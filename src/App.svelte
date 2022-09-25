@@ -1,7 +1,6 @@
 <script>
   import { onMount } from "svelte";
 
-  import Data from "./js/data";
   import Game from "./js/game";
 
   /** @type {HTMLCanvasElement} */
@@ -87,12 +86,16 @@
     place-items: center;
     justify-content: center;
     background-color: rgb(39, 39, 39);
+    overflow: auto;
   }
 
   canvas {
     border: var(--border);
+    /*
     width: 1730px;
     height: 300px;
+    */
+    max-width: 99%;
   }
 
   .overlay {
