@@ -1,5 +1,3 @@
-import Data from "./data";
-
 export class EngineRollenBahn {
   /**
    * @param {{

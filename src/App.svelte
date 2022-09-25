@@ -11,15 +11,18 @@
   /** @type {HTMLImageElement} */
   let assetRolleRight;
 
-  /** @type {number} */
-  let hzRB = 12;
+  // some initial stuff
+  let rbHz = 12;
+
+  /** @type {Game} */
+  let game;
 
   onMount(() => {
     const ctx = canvas.getContext("2d");
     canvas.width = 1730;
     canvas.height = 300;
 
-    const game = new Game(canvas, canvas.width, canvas.height, hzRB, {
+    game = new Game(canvas, ctx, canvas.width, canvas.height, rbHz, {
       rolleLeft: assetRolleLeft,
       rolleRight: assetRolleRight,
     });
@@ -29,9 +32,7 @@
       //if (frame - lastFrame >= 600 / 12) {
       //  game.draw(ctx, (lastFrame = frame));
       //}
-      game.updateHz(hzRB);
-      game.draw(ctx, frame);
-
+      game.draw(frame);
       requestAnimationFrame(animate);
     })(0);
   });
@@ -44,8 +45,8 @@
       type="number"
       min={0}
       max={25}
-      value={hzRB}
-      on:change={(ev) => (hzRB = parseInt(ev.currentTarget.value))}
+      value={rbHz}
+      on:change={(ev) => game.updateHz(parseInt(ev.currentTarget.value))}
     />
   </div>
   <canvas bind:this={canvas} />
