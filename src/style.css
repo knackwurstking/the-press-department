@@ -28,3 +28,7 @@
 body {
   overflow: hidden;
 }
+
+input {
+  font-family: FiraCode;
+}
