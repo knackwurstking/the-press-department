@@ -19,7 +19,7 @@
     canvas.width = 1730;
     canvas.height = 300;
 
-    const game = new Game(canvas.width, canvas.height, hzRB, {
+    const game = new Game(canvas, canvas.width, canvas.height, hzRB, {
       rolleLeft: assetRolleLeft,
       rolleRight: assetRolleRight,
     });

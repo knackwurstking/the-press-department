@@ -1,16 +1,19 @@
 import Data from "./data";
+import { EngineRollenBahn } from "./Engine";
 
 export default class Game {
   /**
+   * @param {HTMLCanvasElement} canvas
    * @param {number} width
    * @param {number} height
    * @param {number} hz
    * @param {{
-   * rolleLeft: HTMLImageElement,
-   * rolleRight: HTMLImageElement,
+   *  rolleLeft: HTMLImageElement,
+   *  rolleRight: HTMLImageElement,
    * }} assets
    */
-  constructor(width, height, hz, assets) {
+  constructor(canvas, width, height, hz, assets) {
+    this.canvas = canvas;
     this.width = width;
     this.height = height;
     this.assets = assets;
@@ -41,43 +44,26 @@ export default class Game {
       }
     }
 
-    let index = -1;
+    let lastX = 0;
     for (let section of Data.rb) {
-      const engine = section.engine;
+      let sX = lastX;
+      let sY = 2;
+      let width = section.engine.count * 10;
+      let height = this.canvas.height;
+      lastX += width;
 
-      if (engine.type === Data.ROLLEN_GRIP) {
-        const assetRolleWidth = 10;
+      // TODO: initialy cereate all engines and just draw here
+      const erb = new EngineRollenBahn(
+        this.assets,
+        section.engine.side,
+        section.engine.count,
+        sX,
+        sY,
+        width,
+        height
+      );
 
-        for (let x = 0; x < engine.count; x++) {
-          index += 1;
-
-          let posX = index * assetRolleWidth + 2;
-          if (posX >= this.width) {
-            throw `posX for "rolle" is out of range (${posX})`;
-          }
-
-          let image;
-          if (engine.side === "right") {
-            image = this.assets.rolleRight;
-          } else if (engine.side === "left") {
-            image = this.assets.rolleLeft;
-          } else {
-            continue;
-          }
-
-          ctx.drawImage(
-            image,
-            6 * this._engineFrame,
-            0,
-            6,
-            image.height,
-            posX,
-            2,
-            6,
-            image.height
-          );
-        }
-      }
+      erb.draw(ctx, this._engineFrame);
     }
   }
 }
