@@ -8,31 +8,30 @@
 
 export default (function () {
   const data = {
-    ROLLEN_1: "rollen",
-    RIEMEN_1: "riemen",
+    ROLLEN_ROUND: 1,
+    ROLLEN_GRIP: 2,
+    RIEMEN_ROUND: 3,
+    RIEMEN_GRIP: 4,
 
     /** 17m, 1700cm */
-    ROLLEN_BAHN_LENGTH: 1700,
+    rbLength: 1700,
 
     /** 1.5m, 150cm */
-    ROLLEN_BAHN_WIDTH: 150,
+    rbWidth: 150,
 
-    ROLLEN_BAHN_MAX_COUNT: 173,
+    rbMaxCount: 173,
 
     /** 1.5m, 150cm -- 6 Rollen nicht sichtbar von oben (Eingang und Ausgang) */
-    TROCKER_LENGTH_1: 150,
-
-    /** Make a cut here */
-    TROCKER_LENGTH_2: -1,
+    trockerLength1: 150,
 
     /** 1.6m, 160cm */
-    TROCKNER_AUSGANG_LENGTH: 160,
+    trocknerAusgangLength: 160,
 
     /** Keep it simple for now */
-    GLASUR_RIEMEN: 4,
+    glRiemenCount: 4,
   };
 
-  data.rollenBahn = [
+  data.rb = [
     {
       name: "Pressen Übergangs Tisch",
       engine: {
@@ -99,7 +98,7 @@ export default (function () {
     },
   ];
 
-  data.trockerAusgang = [
+  data.ta = [
     {
       name: "Gestell Rollen1",
       engine: {
