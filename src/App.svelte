@@ -61,31 +61,26 @@
 <img
   bind:this={assetRolleLeft}
   id="rolleLeft"
-  src="assets/rolle-left_v2_6x296.png"
+  src="assets/RolleLeft_6x296.png"
   alt="rolle"
 />
 <img
   bind:this={assetRolleRight}
   id="rolleRight"
-  src="assets/rolle-right_v2_6x296.png"
+  src="assets/RolleRight_6x296.png"
   alt="rolle"
 />
 <img
   bind:this={assetRBGestellAluBlockLeft}
   id="rbGestellAluBlock"
-  src="assets/rb-gestell-alu-block-left_10x10.png"
+  src="assets/RollenBahnAluBlockLeft_10x10.png"
   alt="gestell alu block"
 />
 <img
   bind:this={assetRBGestellAluBlockRight}
   id="rbGestellAluBlock"
-  src="assets/rb-gestell-alu-block-right_10x10.png"
+  src="assets/RollenBahnAluBlockRight_10x10.png"
   alt="gestell alu block"
-/>
-<img
-  id="rbGestellQuer"
-  src="assets/rb-gestell-quer_10x300.png"
-  alt="gestell quer"
 />
 
 <style>
