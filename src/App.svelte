@@ -9,6 +9,9 @@
   /** @type {HTMLImageElement} */
   let assetRolleLeft;
 
+  /** @type {HTMLImageElement} */
+  let assetRolleRight;
+
   /** @type {number} */
   let hzRB = 12;
 
@@ -63,16 +66,25 @@
               throw `posX for "rolle" is out of range (${posX})`;
             }
 
+            let image;
+            if (engine.side === "right") {
+              image = assetRolleRight;
+            } else if (engine.side === "left") {
+              image = assetRolleLeft;
+            } else {
+              continue;
+            }
+
             ctx.drawImage(
-              assetRolleLeft,
+              image,
               6 * this._engineFrame,
               0,
               6,
-              assetRolleLeft.height,
+              image.height,
               posX,
               2,
               6,
-              assetRolleLeft.height
+              image.height
             );
           }
         }
@@ -117,16 +129,25 @@
 <img
   bind:this={assetRolleLeft}
   id="rolleLeft"
-  src="assets/rolle-left_6x296.png"
-  alt="iamge"
+  src="assets/rolle-left_v2_6x296.png"
+  alt="rolle"
 />
-<img id="rolleRight" src="assets/rolle-right_6x296.png" alt="iamge" />
+<img
+  bind:this={assetRolleRight}
+  id="rolleRight"
+  src="assets/rolle-right_v2_6x296.png"
+  alt="rolle"
+/>
 <img
   id="rbGestellAluBlock"
   src="assets/rb-gestell-alu-block_10x10.png"
-  alt="iamge"
+  alt="gestell alu block"
 />
-<img id="rbGestellQuer" src="assets/rb-gestell-quer_10x300.png" alt="iamge" />
+<img
+  id="rbGestellQuer"
+  src="assets/rb-gestell-quer_10x300.png"
+  alt="gestell quer"
+/>
 
 <style>
   img {

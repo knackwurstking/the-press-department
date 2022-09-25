@@ -33,52 +33,12 @@ export default (function () {
 
   data.rb = [
     {
-      name: "Pressen Übergangs Tisch",
+      name: "Trockner Eingang",
       engine: {
-        count: 16,
+        /** 2 Rollen for dem Trocker Eingang sind speziell */
+        count: 15,
         type: data.ROLLEN_GRIP,
-      },
-    },
-    {
-      name: "Wender",
-      engine: {
-        count: 26,
-        type: data.ROLLEN_GRIP,
-      },
-    },
-    {
-      name: "Rollen Bahn 1",
-      engine: {
-        count: 22,
-        type: data.ROLLEN_GRIP,
-      },
-    },
-    {
-      name: "Rollen Bahn 2",
-      engine: {
-        count: 22,
-        type: data.ROLLEN_GRIP,
-      },
-    },
-    {
-      name: "Rollen Bahn 3",
-      engine: {
-        count: 22,
-        type: data.ROLLEN_GRIP,
-      },
-    },
-    {
-      name: "Rollen Bahn 4",
-      engine: {
-        count: 22,
-        type: data.ROLLEN_GRIP,
-      },
-    },
-    {
-      name: "Rollen Bahn 5",
-      engine: {
-        count: 14,
-        type: data.ROLLEN_GRIP,
+        side: "left",
       },
     },
     {
@@ -86,14 +46,63 @@ export default (function () {
       engine: {
         count: 14,
         type: data.ROLLEN_GRIP,
+        side: "right",
       },
     },
     {
-      name: "Trockner Eingang",
+      name: "Rollen Bahn 5",
       engine: {
-        /** 2 Rollen for dem Trocker Eingang sind speziell */
-        count: 15,
+        count: 14,
         type: data.ROLLEN_GRIP,
+        side: "left",
+      },
+    },
+    {
+      name: "Rollen Bahn 4",
+      engine: {
+        count: 22,
+        type: data.ROLLEN_GRIP,
+        side: "right",
+      },
+    },
+    {
+      name: "Rollen Bahn 3",
+      engine: {
+        count: 22,
+        type: data.ROLLEN_GRIP,
+        side: "left",
+      },
+    },
+    {
+      name: "Rollen Bahn 2",
+      engine: {
+        count: 22,
+        type: data.ROLLEN_GRIP,
+        side: "right",
+      },
+    },
+    {
+      name: "Rollen Bahn 1",
+      engine: {
+        count: 22,
+        type: data.ROLLEN_GRIP,
+        side: "left",
+      },
+    },
+    {
+      name: "Wender",
+      engine: {
+        count: 26,
+        type: data.ROLLEN_GRIP,
+        side: "right",
+      },
+    },
+    {
+      name: "Pressen Übergangs Tisch",
+      engine: {
+        count: 16,
+        type: data.ROLLEN_GRIP,
+        side: "right",
       },
     },
   ];
