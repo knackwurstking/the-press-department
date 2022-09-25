@@ -90,8 +90,8 @@
   }
 
   canvas {
-    border: var(--border);
     /*
+    border: var(--border);
     width: 1730px;
     height: 300px;
     */
