@@ -94,9 +94,8 @@
     display: flex;
     place-items: center;
     justify-content: center;
-    background-color: rgb(39, 39, 39);
     overflow: auto;
-    background-image: url(/assets/Ground_250x250.png);
+    background-image: url("./Ground_248x248.png"), url("/assets/Ground_248x248.png");
   }
 
   canvas {
