@@ -36,56 +36,56 @@ export default (function () {
       name: "Pressen Übergangs Tisch",
       engine: {
         count: 16,
-        type: data.ROLLEN_1,
+        type: data.ROLLEN_GRIP,
       },
     },
     {
       name: "Wender",
       engine: {
         count: 26,
-        type: data.ROLLEN_1,
+        type: data.ROLLEN_GRIP,
       },
     },
     {
       name: "Rollen Bahn 1",
       engine: {
         count: 22,
-        type: data.ROLLEN_1,
+        type: data.ROLLEN_GRIP,
       },
     },
     {
       name: "Rollen Bahn 2",
       engine: {
         count: 22,
-        type: data.ROLLEN_1,
+        type: data.ROLLEN_GRIP,
       },
     },
     {
       name: "Rollen Bahn 3",
       engine: {
         count: 22,
-        type: data.ROLLEN_1,
+        type: data.ROLLEN_GRIP,
       },
     },
     {
       name: "Rollen Bahn 4",
       engine: {
         count: 22,
-        type: data.ROLLEN_1,
+        type: data.ROLLEN_GRIP,
       },
     },
     {
       name: "Rollen Bahn 5",
       engine: {
         count: 14,
-        type: data.ROLLEN_1,
+        type: data.ROLLEN_GRIP,
       },
     },
     {
       name: "Ausricter Eingang",
       engine: {
         count: 14,
-        type: data.ROLLEN_1,
+        type: data.ROLLEN_GRIP,
       },
     },
     {
@@ -93,7 +93,7 @@ export default (function () {
       engine: {
         /** 2 Rollen for dem Trocker Eingang sind speziell */
         count: 15,
-        type: data.ROLLEN_1,
+        type: data.ROLLEN_GRIP,
       },
     },
   ];
@@ -104,7 +104,7 @@ export default (function () {
       engine: {
         /** Format 60x60 -- Der Antriebsriemen ist ca. 1 Rollen lang */
         count: 13,
-        type: data.ROLLEN_1,
+        type: data.ROLLEN_GRIP,
       },
     },
     {
@@ -112,7 +112,7 @@ export default (function () {
       engine: {
         /** Format 60x60 -- Der Antriebsriemen ist ca. 11 Rollen lang */
         count: 9,
-        type: data.ROLLEN_1,
+        type: data.ROLLEN_GRIP,
       },
     },
   ];
@@ -122,7 +122,7 @@ export default (function () {
     name: "Gestell Riemen",
     engine: {
       count: 6,
-      type: data.RIEMEN_1,
+      type: data.RIEMEN_ROUND,
     },
   };
 
@@ -131,7 +131,7 @@ export default (function () {
     name: "Proben Tisch",
     engine: {
       count: 6,
-      type: data.RIEMEN_1,
+      type: data.RIEMEN_GRIP,
     },
   };
 
