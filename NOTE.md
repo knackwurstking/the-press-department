@@ -27,4 +27,4 @@
 ## Ground
 
 - size: `250x250`
-- color1: `#`
+- color1: `#6d6d6d, #878787`

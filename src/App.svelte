@@ -96,11 +96,12 @@
     justify-content: center;
     background-color: rgb(39, 39, 39);
     overflow: auto;
+    background-image: url(/assets/Ground_250x250.png);
   }
 
   canvas {
-    border: var(--border);
     /*
+    border: var(--border);
     width: 1730px;
     height: 300px;
     */
