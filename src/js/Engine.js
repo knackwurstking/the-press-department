@@ -3,6 +3,8 @@ export class EngineRollenBahn {
    * @param {{
    *  rolleLeft: HTMLImageElement,
    *  rolleRight: HTMLImageElement,
+   *  rbGestellAluBlockLeft: HTMLImageElement,
+   *  rbGestellAluBlockRight: HTMLImageElement,
    * }} assets
    * @param {"left"|"right"} side
    * @param {number} count
@@ -30,30 +32,40 @@ export class EngineRollenBahn {
     for (let x = 0; x < this.count; x++) {
       index += 1;
 
-      let posX = this.sX + index * 10;
-
-      let image;
+      let rolle;
       if (this.side === "right") {
-        image = this.assets.rolleRight;
+        rolle = this.assets.rolleRight;
       } else if (this.side === "left") {
-        image = this.assets.rolleLeft;
+        rolle = this.assets.rolleLeft;
       } else {
         continue;
       }
 
+      let aluBlockLeft = this.assets.rbGestellAluBlockLeft;
+      let aluBlockRight = this.assets.rbGestellAluBlockRight;
+      aluBlockRight.style.transform = "rotate(180deg)";
+
+      let posX = this.sX + index * 10;
+      let sX = 6 * frameNumber;
+      let sY = 0;
+      let sWidth = 6;
+      let sHeight = rolle.height;
+      let dX = posX + 2;
+      let dY = 8;
+      let dWidth = 6;
+      let dHeight = sHeight;
+
+      ctx.drawImage(aluBlockLeft, posX, 0, 10, aluBlockRight.height);
+
       ctx.drawImage(
-        image,
-        // game asset
-        6 * frameNumber,
-        0,
-        6,
-        image.height,
-        // canvas position
+        aluBlockRight,
         posX,
-        2,
-        6,
-        image.height
+        aluBlockLeft.height + rolle.height - dY / 2,
+        10,
+        aluBlockRight.height
       );
+
+      ctx.drawImage(rolle, sX, sY, sWidth, sHeight, dX, dY, dWidth, dHeight);
     }
   }
 }

@@ -10,6 +10,10 @@
   let assetRolleLeft;
   /** @type {HTMLImageElement} */
   let assetRolleRight;
+  /** @type {HTMLImageElement} */
+  let assetRBGestellAluBlockLeft;
+  /** @type {HTMLImageElement} */
+  let assetRBGestellAluBlockRight;
 
   // some initial stuff
   let rbHz = 12;
@@ -20,11 +24,13 @@
   onMount(() => {
     const ctx = canvas.getContext("2d");
     canvas.width = 1730;
-    canvas.height = 300;
+    canvas.height = 312;
 
     game = new Game(canvas, ctx, canvas.width, canvas.height, rbHz, {
       rolleLeft: assetRolleLeft,
       rolleRight: assetRolleRight,
+      rbGestellAluBlockLeft: assetRBGestellAluBlockLeft,
+      rbGestellAluBlockRight: assetRBGestellAluBlockRight,
     });
 
     //let lastFrame = 0 - 600 / 12;
@@ -65,8 +71,15 @@
   alt="rolle"
 />
 <img
+  bind:this={assetRBGestellAluBlockLeft}
   id="rbGestellAluBlock"
-  src="assets/rb-gestell-alu-block_10x10.png"
+  src="assets/rb-gestell-alu-block-left_10x10.png"
+  alt="gestell alu block"
+/>
+<img
+  bind:this={assetRBGestellAluBlockRight}
+  id="rbGestellAluBlock"
+  src="assets/rb-gestell-alu-block-right_10x10.png"
   alt="gestell alu block"
 />
 <img
@@ -91,8 +104,8 @@
   }
 
   canvas {
-    /*
     border: var(--border);
+    /*
     width: 1730px;
     height: 300px;
     */

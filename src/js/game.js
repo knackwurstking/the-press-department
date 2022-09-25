@@ -11,6 +11,8 @@ export default class Game {
    * @param {{
    *  rolleLeft: HTMLImageElement,
    *  rolleRight: HTMLImageElement,
+   *  rbGestellAluBlockLeft: HTMLImageElement,
+   *  rbGestellAluBlockRight: HTMLImageElement,
    * }} assets
    */
   constructor(canvas, ctx, width, height, hz, assets) {
@@ -22,7 +24,7 @@ export default class Game {
 
     this.updateHz(hz);
     this._lastFrame = 0 - this._fps;
-    this._engineFrame = 0;
+    this._engineFrame = -1;
 
     // initialize
     this.initialize();
@@ -68,13 +70,13 @@ export default class Game {
       this._engineFrame += 1;
       this._lastFrame = frame;
 
-      if (this._engineFrame > 6) {
+      if (this._engineFrame > 5) {
         this._engineFrame = 1;
       }
-    }
 
-    for (let engine of this.engines) {
-      engine.draw(this.ctx, this._engineFrame);
+      for (let engine of this.engines) {
+        engine.draw(this.ctx, this._engineFrame);
+      }
     }
   }
 }
