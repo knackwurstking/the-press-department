@@ -1,0 +1,7 @@
+- 1px === 1cm || 1pz === 0.5cm
+- game area for "Rollenbahn" is: `1700x150 || 3400x300`
+- section: `(count*(2+3+2))x150 || (count*(2+3+2)*2)x150`
+- rolle: `3x148 || 6x296`
+  - color 1: `#000000`
+  - color 1: `#635242`, `#3c3228`
+  - color 1: `#454545`, `#6d6d6d`

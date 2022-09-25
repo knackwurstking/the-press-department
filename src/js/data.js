@@ -1,3 +1,11 @@
+/**
+ * @typedef Engine
+ * @type {{
+ *   count: number,
+ *   type: "rollen"|"riemen",
+ * }}
+ */
+
 export default (function () {
   const data = {
     ROLLEN_1: "rollen",
@@ -5,6 +13,11 @@ export default (function () {
 
     /** 17m, 1700cm */
     ROLLEN_BAHN_LENGTH: 1700,
+
+    /** 1.5m, 150cm */
+    ROLLEN_BAHN_WIDTH: 150,
+
+    ROLLEN_BAHN_MAX_COUNT: 173,
 
     /** 1.5m, 150cm -- 6 Rollen nicht sichtbar von oben (Eingang und Ausgang) */
     TROCKER_LENGTH_1: 150,
