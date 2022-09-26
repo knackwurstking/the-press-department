@@ -33,7 +33,7 @@
 
   onMount(() => {
     const ctx = canvas.getContext("2d");
-    canvas.width = 1730;
+    canvas.width = 3400;
     canvas.height = 312;
 
     game = new Game(canvas, ctx, canvas.width, canvas.height, rbHz, {
@@ -135,11 +135,9 @@
   }
 
   canvas {
-    /*
     border: var(--border);
-    width: 1730px;
-    height: 300px;
-    */
+    width: 3400px;
+    height: 312px;
     max-width: 99%;
   }
 
