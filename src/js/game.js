@@ -1,5 +1,16 @@
 import Data from "./data";
-import { EngineRollenBahn } from "./Engine";
+import { EngineRollenBahn } from "./engine";
+
+/**
+ * @typedef Assets
+ * @type {{
+ *  rolleLeft: HTMLImageElement,
+ *  rolleRight: HTMLImageElement,
+ *  rbAluBlockLeft: HTMLImageElement,
+ *  rbAluBlockRight: HTMLImageElement,
+ *  rbRiemen300x5: HTMLImageElement,
+ * }}
+ */
 
 export default class Game {
   /**
@@ -8,12 +19,7 @@ export default class Game {
    * @param {number} width
    * @param {number} height
    * @param {number} hz
-   * @param {{
-   *  rolleLeft: HTMLImageElement,
-   *  rolleRight: HTMLImageElement,
-   *  rbGestellAluBlockLeft: HTMLImageElement,
-   *  rbGestellAluBlockRight: HTMLImageElement,
-   * }} assets
+   * @param {Assets} assets
    */
   constructor(canvas, ctx, width, height, hz, assets) {
     this.canvas = canvas;

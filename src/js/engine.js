@@ -1,11 +1,6 @@
 export class EngineRollenBahn {
   /**
-   * @param {{
-   *  rolleLeft: HTMLImageElement,
-   *  rolleRight: HTMLImageElement,
-   *  rbGestellAluBlockLeft: HTMLImageElement,
-   *  rbGestellAluBlockRight: HTMLImageElement,
-   * }} assets
+   * @param {import("./game").Assets} assets
    * @param {"left"|"right"} side
    * @param {number} count
    * @param {number} sX
@@ -41,8 +36,8 @@ export class EngineRollenBahn {
         continue;
       }
 
-      let aluBlockLeft = this.assets.rbGestellAluBlockLeft;
-      let aluBlockRight = this.assets.rbGestellAluBlockRight;
+      let aluBlockLeft = this.assets.rbAluBlockLeft;
+      let aluBlockRight = this.assets.rbAluBlockRight;
       aluBlockRight.style.transform = "rotate(180deg)";
 
       let posX = this.sX + index * 10;
@@ -64,6 +59,8 @@ export class EngineRollenBahn {
         10,
         aluBlockRight.height
       );
+
+      // TODO: after the "Alu Block" render the "Riemen" only for "P... U... T..." for testing on the right
 
       ctx.drawImage(rolle, sX, sY, sWidth, sHeight, dX, dY, dWidth, dHeight);
     }

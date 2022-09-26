@@ -7,13 +7,15 @@
   let canvas;
 
   /** @type {HTMLImageElement} */
-  let assetRolleLeft;
+  let rolleLeft;
   /** @type {HTMLImageElement} */
-  let assetRolleRight;
+  let rolleRight;
   /** @type {HTMLImageElement} */
-  let assetRBGestellAluBlockLeft;
+  let rbAluBlockLeft;
   /** @type {HTMLImageElement} */
-  let assetRBGestellAluBlockRight;
+  let rbAluBlockRight;
+  /** @type {HTMLImageElement} */
+  let rbRiemen300x5;
 
   // some initial stuff
   let rbHz = 12;
@@ -27,10 +29,11 @@
     canvas.height = 312;
 
     game = new Game(canvas, ctx, canvas.width, canvas.height, rbHz, {
-      rolleLeft: assetRolleLeft,
-      rolleRight: assetRolleRight,
-      rbGestellAluBlockLeft: assetRBGestellAluBlockLeft,
-      rbGestellAluBlockRight: assetRBGestellAluBlockRight,
+      rolleLeft,
+      rolleRight,
+      rbAluBlockLeft,
+      rbAluBlockRight,
+      rbRiemen300x5,
     });
 
     //let lastFrame = 0 - 600 / 12;
@@ -59,28 +62,30 @@
 </main>
 
 <img
-  bind:this={assetRolleLeft}
-  id="rolleLeft"
+  bind:this={rolleLeft}
   src="assets/RolleLeft_6x296.png"
   alt="rolle"
 />
 <img
-  bind:this={assetRolleRight}
-  id="rolleRight"
+  bind:this={rolleRight}
   src="assets/RolleRight_6x296.png"
   alt="rolle"
 />
 <img
-  bind:this={assetRBGestellAluBlockLeft}
-  id="rbGestellAluBlock"
+  bind:this={rbAluBlockLeft}
   src="assets/RollenBahnAluBlockLeft_10x10.png"
   alt="gestell alu block"
 />
 <img
-  bind:this={assetRBGestellAluBlockRight}
-  id="rbGestellAluBlock"
+  bind:this={rbAluBlockRight}
   src="assets/RollenBahnAluBlockRight_10x10.png"
   alt="gestell alu block"
+/>
+<img
+  bind:this={rbRiemen300x5}
+  id="rbGestellAluBlock"
+  src="assets/RollenBahnRiemen_300x5-Sheet.png"
+  alt="riemen"
 />
 
 <style>
