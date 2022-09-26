@@ -16,6 +16,8 @@
   let rbAluBlockRight;
   /** @type {HTMLImageElement} */
   let rbRiemen290x5;
+  /** @type {HTMLImageElement} */
+  let rbRiemen270x5;
 
   // some initial stuff
   let rbHz = 12;
@@ -34,6 +36,7 @@
       rbAluBlockLeft,
       rbAluBlockRight,
       rbRiemen290x5,
+      rbRiemen270x5,
     });
 
     //let lastFrame = 0 - 600 / 12;
@@ -86,6 +89,11 @@
 <img
   bind:this={rbRiemen290x5}
   src="assets/Riemen-290x5.png"
+  alt="rb riemen"
+/>
+<img
+  bind:this={rbRiemen270x5}
+  src="assets/Riemen-270x5.png"
   alt="rb riemen"
 />
 
