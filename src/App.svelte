@@ -1,23 +1,11 @@
 <script>
   import { onMount } from "svelte";
 
+  import Data from "./js/data";
   import Game from "./js/game";
 
   /** @type {HTMLCanvasElement} */
   let canvas;
-
-  /** @type {HTMLImageElement} */
-  let rolleLeft;
-  /** @type {HTMLImageElement} */
-  let rolleRight;
-  /** @type {HTMLImageElement} */
-  let rbAluBlockLeft;
-  /** @type {HTMLImageElement} */
-  let rbAluBlockRight;
-  /** @type {HTMLImageElement} */
-  let rbRiemen290x5;
-  /** @type {HTMLImageElement} */
-  let rbRiemen270x5;
 
   // some initial stuff
   let rbHz = 12;
@@ -30,26 +18,29 @@
     canvas.width = 3460;
     canvas.height = 312;
 
-    game = new Game(canvas, ctx, canvas.width, canvas.height, rbHz, {
-      rolleLeft,
-      rolleRight,
-      rbAluBlockLeft,
-      rbAluBlockRight,
-      rbRiemen290x5,
-      rbRiemen270x5,
-    });
+    game = new Game(canvas, ctx, canvas.width, canvas.height, rbHz);
 
-    //let lastFrame = 0 - 600 / 12;
-    (function animate(frame) {
-      //if (frame - lastFrame >= 600 / 12) {
-      //  game.draw(ctx, (lastFrame = frame));
-      //}
-      game.draw(frame);
-      requestAnimationFrame(animate);
-    })(0);
+    // loading assets before runninng the game loop
+    const queue = new Set();
+    for (let asset of Data.assets) {
+      game.assets[asset.name] = new Image(asset.width, asset.height);
+      game.assets[asset.name].src = asset.src;
+
+      queue.add(game.assets[asset.name].src);
+      game.assets[asset.name].onloadend = (ev) => {
+        queue.delete(ev.target.src);
+      };
+    }
+
+    // TODO: wait for queue to finish
+    let interval = setInterval(() => {
+      if (queue.size === 0) {
+        game.start();
+        clearInterval(interval);
+      }
+    }, 250);
   });
 </script>
-
 
 <div class="overlay">
   <input
@@ -66,48 +57,14 @@
   <canvas bind:this={canvas} />
 </main>
 
-<img
-  bind:this={rolleLeft}
-  src="assets/RolleLeft_6x296.png"
-  alt="rolle"
-/>
-<img
-  bind:this={rolleRight}
-  src="assets/RolleRight_6x296.png"
-  alt="rolle"
-/>
-<img
-  bind:this={rbAluBlockLeft}
-  src="assets/RollenBahnAluBlockLeft_20x10.png"
-  alt="gestell alu block"
-/>
-<img
-  bind:this={rbAluBlockRight}
-  src="assets/RollenBahnAluBlockRight_20x10.png"
-  alt="gestell alu block"
-/>
-<img
-  bind:this={rbRiemen290x5}
-  src="assets/Riemen-290x5.png"
-  alt="rb riemen"
-/>
-<img
-  bind:this={rbRiemen270x5}
-  src="assets/Riemen-270x5.png"
-  alt="rb riemen"
-/>
-
 <style>
-  img {
-    display: none;
-  }
-
   main {
     width: 100vw;
     height: 100vh;
     display: flex;
     place-items: center;
-    background-image: url("./Ground_248x248.png"), url("/assets/Ground_248x248.png");
+    background-image: url("./Ground_248x248.png"),
+      url("/assets/Ground_248x248.png");
     padding: 8px;
   }
 

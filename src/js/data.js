@@ -31,6 +31,45 @@ export default (function () {
     glRiemenCount: 4,
   };
 
+  data.assets = [
+    {
+      name: "rbAluBlockLeft",
+      width: 20,
+      height: 10,
+      src: "assets/RollenBahnAluBlockLeft_20x10.png",
+    },
+    {
+      name: "rbAluBlockRight",
+      width: 20,
+      height: 10,
+      src: "assets/RollenBahnAluBlockRight_20x10.png",
+    },
+    {
+      name: "rolleLeft",
+      width: 6 * 6,
+      height: 296,
+      src: "assets/RolleLeft_6x296.png",
+    },
+    {
+      name: "rolleRight",
+      width: 6 * 6,
+      height: 296,
+      src: "assets/RolleRight_6x296.png",
+    },
+    {
+      name: "rbRiemen290x5",
+      width: 290,
+      height: 5 * 3,
+      src: "assets/Riemen-290x5.png",
+    },
+    {
+      name: "rbRiemen270x5",
+      width: 290,
+      height: 5 * 3,
+      src: "assets/Riemen-270x5.png",
+    },
+  ];
+
   data.rb = [
     {
       name: "Trockner Eingang",

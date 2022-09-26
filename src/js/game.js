@@ -4,12 +4,12 @@ import { EngineRollenBahn } from "./engine";
 /**
  * @typedef Assets
  * @type {{
- *  rolleLeft: HTMLImageElement,
- *  rolleRight: HTMLImageElement,
- *  rbAluBlockLeft: HTMLImageElement,
- *  rbAluBlockRight: HTMLImageElement,
- *  rbRiemen290x5: HTMLImageElement,
- *  rbRiemen270x5: HTMLImageElement,
+ *  rolleLeft?: HTMLImageElement,
+ *  rolleRight?: HTMLImageElement,
+ *  rbAluBlockLeft?: HTMLImageElement,
+ *  rbAluBlockRight?: HTMLImageElement,
+ *  rbRiemen290x5?: HTMLImageElement,
+ *  rbRiemen270x5?: HTMLImageElement,
  * }}
  */
 
@@ -20,28 +20,29 @@ export default class Game {
    * @param {number} width
    * @param {number} height
    * @param {number} hz
-   * @param {Assets} assets
    */
-  constructor(canvas, ctx, width, height, hz, assets) {
+  constructor(canvas, ctx, width, height, hz) {
     this.canvas = canvas;
     this.ctx = ctx;
     this.width = width;
     this.height = height;
-    this.assets = assets;
 
     this.updateHz(hz);
     this._lastFrame = 0 - this._fps;
     this._engineFrame = -1;
 
-    // initialize
-    this.initialize();
+    /** @type {Assets} */
+    this.assets = {};
+
+    /** @type {EngineRollenBahn[]} */
+    this.engines;
 
     console.log("[App.svelte] canvas size (x, y):", width, height);
   }
 
   initialize() {
-    /** @type {EngineRollenBahn[]} */
     this.engines = []; // left to right
+
     let lastX = 0;
     for (let section of Data.rb) {
       let sX = lastX;
@@ -86,5 +87,15 @@ export default class Game {
         engine.draw(this.ctx, this._engineFrame);
       }
     }
+  }
+
+  async start() {
+    this.initialize();
+    const animate = (/** @type {number} */ frame) => {
+      this.draw(frame);
+      requestAnimationFrame(animate);
+    };
+
+    animate(0);
   }
 }
