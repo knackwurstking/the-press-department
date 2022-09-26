@@ -48,8 +48,8 @@ export default class Game {
     let lastX = 0;
     for (let section of Data.rb) {
       let sX = lastX;
-      let sY = 2;
-      let width = section.engine.count * 10;
+      let sY = 0;
+      let width = section.engine.count * this.assets.rbAluBlockLeft.width;
       let height = this.canvas.height;
       lastX += width;
 

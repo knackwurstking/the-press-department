@@ -16,6 +16,79 @@ export class EngineRollenBahn {
     this.sY = sY;
     this.width = width;
     this.height = height;
+
+    /** @type {number} */
+    this._frameNumber;
+  }
+
+  /**
+   * @param {CanvasRenderingContext2D} ctx
+   * @param {number} dX
+   */
+  drawRiemen(ctx, dX) {
+    const image = this.assets[`rbRiemen${this.count * 10}x5`];
+    if (image) {
+      ctx.drawImage(
+        image,
+        0, // sX
+        5 * (2 - (this._frameNumber % 3)), // sY: backwards
+        image.width, // sWidth
+        image.height / 3, // sHeight
+        dX,
+        this.side === "left" ? 11 : this.assets.rolleLeft.height + (10 - 4 - 5), // dY
+        image.width, // dWidth
+        5 // dHeight
+      );
+    } else {
+      throw `missing assets: "rbRiemen${this.count * 10}x5"`;
+    }
+  }
+
+  /**
+   * @param {CanvasRenderingContext2D} ctx
+   * @param {number} dX
+   */
+  drawAluBlockLeft(ctx, dX) {
+    let image = this.assets.rbAluBlockLeft;
+    ctx.drawImage(image, dX, 0, image.width, image.height);
+  }
+
+  /**
+   * @param {CanvasRenderingContext2D} ctx
+   * @param {number} dX
+   */
+  drawAluBlockRight(ctx, dX) {
+    let image = this.assets.rbAluBlockRight;
+    ctx.drawImage(
+      image,
+      dX,
+      this.assets.rbAluBlockLeft.height + (this.assets.rolleLeft.height - 4),
+      image.width,
+      image.height
+    );
+  }
+
+  /**
+   * @param {CanvasRenderingContext2D} ctx
+   * @param {number} dX
+   */
+  drawRolle(ctx, dX) {
+    let rolle;
+    if (this.side === "left") {
+      rolle = this.assets.rolleLeft;
+    } else {
+      rolle = this.assets.rolleRight;
+    }
+
+    let sX = 6 * this._frameNumber;
+    let sY = 0;
+    let sWidth = 6;
+    let sHeight = rolle.height;
+    let dY = 8;
+    let dWidth = rolle.width / 6;
+    let dHeight = rolle.height;
+
+    ctx.drawImage(rolle, sX, sY, sWidth, sHeight, dX, dY, dWidth, dHeight);
   }
 
   /**
@@ -23,60 +96,18 @@ export class EngineRollenBahn {
    * @param {number} frameNumber - draw a frame (1-6)
    */
   draw(ctx, frameNumber) {
+    this._frameNumber = frameNumber;
+
+    this.drawRiemen(ctx, this.sX + 5);
+
     let index = -1;
-
-    const image = this.assets[`rbRiemen${this.count * 10}x5`];
-    if (image) {
-      let sX = 0;
-      let sY = 5 * (2 - (frameNumber % 3)); // Backwards
-      let sWidth = image.width;
-      let sHeight = 5;
-      let dX = this.sX;
-      let dY =
-        this.side === "left" ? 11 : this.assets.rolleRight.height + 10 - 4 - 5;
-      let dWidth = sWidth;
-      let dHeight = 5;
-
-      ctx.drawImage(image, sX, sY, sWidth, sHeight, dX, dY, dWidth, dHeight);
-    }
-
     for (let x = 0; x < this.count; x++) {
       index += 1;
 
-      let rolle;
-      if (this.side === "right") {
-        rolle = this.assets.rolleRight;
-      } else if (this.side === "left") {
-        rolle = this.assets.rolleLeft;
-      } else {
-        continue;
-      }
-
-      let aluBlockLeft = this.assets.rbAluBlockLeft;
-      let aluBlockRight = this.assets.rbAluBlockRight;
-      aluBlockRight.style.transform = "rotate(180deg)";
-
-      let posX = this.sX + index * 10;
-      let sX = 6 * frameNumber;
-      let sY = 0;
-      let sWidth = 6;
-      let sHeight = rolle.height;
-      let dX = posX + 2;
-      let dY = 8;
-      let dWidth = 6;
-      let dHeight = sHeight;
-
-      ctx.drawImage(aluBlockLeft, posX, 0, 10, aluBlockRight.height);
-
-      ctx.drawImage(
-        aluBlockRight,
-        posX,
-        aluBlockLeft.height + rolle.height - dY / 2,
-        10,
-        aluBlockRight.height
-      );
-
-      ctx.drawImage(rolle, sX, sY, sWidth, sHeight, dX, dY, dWidth, dHeight);
+      let posX = this.sX + index * this.assets.rbAluBlockLeft.width;
+      this.drawAluBlockLeft(ctx, posX);
+      this.drawAluBlockRight(ctx, posX);
+      this.drawRolle(ctx, posX + 7);
     }
   }
 }

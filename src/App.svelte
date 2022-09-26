@@ -33,7 +33,7 @@
 
   onMount(() => {
     const ctx = canvas.getContext("2d");
-    canvas.width = 3400;
+    canvas.width = 3460;
     canvas.height = 312;
 
     game = new Game(canvas, ctx, canvas.width, canvas.height, rbHz, {
@@ -59,17 +59,19 @@
   });
 </script>
 
+
+<div class="overlay">
+  <input
+    class="hz-rb"
+    type="number"
+    min={0}
+    max={25}
+    value={rbHz}
+    on:change={(ev) => game.updateHz(parseInt(ev.currentTarget.value))}
+  />
+</div>
+
 <main>
-  <div class="overlay">
-    <input
-      class="hz-rb"
-      type="number"
-      min={0}
-      max={25}
-      value={rbHz}
-      on:change={(ev) => game.updateHz(parseInt(ev.currentTarget.value))}
-    />
-  </div>
   <canvas bind:this={canvas} />
 </main>
 
@@ -85,12 +87,12 @@
 />
 <img
   bind:this={rbAluBlockLeft}
-  src="assets/RollenBahnAluBlockLeft_10x10.png"
+  src="assets/RollenBahnAluBlockLeft_20x10.png"
   alt="gestell alu block"
 />
 <img
   bind:this={rbAluBlockRight}
-  src="assets/RollenBahnAluBlockRight_10x10.png"
+  src="assets/RollenBahnAluBlockRight_20x10.png"
   alt="gestell alu block"
 />
 <img
@@ -129,16 +131,14 @@
     height: 100vh;
     display: flex;
     place-items: center;
-    justify-content: center;
     overflow: auto;
     background-image: url("./Ground_248x248.png"), url("/assets/Ground_248x248.png");
+    padding: 8px;
   }
 
   canvas {
-    border: var(--border);
-    width: 3400px;
+    width: 3460px;
     height: 312px;
-    max-width: 99%;
   }
 
   .overlay {
