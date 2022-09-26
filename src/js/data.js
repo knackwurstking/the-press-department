@@ -42,7 +42,7 @@ export default (function () {
       },
     },
     {
-      name: "Ausricter Eingang",
+      name: "Ausrichter Eingang",
       engine: {
         count: 14,
         type: data.ROLLEN_GRIP,

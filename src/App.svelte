@@ -15,7 +15,7 @@
   /** @type {HTMLImageElement} */
   let rbAluBlockRight;
   /** @type {HTMLImageElement} */
-  let rbRiemen300x5;
+  let rbRiemen150x5;
 
   // some initial stuff
   let rbHz = 12;
@@ -33,7 +33,7 @@
       rolleRight,
       rbAluBlockLeft,
       rbAluBlockRight,
-      rbRiemen300x5,
+      rbRiemen150x5,
     });
 
     //let lastFrame = 0 - 600 / 12;
@@ -82,9 +82,8 @@
   alt="gestell alu block"
 />
 <img
-  bind:this={rbRiemen300x5}
-  id="rbGestellAluBlock"
-  src="assets/RollenBahnRiemen_300x5-Sheet.png"
+  bind:this={rbRiemen150x5}
+  src="assets/RollenBahnRiemen-750_150x5-Sheet.png"
   alt="riemen"
 />
 

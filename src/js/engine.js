@@ -24,6 +24,22 @@ export class EngineRollenBahn {
    */
   draw(ctx, frameNumber) {
     let index = -1;
+
+    if (this.count === 15) {
+      const image = this.assets.rbRiemen150x5;
+      let sX = 0;
+      let sY = 5 * (frameNumber % 3);
+      let sWidth = image.width;
+      let sHeight = 5;
+      let dX = this.sX;
+      let dY =
+        this.side === "left" ? 12 : this.assets.rolleRight.height + 10 - 5 - 5;
+      let dWidth = sWidth;
+      let dHeight = 5;
+
+      ctx.drawImage(image, sX, sY, sWidth, sHeight, dX, dY, dWidth, dHeight);
+    }
+
     for (let x = 0; x < this.count; x++) {
       index += 1;
 
@@ -59,8 +75,6 @@ export class EngineRollenBahn {
         10,
         aluBlockRight.height
       );
-
-      // TODO: after the "Alu Block" render the "Riemen" only for "P... U... T..." for testing on the right
 
       ctx.drawImage(rolle, sX, sY, sWidth, sHeight, dX, dY, dWidth, dHeight);
     }

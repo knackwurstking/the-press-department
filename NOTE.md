@@ -28,7 +28,7 @@
 - size: `250x250`
 - color1: `#6d6d6d, #878787`
 
-## Riemen `300x5` (1500x25) - _"Trockner Eingang"_
+## Riemen `150x5` (75x2.5) - _"Trockner Eingang (15 Rollen)"_
 
 ## Riemen `280x5` (1400x25) - _"Ausrichter Eingang"_
 

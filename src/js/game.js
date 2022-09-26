@@ -8,7 +8,7 @@ import { EngineRollenBahn } from "./engine";
  *  rolleRight: HTMLImageElement,
  *  rbAluBlockLeft: HTMLImageElement,
  *  rbAluBlockRight: HTMLImageElement,
- *  rbRiemen300x5: HTMLImageElement,
+ *  rbRiemen150x5: HTMLImageElement,
  * }}
  */
 
@@ -77,7 +77,7 @@ export default class Game {
       this._lastFrame = frame;
 
       if (this._engineFrame > 5) {
-        this._engineFrame = 1;
+        this._engineFrame = 0;
       }
 
       for (let engine of this.engines) {
