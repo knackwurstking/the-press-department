@@ -8,11 +8,7 @@ import { EngineRollenBahn } from "./engine";
  *  rolleRight: HTMLImageElement,
  *  rbAluBlockLeft: HTMLImageElement,
  *  rbAluBlockRight: HTMLImageElement,
- *  rbRiemen150x5: HTMLImageElement,
- *  rbRiemen140x5: HTMLImageElement,
- *  rbRiemen220x5: HTMLImageElement,
- *  rbRiemen260x5: HTMLImageElement,
- *  rbRiemen160x5: HTMLImageElement,
+ *  rbRiemen290x5: HTMLImageElement,
  * }}
  */
 
@@ -55,13 +51,14 @@ export default class Game {
 
       this.engines.push(
         new EngineRollenBahn(
-          this.assets,
+          section.name,
           section.engine.side,
           section.engine.count,
           sX,
           sY,
           width,
-          height
+          height,
+          this.assets
         )
       );
     }

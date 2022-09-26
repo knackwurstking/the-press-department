@@ -1,14 +1,16 @@
 export class EngineRollenBahn {
   /**
-   * @param {import("./game").Assets} assets
+   * @param {string} name
    * @param {"left"|"right"} side
    * @param {number} count
    * @param {number} sX
    * @param {number} sY
    * @param {number} width
    * @param {number} height
+   * @param {import("./game").Assets} assets
    */
-  constructor(assets, side, count, sX, sY, width, height) {
+  constructor(name, side, count, sX, sY, width, height, assets) {
+    this.name = name;
     this.assets = assets;
     this.side = side;
     this.count = count;
@@ -26,12 +28,13 @@ export class EngineRollenBahn {
    * @param {number} dX
    */
   drawRiemen(ctx, dX) {
-    const image = this.assets[`rbRiemen${this.count * 10}x5`];
+    // NOTE: ${count - aluBlock.width - padding-left/right}
+    const image = this.assets[`rbRiemen${this.count * 20 - 10}x5`];
     if (image) {
       ctx.drawImage(
         image,
         0, // sX
-        5 * (2 - (this._frameNumber % 3)), // sY: backwards
+        5 * (this._frameNumber % 3), // sY
         image.width, // sWidth
         image.height / 3, // sHeight
         dX,
@@ -98,7 +101,11 @@ export class EngineRollenBahn {
   draw(ctx, frameNumber) {
     this._frameNumber = frameNumber;
 
-    this.drawRiemen(ctx, this.sX + 5);
+    try {
+      this.drawRiemen(ctx, this.sX + 5);
+    } catch (error) {
+      console.warn("Kein Riemen verbaut:", this.name);
+    }
 
     let index = -1;
     for (let x = 0; x < this.count; x++) {
