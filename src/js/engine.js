@@ -25,15 +25,15 @@ export class EngineRollenBahn {
   draw(ctx, frameNumber) {
     let index = -1;
 
-    if (this.count === 15) {
-      const image = this.assets.rbRiemen150x5;
+    const image = this.assets[`rbRiemen${this.count * 10}x5`];
+    if (image) {
       let sX = 0;
-      let sY = 5 * (frameNumber % 3);
+      let sY = 5 * (2 - (frameNumber % 3)); // Backwards
       let sWidth = image.width;
       let sHeight = 5;
       let dX = this.sX;
       let dY =
-        this.side === "left" ? 12 : this.assets.rolleRight.height + 10 - 5 - 5;
+        this.side === "left" ? 11 : this.assets.rolleRight.height + 10 - 4 - 5;
       let dWidth = sWidth;
       let dHeight = 5;
 

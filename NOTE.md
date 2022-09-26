@@ -30,18 +30,18 @@
 
 ## Riemen `150x5` (750x25) - _"Trockner Eingang (15 Rollen)"_
 
-## Riemen `` () - _"Ausrichter Eingang"_
+## Riemen `140x5` (700x25) - _"Ausrichter Eingang"_
 
-## Riemen `` () - _"Rollen Bahn 5"_
+## Riemen `140x5` (700x25) - _"Rollen Bahn 5"_
 
-## Riemen `` () - _"Rollen Bahn 4"_
+## Riemen `220x5` (1100x25) - _"Rollen Bahn 4"_
 
-## Riemen `` () - _"Rollen Bahn 3"_
+## Riemen `220x5` (1100x25) - _"Rollen Bahn 3"_
 
-## Riemen `` () - _"Rollen Bahn 2"_
+## Riemen `220x5` (1100x25) - _"Rollen Bahn 2"_
 
-## Riemen `` () - _"Rollen Bahn 1"_
+## Riemen `220x5` (1100x25) - _"Rollen Bahn 1"_
 
-## Riemen `` () - _"Wender"_
+## Riemen `260x5` (1300x25) - _"Wender"_
 
-## Riemen `` () - _"Pressen Übergangs Tisch"_
+## Riemen `160x5` (800x25) - _"Pressen Übergangs Tisch"_

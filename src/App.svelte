@@ -16,6 +16,14 @@
   let rbAluBlockRight;
   /** @type {HTMLImageElement} */
   let rbRiemen150x5;
+  /** @type {HTMLImageElement} */
+  let rbRiemen140x5;
+  /** @type {HTMLImageElement} */
+  let rbRiemen220x5;
+  /** @type {HTMLImageElement} */
+  let rbRiemen260x5;
+  /** @type {HTMLImageElement} */
+  let rbRiemen160x5;
 
   // some initial stuff
   let rbHz = 12;
@@ -34,6 +42,10 @@
       rbAluBlockLeft,
       rbAluBlockRight,
       rbRiemen150x5,
+      rbRiemen140x5,
+      rbRiemen220x5,
+      rbRiemen260x5,
+      rbRiemen160x5,
     });
 
     //let lastFrame = 0 - 600 / 12;
@@ -83,7 +95,27 @@
 />
 <img
   bind:this={rbRiemen150x5}
-  src="assets/RollenBahnRiemen-750_150x5-Sheet.png"
+  src="assets/RollenBahnRiemen-750_150x5-Sheetv2.png"
+  alt="riemen"
+/>
+<img
+  bind:this={rbRiemen140x5}
+  src="assets/RollenBahnRiemen-700_140x5-Sheetv2.png"
+  alt="riemen"
+/>
+<img
+  bind:this={rbRiemen220x5}
+  src="assets/RollenBahnRiemen-1100_220x5-Sheetv2.png"
+  alt="riemen"
+/>
+<img
+  bind:this={rbRiemen260x5}
+  src="assets/RollenBahnRiemen-1300_260x5-Sheetv2.png"
+  alt="riemen"
+/>
+<img
+  bind:this={rbRiemen160x5}
+  src="assets/RollenBahnRiemen-800_160x5-Sheetv2.png"
   alt="riemen"
 />
 

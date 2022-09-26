@@ -9,6 +9,10 @@ import { EngineRollenBahn } from "./engine";
  *  rbAluBlockLeft: HTMLImageElement,
  *  rbAluBlockRight: HTMLImageElement,
  *  rbRiemen150x5: HTMLImageElement,
+ *  rbRiemen140x5: HTMLImageElement,
+ *  rbRiemen220x5: HTMLImageElement,
+ *  rbRiemen260x5: HTMLImageElement,
+ *  rbRiemen160x5: HTMLImageElement,
  * }}
  */
 
