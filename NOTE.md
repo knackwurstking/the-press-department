@@ -27,3 +27,21 @@
 
 - size: `250x250`
 - color1: `#6d6d6d, #878787`
+
+## Riemen `300x5` (1500x25) - _"Trockner Eingang"_
+
+## Riemen `280x5` (1400x25) - _"Ausrichter Eingang"_
+
+## Riemen `280x5` (1400x25) - _"Rollen Bahn 5"_
+
+## Riemen `440x5` (2200x25) - _"Rollen Bahn 4"_
+
+## Riemen `440x5` (2200x25) - _"Rollen Bahn 3"_
+
+## Riemen `440x5` (2200x25) - _"Rollen Bahn 2"_
+
+## Riemen `440x5` (2200x25) - _"Rollen Bahn 1"_
+
+## Riemen `520x5` (2600x25) - _"Wender"_
+
+## Riemen `320x5` (1600x25) - _"Pressen Übergangs Tisch"_
