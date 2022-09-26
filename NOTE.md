@@ -1,9 +1,8 @@
-- game area for "Rollenbahn" is: `1700x150 || 3400x300`
-- section: `(count*(2+3+2))x150 || (count*(2+3+2)*2)x300`
-
 # Notes
 
-> 1px === 0.5cm
+> 1px === 0.5cm  
+> width (rb): _1730_  
+> height: _312px_
 
 ## RollenBahnGestellQuer
 
