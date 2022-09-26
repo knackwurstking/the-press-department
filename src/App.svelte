@@ -107,22 +107,21 @@
     height: 100vh;
     display: flex;
     place-items: center;
-    overflow: auto;
     background-image: url("./Ground_248x248.png"), url("/assets/Ground_248x248.png");
     padding: 8px;
   }
 
   canvas {
-    width: 3460px;
-    height: 312px;
+    max-width: 99%;
   }
 
   .overlay {
     position: absolute;
     top: 0;
     right: 0;
-    width: 5em;
-    height: 3em;
+    width: 4rem;
+    height: 2.5rem;
+    padding: 0.25rem;
   }
 
   .overlay input.hz-rb {
