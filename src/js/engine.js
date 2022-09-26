@@ -99,12 +99,13 @@ export class EngineRollenBahn {
    * @param {number} frameNumber - draw a frame (1-6)
    */
   draw(ctx, frameNumber) {
+    let backup = this._frameNumber || 0;
     this._frameNumber = frameNumber;
 
     try {
       this.drawRiemen(ctx, this.sX + 5);
     } catch (error) {
-      console.warn("Kein Riemen verbaut:", this.name);
+      this._frameNumber = backup;
     }
 
     let index = -1;
