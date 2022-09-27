@@ -42,7 +42,7 @@
       };
     }
 
-    // TODO: wait for queue to finish
+    // wait for queue to finish
     let interval = setInterval(() => {
       if (queue.size === 0) {
         game.start();
