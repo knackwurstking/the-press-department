@@ -26,7 +26,6 @@
         queue.add(game.assets[asset.name].src);
 
         game.assets[asset.name].onloadend = (ev) => {
-          console.log("[DEBUG] asset loaded:", ev.target.src);
           queue.delete(ev.target.src);
           if (!queue.size) game.initialize();
         };
