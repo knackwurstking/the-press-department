@@ -36,13 +36,13 @@ export default (function () {
       name: "rbAluBlockLeft",
       width: 20,
       height: 10,
-      src: "assets/RollenBahnAluBlockLeft_20x10.png",
+      src: "assets/rb/engine/halterung/alu-block-left-20x10.png",
     },
     {
       name: "rbAluBlockRight",
       width: 20,
       height: 10,
-      src: "assets/RollenBahnAluBlockRight_20x10.png",
+      src: "assets/rb/engine/halterung/alu-block-right-20x10.png",
     },
     {
       name: "rolleLeft",
@@ -57,16 +57,34 @@ export default (function () {
       src: "assets/RolleRight_6x296.png",
     },
     {
+      name: "rbRiemen270x5",
+      width: 270,
+      height: 5 * 3,
+      src: "assets/rb/engine/riemen/270x5.png",
+    },
+    {
       name: "rbRiemen290x5",
       width: 290,
       height: 5 * 3,
-      src: "assets/Riemen-290x5.png",
+      src: "assets/rb/engine/riemen/290x5.png",
     },
     {
-      name: "rbRiemen270x5",
-      width: 290,
+      name: "rbRiemen310x5",
+      width: 310,
       height: 5 * 3,
-      src: "assets/Riemen-270x5.png",
+      src: "assets/rb/engine/riemen/310x5.png",
+    },
+    {
+      name: "rbRiemen430x5",
+      width: 430,
+      height: 5 * 3,
+      src: "assets/rb/engine/riemen/430x5.png",
+    },
+    {
+      name: "rbRiemen510x5",
+      width: 510,
+      height: 5 * 3,
+      src: "assets/rb/engine/riemen/510x5.png",
     },
   ];
 

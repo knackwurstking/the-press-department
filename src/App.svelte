@@ -26,9 +26,19 @@
       game.assets[asset.name] = new Image(asset.width, asset.height);
       game.assets[asset.name].src = asset.src;
 
-      queue.add(game.assets[asset.name].src);
-      game.assets[asset.name].onloadend = (ev) => {
-        queue.delete(ev.target.src);
+      if (location.protocol !== "file:") {
+        queue.add(game.assets[asset.name].src);
+
+        game.assets[asset.name].onloadend = (ev) => {
+          console.log("[DEBUG] asset loaded:", ev.target.src);
+          queue.delete(ev.target.src);
+        };
+      } else {
+        console.log("[DEBUG] load image:", game.assets[asset.name].src);
+      }
+
+      game.assets[asset.name].onerror = (ev) => {
+        console.warn("[WARNING] load game asset failed:", ev.target.src);
       };
     }
 
