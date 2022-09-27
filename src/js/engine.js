@@ -40,7 +40,7 @@ export class EngineRollenBahn {
         this.x + dX,
         this.side === "left"
           ? this.y + 11
-          : this.x + (this.assets.rolleLeft.height + (10 - 4 - 5)), // dY
+          : this.y + (this.assets.rolleLeft.height + (10 - 4 - 5)), // dY
         image.width, // dWidth
         5 // dHeight
       );
@@ -117,7 +117,7 @@ export class EngineRollenBahn {
     this._frameNumber = frameNumber;
 
     try {
-      this.drawRiemen(ctx, this.x + 5);
+      this.drawRiemen(ctx, 5);
     } catch (error) {
       this._frameNumber = backup;
     }

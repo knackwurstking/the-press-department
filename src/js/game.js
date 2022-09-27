@@ -33,40 +33,68 @@ export default class Game {
     /** @type {EngineRollenBahn[]} */
     this.engines;
 
+    // touch event handlers
+    this.touchmove = false;
+
     /** @type {null|((ev: TouchEvent) => any)} */
     this.ontouchstart = null;
     /** @type {null|((ev: TouchEvent) => any)} */
-    this._touchstart = null;
+    this._touchstart = () => {
+      //console.log(`[DEBUG] canvas: "touchstart" event`);
+      this.touchmove = true;
+    };
 
     /** @type {null|((ev: TouchEvent) => any)} */
     this.ontouchmove = null;
     /** @type {null|((ev: TouchEvent) => any)} */
-    this._touchmove = null;
+    this._touchmove = () => {
+      if (!this.touchmove) return;
+      //console.log(`[DEBUG] canvas: "touchmove" event`);
+    };
 
     /** @type {null|((ev: TouchEvent) => any)} */
     this.ontouchend = null;
     /** @type {null|((ev: TouchEvent) => any)} */
-    this._touchend = null;
+    this._touchend = () => {
+      //console.log(`[DEBUG] canvas: "touchend" event`);
+      this.touchmove = false;
+    };
 
     /** @type {null|((ev: TouchEvent) => any)} */
     this.ontouchcancel = null;
     /** @type {null|((ev: TouchEvent) => any)} */
-    this._touchcancel = null;
+    this._touchcancel = (ev) => {
+      if (!this.touchmove) return;
+      //console.log(`[DEBUG] canvas: "touchcancel" event`);
+      if (this._touchend) this._touchend(ev);
+    };
+
+    // mouse event handlers
+    this.mousemove = false;
 
     /** @type {null|((ev: MouseEvent) => any)} */
     this.onmousedown = null;
     /** @type {null|((ev: MouseEvent) => any)} */
-    this._mousedown = null;
+    this._mousedown = () => {
+      //console.log(`[DEBUG] canvas: "mousedown" event`);
+      this.mousemove = true;
+    };
 
     /** @type {null|((ev: MouseEvent) => any)} */
     this.onmousemove = null;
     /** @type {null|((ev: MouseEvent) => any)} */
-    this._mousemove = null;
+    this._mousemove = () => {
+      if (!this.mousemove) return;
+      //console.log(`[DEBUG] canvas: "mousemove" event`);
+    };
 
     /** @type {null|((ev: MouseEvent) => any)} */
     this.onmouseup = null;
     /** @type {null|((ev: MouseEvent) => any)} */
-    this._mouseup = null;
+    this._mouseup = () => {
+      //console.log(`[DEBUG] canvas: "mouseup" event`);
+      this.mousemove = false;
+    };
 
     /** @type {null|((ev: MouseEvent) => any)} */
     this.onmouseover = null;
@@ -76,7 +104,11 @@ export default class Game {
     /** @type {null|((ev: MouseEvent) => any)} */
     this.onmouseout = null;
     /** @type {null|((ev: MouseEvent) => any)} */
-    this._mouseout = null;
+    this._mouseout = (ev) => {
+      if (!this.mousemove) return;
+      //console.log(`[DEBUG] canvas: "mouseout" event`);
+      if (this._mouseup) this._mouseup(ev);
+    };
   }
 
   initialize() {
