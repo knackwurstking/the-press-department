@@ -68,11 +68,6 @@
       url("/assets/Ground_248x248.png");
   }
 
-  canvas {
-    border: var(--border);
-    border-color: red;
-  }
-
   .overlay {
     position: absolute;
     top: 0;
