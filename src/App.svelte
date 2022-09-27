@@ -15,16 +15,12 @@
 
   onMount(() => {
     const ctx = canvas.getContext("2d");
-    canvas.width = 3460;
-    canvas.height = 312;
-
-    game = new Game(canvas, ctx, canvas.width, canvas.height, rbHz);
+    game = new Game(canvas, ctx, rbHz);
 
     // loading assets before runninng the game loop
     const queue = new Set();
     for (let asset of Data.assets) {
       game.assets[asset.name] = new Image(asset.width, asset.height);
-      game.assets[asset.name].src = asset.src;
 
       if (location.protocol !== "file:") {
         queue.add(game.assets[asset.name].src);
@@ -32,23 +28,19 @@
         game.assets[asset.name].onloadend = (ev) => {
           console.log("[DEBUG] asset loaded:", ev.target.src);
           queue.delete(ev.target.src);
+          if (!queue.size) game.initialize();
         };
-      } else {
-        console.log("[DEBUG] load image:", game.assets[asset.name].src);
       }
 
+      console.log("[DEBUG] load image:", asset.src);
+      game.assets[asset.name].src = asset.src;
       game.assets[asset.name].onerror = (ev) => {
         console.warn("[WARNING] load game asset failed:", ev.target.src);
       };
     }
 
     // wait for queue to finish
-    let interval = setInterval(() => {
-      if (queue.size === 0) {
-        game.start();
-        clearInterval(interval);
-      }
-    }, 250);
+    game.start();
   });
 </script>
 
@@ -75,8 +67,11 @@
     place-items: center;
     background-image: url("./Ground_248x248.png"),
       url("/assets/Ground_248x248.png");
-    padding: 8px;
-    overflow: auto;
+  }
+
+  canvas {
+    border: var(--border);
+    border-color: red;
   }
 
   .overlay {

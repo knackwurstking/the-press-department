@@ -3,19 +3,19 @@ export class EngineRollenBahn {
    * @param {string} name
    * @param {"left"|"right"} side
    * @param {number} count
-   * @param {number} sX
-   * @param {number} sY
+   * @param {number} x
+   * @param {number} y
    * @param {number} width
    * @param {number} height
    * @param {import("./game").Assets} assets
    */
-  constructor(name, side, count, sX, sY, width, height, assets) {
+  constructor(name, side, count, x, y, width, height, assets) {
     this.name = name;
     this.assets = assets;
     this.side = side;
     this.count = count;
-    this.sX = sX;
-    this.sY = sY;
+    this.x = x;
+    this.y = y;
     this.width = width;
     this.height = height;
 
@@ -37,8 +37,10 @@ export class EngineRollenBahn {
         5 * (this._frameNumber % 3), // sY
         image.width, // sWidth
         image.height / 3, // sHeight
-        dX,
-        this.side === "left" ? 11 : this.assets.rolleLeft.height + (10 - 4 - 5), // dY
+        this.x + dX,
+        this.side === "left"
+          ? this.y + 11
+          : this.x + (this.assets.rolleLeft.height + (10 - 4 - 5)), // dY
         image.width, // dWidth
         5 // dHeight
       );
@@ -53,7 +55,7 @@ export class EngineRollenBahn {
    */
   drawAluBlockLeft(ctx, dX) {
     let image = this.assets.rbAluBlockLeft;
-    ctx.drawImage(image, dX, 0, image.width, image.height);
+    ctx.drawImage(image, this.x + dX, this.y, image.width, image.height);
   }
 
   /**
@@ -64,8 +66,10 @@ export class EngineRollenBahn {
     let image = this.assets.rbAluBlockRight;
     ctx.drawImage(
       image,
-      dX,
-      this.assets.rbAluBlockLeft.height + (this.assets.rolleLeft.height - 4),
+      this.x + dX,
+      this.y +
+        (this.assets.rbAluBlockLeft.height +
+          (this.assets.rolleLeft.height - 4)),
       image.width,
       image.height
     );
@@ -87,11 +91,21 @@ export class EngineRollenBahn {
     let sY = 0;
     let sWidth = 6;
     let sHeight = rolle.height;
-    let dY = 8;
+    let dY = this.y + 8;
     let dWidth = rolle.width / 6;
     let dHeight = rolle.height;
 
-    ctx.drawImage(rolle, sX, sY, sWidth, sHeight, dX, dY, dWidth, dHeight);
+    ctx.drawImage(
+      rolle,
+      sX,
+      sY,
+      sWidth,
+      sHeight,
+      this.x + dX,
+      dY,
+      dWidth,
+      dHeight
+    );
   }
 
   /**
@@ -103,7 +117,7 @@ export class EngineRollenBahn {
     this._frameNumber = frameNumber;
 
     try {
-      this.drawRiemen(ctx, this.sX + 5);
+      this.drawRiemen(ctx, this.x + 5);
     } catch (error) {
       this._frameNumber = backup;
     }
@@ -112,7 +126,7 @@ export class EngineRollenBahn {
     for (let x = 0; x < this.count; x++) {
       index += 1;
 
-      let posX = this.sX + index * this.assets.rbAluBlockLeft.width;
+      let posX = index * this.assets.rbAluBlockLeft.width;
       this.drawAluBlockLeft(ctx, posX);
       this.drawAluBlockRight(ctx, posX);
       this.drawRolle(ctx, posX + 7);

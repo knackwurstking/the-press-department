@@ -17,15 +17,11 @@ export default class Game {
   /**
    * @param {HTMLCanvasElement} canvas
    * @param {CanvasRenderingContext2D} ctx
-   * @param {number} width
-   * @param {number} height
    * @param {number} hz
    */
-  constructor(canvas, ctx, width, height, hz) {
+  constructor(canvas, ctx, hz) {
     this.canvas = canvas;
     this.ctx = ctx;
-    this.width = width;
-    this.height = height;
 
     this.updateHz(hz);
     this._lastFrame = 0 - this._fps;
@@ -36,17 +32,23 @@ export default class Game {
 
     /** @type {EngineRollenBahn[]} */
     this.engines;
-
-    console.log("[App.svelte] canvas size (x, y):", width, height);
   }
 
   initialize() {
+    this.canvas.width = window.innerWidth - 2;
+    this.canvas.height = window.innerHeight - 4;
+    window.onresize = () => {
+      this.canvas.width = window.innerWidth - 2;
+      this.canvas.height = window.innerHeight - 4;
+      this.initialize();
+    };
+
     this.engines = []; // left to right
 
     let lastX = 0;
     for (let section of Data.rb) {
-      let sX = lastX;
-      let sY = 0;
+      let x = lastX;
+      let y = this.canvas.height / 2 - 312 / 2;
       let width = section.engine.count * this.assets.rbAluBlockLeft.width;
       let height = this.canvas.height;
       lastX += width;
@@ -56,8 +58,8 @@ export default class Game {
           section.name,
           section.engine.side,
           section.engine.count,
-          sX,
-          sY,
+          x,
+          y,
           width,
           height,
           this.assets
