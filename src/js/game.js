@@ -115,8 +115,6 @@ export default class Game {
     this.canvas.width = window.innerWidth - 2;
     this.canvas.height = window.innerHeight - 4;
     window.onresize = () => {
-      this.canvas.width = window.innerWidth - 2;
-      this.canvas.height = window.innerHeight - 4;
       this.initialize();
     };
 
