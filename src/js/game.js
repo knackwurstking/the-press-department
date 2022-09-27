@@ -32,6 +32,51 @@ export default class Game {
 
     /** @type {EngineRollenBahn[]} */
     this.engines;
+
+    /** @type {null|((ev: TouchEvent) => any)} */
+    this.ontouchstart = null;
+    /** @type {null|((ev: TouchEvent) => any)} */
+    this._touchstart = null;
+
+    /** @type {null|((ev: TouchEvent) => any)} */
+    this.ontouchmove = null;
+    /** @type {null|((ev: TouchEvent) => any)} */
+    this._touchmove = null;
+
+    /** @type {null|((ev: TouchEvent) => any)} */
+    this.ontouchend = null;
+    /** @type {null|((ev: TouchEvent) => any)} */
+    this._touchend = null;
+
+    /** @type {null|((ev: TouchEvent) => any)} */
+    this.ontouchcancel = null;
+    /** @type {null|((ev: TouchEvent) => any)} */
+    this._touchcancel = null;
+
+    /** @type {null|((ev: MouseEvent) => any)} */
+    this.onmousedown = null;
+    /** @type {null|((ev: MouseEvent) => any)} */
+    this._mousedown = null;
+
+    /** @type {null|((ev: MouseEvent) => any)} */
+    this.onmousemove = null;
+    /** @type {null|((ev: MouseEvent) => any)} */
+    this._mousemove = null;
+
+    /** @type {null|((ev: MouseEvent) => any)} */
+    this.onmouseup = null;
+    /** @type {null|((ev: MouseEvent) => any)} */
+    this._mouseup = null;
+
+    /** @type {null|((ev: MouseEvent) => any)} */
+    this.onmouseover = null;
+    /** @type {null|((ev: MouseEvent) => any)} */
+    this._mouseover = null;
+
+    /** @type {null|((ev: MouseEvent) => any)} */
+    this.onmouseout = null;
+    /** @type {null|((ev: MouseEvent) => any)} */
+    this._mouseout = null;
   }
 
   initialize() {
@@ -68,6 +113,20 @@ export default class Game {
     }
   }
 
+  handleUserInput() {
+    // handle touch events
+    this.canvas.ontouchstart = this._touchstart;
+    this.canvas.ontouchmove = this._touchmove;
+    this.canvas.ontouchend = this._touchend;
+    this.canvas.ontouchcancel = this._touchcancel;
+    // handle mouse events
+    this.canvas.onmousedown = this._mousedown;
+    this.canvas.onmousemove = this._mousemove;
+    this.canvas.onmouseup = this._mouseup;
+    this.canvas.onmouseover = this._mouseover;
+    this.canvas.onmouseout = this._mouseout;
+  }
+
   /** @param {number} hz */
   updateHz(hz) {
     this._fps = 600 / hz;
@@ -93,6 +152,7 @@ export default class Game {
 
   async start() {
     this.initialize();
+    this.handleUserInput();
     const animate = (/** @type {number} */ frame) => {
       this.draw(frame);
       requestAnimationFrame(animate);
