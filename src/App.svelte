@@ -76,10 +76,7 @@
     background-image: url("./Ground_248x248.png"),
       url("/assets/Ground_248x248.png");
     padding: 8px;
-  }
-
-  canvas {
-    max-width: 99%;
+    overflow: auto;
   }
 
   .overlay {
