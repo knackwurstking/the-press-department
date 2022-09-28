@@ -1,0 +1,68 @@
+@font-face {
+  font-family: FiraCode;
+  src: local("FiraCode"),
+    url(./FiraCode-VariableFont_wght.ttf) format("truetype");
+}
+:root {
+  --background: rgba(0, 0, 0, 1);
+  --color: rgba(255, 255, 255, 0.85);
+  --surface: rgba(35, 35, 45, 1);
+  --accent: rgba(15, 225, 20, 1);
+  --border-radius: 0.25rem;
+  --border-width: 0.05rem;
+  --border-style: solid;
+  --border-color: rgba(255, 255, 255, 0.4);
+  --border: var(--border-width) var(--border-style) var(--border-color);
+  background-color: var(--background);
+  color: var(--color);
+  font-family: FiraCode, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI,
+    Roboto, Oxygen, Ubuntu, Cantarell, Open Sans, Helvetica Neue, sans-serif;
+}
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  position: relative;
+}
+body {
+  overflow: hidden;
+  width: 100vw;
+  height: 100vh;
+}
+#app {
+  width: 100%;
+  height: 100%;
+}
+input {
+  font-family: FiraCode;
+}
+main.svelte-1ed2xk5.svelte-1ed2xk5 {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  place-items: center;
+  background-image: url(./Ground_248x248.png), url(/assets/Ground_248x248.png);
+}
+.overlay.svelte-1ed2xk5.svelte-1ed2xk5 {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 4rem;
+  height: 2.5rem;
+  padding: 0.25rem;
+}
+.overlay.svelte-1ed2xk5 input.hz-rb.svelte-1ed2xk5 {
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  font-size: 1.5rem;
+  text-align: center;
+}
+input[type="number"].svelte-1ed2xk5.svelte-1ed2xk5::-webkit-outer-spin-button,
+input[type="number"].svelte-1ed2xk5.svelte-1ed2xk5::-webkit-inner-spin-button {
+  appearance: none;
+  margin: 0;
+}
+input[type="number"].svelte-1ed2xk5.svelte-1ed2xk5 {
+  appearance: textfield;
+}

@@ -31,7 +31,7 @@ export default class Game {
     this.assets = {};
 
     /** @type {EngineRollenBahn[]} */
-    this.engines;
+    this.engines = [];
 
     // touch event handlers
     this.pointer = false;
@@ -39,20 +39,26 @@ export default class Game {
     /** @type {null|((ev: PointerEvent) => any)} */
     this.onpointerdown = null;
     /** @type {null|((ev: PointerEvent) => any)} */
-    this._pointerdown = () => {
+    this._pointerdown = (ev) => {
       console.log(`[DEBUG] pointerdown`);
+      this.view.sX = ev.x;
       this.pointer = true;
     };
 
     /** @type {null|((ev: PointerEvent) => any)} */
     this.onpointermove = null;
     /** @type {null|((ev: PointerEvent) => any)} */
-    this._pointermove = () => {
+    this._pointermove = (ev) => {
       if (!this.pointer) return;
       console.log(`[DEBUG] pointermove`);
 
-      // TODO: move x and y axis for all engines...
-      // ...
+      this.view.x -= this.view.sX - ev.x;
+      this.view.y = this.canvas.height / 2 - 312 / 2;
+
+      this.view.sX = ev.x;
+      this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+
+      this.moveView(this.view);
     };
 
     /** @type {null|((ev: PointerEvent) => any)} */
@@ -81,48 +87,84 @@ export default class Game {
       console.log(`[DEBUG] pointerout`);
       if (this._pointerup) this._pointerup(ev);
     };
+
+    this.canvas.width = window.innerWidth - 2;
+    this.canvas.height = window.innerHeight - 4;
+
+    window.onresize = () => {
+      this.canvas.width = window.innerWidth - 2;
+      this.canvas.height = window.innerHeight - 4;
+      this.view.y = this.canvas.height / 2 - 312 / 2;
+      this.moveView(this.view);
+    };
+
+    this.view = {
+      sX: 0,
+      x: 0,
+      y: this.canvas.height / 2 - 312 / 2,
+    };
   }
 
   /**
+   * @param {{
+   *  name: string,
+   *  engine: {
+   *    count: number,
+   *    type: number,
+   *    side: "left"|"right",
+   *  },
+   * }} data
    * @param {number} x
    * @param {number} y
+   * @returns {EngineRollenBahn}
    */
-  initialize(x = null, y = null) {
-    this.canvas.width = window.innerWidth - 2;
-    this.canvas.height = window.innerHeight - 4;
-    window.onresize = () => {
-      this.initialize();
-    };
+  createEngine(data, x, y) {
+    // create
+    let width = data.engine.count * this.assets.rbAluBlockLeft.width;
+    let height = this.canvas.height;
 
-    this.engines = []; // left to right
+    let engine = new EngineRollenBahn(
+      data.name,
+      data.engine.side,
+      data.engine.count,
+      x,
+      y,
+      width,
+      height,
+      this.assets
+    );
+    return engine;
+  }
 
-    if (x === null) {
-      x = 0;
-    }
-    if (y === null) {
-      // (canvas height / 2) - (assets heigth / 2) - position in center (y axis)
-      y = this.canvas.height / 2 - 312 / 2;
-    }
+  /**
+   * @param {EngineRollenBahn} engine
+   * @param {number} x
+   * @param {number} y
+   * @returns {EngineRollenBahn}
+   */
+  updateEngine(engine, x, y) {
+    engine.x = x;
+    engine.y = y;
+    engine.height = this.canvas.height;
+    return engine;
+  }
 
-    let lastX = x;
-    for (let section of Data.rb) {
-      let width = section.engine.count * this.assets.rbAluBlockLeft.width;
-      let height = this.canvas.height;
+  /**
+   * @param {{ sX: number, x: number, y: number }} view
+   */
+  moveView(view) {
+    // TODO: just move the background and engines
+    let lastX = view.x;
+    for (let index = 0; index < Data.rb.length; index++) {
+      let engine = this.engines[index];
+      if (engine) {
+        engine = this.updateEngine(engine, lastX, view.y);
+      } else {
+        engine = this.createEngine(Data.rb[index], lastX, view.y);
+        this.engines.push(engine);
+      }
 
-      this.engines.push(
-        new EngineRollenBahn(
-          section.name,
-          section.engine.side,
-          section.engine.count,
-          lastX,
-          y,
-          width,
-          height,
-          this.assets
-        )
-      );
-
-      lastX += width;
+      lastX += engine.width;
     }
   }
 
@@ -157,8 +199,12 @@ export default class Game {
     }
   }
 
+  drawBackground() {
+    // TODO: handle canvas background
+  }
+
   async start() {
-    this.initialize();
+    this.moveView(this.view);
     this.handleUserInput();
     const animate = (/** @type {number} */ frame) => {
       this.draw(frame);
