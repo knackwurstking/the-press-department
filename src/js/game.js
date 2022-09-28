@@ -122,6 +122,11 @@ export default class Game {
     };
   }
 
+  /** @param {number} hz */
+  updateHz(hz) {
+    this._fps = 600 / hz;
+  }
+
   /**
    * @param {{
    *  name: string,
@@ -163,50 +168,22 @@ export default class Game {
     }
   }
 
-  /**
-   * @param {EngineRollenBahn} engine
-   * @param {number} x
-   * @param {number} y
-   * @returns {EngineRollenBahn}
-   */
-  updateEngine(engine, x, y) {
-    // TODO: removed and replaced (see your notes)
-    engine.x = x;
-    engine.y = y;
-    engine.height = this.canvas.height;
-    return engine;
-  }
-
-  /**
-   * @param {{ sX: number, x: number, y: number }} view
-   */
-  moveView(view) {
-    // TODO: just move the background and engines
-    let lastX = view.x;
-    for (let index = 0; index < Data.rb.length; index++) {
+  updatePosition() {
+    let lastX = this.view.x;
+    for (let index = 0; index < this.engines.length; index++) {
       let engine = this.engines[index];
-      if (engine) {
-        engine = this.updateEngine(engine, lastX, view.y);
-      } else {
-        engine = this.createEngine(Data.rb[index], lastX, view.y);
-        this.engines.push(engine);
-      }
-
-      lastX += engine.width;
+      engine.x = lastX;
+      engine.y = this.view.y;
+      lastX += this.view.x;
     }
   }
 
   handleUserInput() {
-    this.canvas.onpointerdown = this._pointerdown;
-    this.canvas.onpointermove = this._pointermove;
-    this.canvas.onpointerup = this._pointerup;
-    this.canvas.onpointercancel = this._pointercancel;
-    this.canvas.onpointerout = this._pointerout;
-  }
-
-  /** @param {number} hz */
-  updateHz(hz) {
-    this._fps = 600 / hz;
+    this._canvas.onpointerdown = this._pointerdown;
+    this._canvas.onpointermove = this._pointermove;
+    this._canvas.onpointerup = this._pointerup;
+    this._canvas.onpointercancel = this._pointercancel;
+    this._canvas.onpointerout = this._pointerout;
   }
 
   /**
@@ -222,8 +199,7 @@ export default class Game {
       }
 
       if (this._viewChanged) {
-        // TODO: if view changed => updatePosition
-
+        this.updatePosition();
         this._viewChanged = false;
       }
 
