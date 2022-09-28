@@ -24,7 +24,7 @@ import { EngineRollenBahn } from "./engine";
  * }}
  */
 
-export default class Game {
+export class Game {
   /**
    * @param {HTMLCanvasElement} canvas
    * @param {CanvasRenderingContext2D} ctx
@@ -65,7 +65,6 @@ export default class Game {
     this.onpointerdown = null;
     /** @type {null|((ev: PointerEvent) => any)} */
     this._pointerdown = (ev) => {
-      console.log(`[DEBUG] pointerdown`);
       this.view.pX = ev.x;
       this.pointer = true;
     };
@@ -75,14 +74,12 @@ export default class Game {
     /** @type {null|((ev: PointerEvent) => any)} */
     this._pointermove = (ev) => {
       if (!this.pointer) return;
-      console.log(`[DEBUG] pointermove`);
 
       this.view.x -= this.view.pX - ev.x;
-      this.view.y = this.view.canvas.height / 2 - 312 / 2;
 
       // update pX value
       this.view.pX = ev.x;
-      this._viewChanged;
+      this._viewChanged = true;
     };
 
     /** @type {null|((ev: PointerEvent) => any)} */
@@ -91,7 +88,6 @@ export default class Game {
     this._pointerup = () => {
       if (!this.pointer) return;
       this.pointer = false;
-      console.log(`[DEBUG] pointerup`);
     };
 
     /** @type {null|((ev: PointerEvent) => any)} */
@@ -99,7 +95,6 @@ export default class Game {
     /** @type {null|((ev: PointerEvent) => any)} */
     this._pointercancel = (ev) => {
       if (!this.pointer) return;
-      console.log(`[DEBUG] pointercancel`);
       if (this._pointerup) this._pointerup(ev);
     };
 
@@ -108,7 +103,6 @@ export default class Game {
     /** @type {null|((ev: PointerEvent) => any)} */
     this._pointerout = (ev) => {
       if (!this.pointer) return;
-      console.log(`[DEBUG] pointerout`);
       if (this._pointerup) this._pointerup(ev);
     };
 
@@ -161,7 +155,7 @@ export default class Game {
     this.engines = [];
     let lastX = this.view.x;
     for (let index = 0; index < Data.rb.length; index++) {
-      let engine = this.createEngine(Data.rb[index], lastX, this.view.y);
+      let engine = this.createEngine(Data.rb[index], lastX, this.view.getY());
       this.engines.push(engine);
 
       lastX += engine.width;
@@ -173,8 +167,8 @@ export default class Game {
     for (let index = 0; index < this.engines.length; index++) {
       let engine = this.engines[index];
       engine.x = lastX;
-      engine.y = this.view.y;
-      lastX += this.view.x;
+      engine.y = this.view.getY();
+      lastX += engine.width;
     }
   }
 
@@ -198,12 +192,13 @@ export default class Game {
         this._engineFrame = 0;
       }
 
+      this.ctx.clearRect(0, 0, this._canvas.width, this._canvas.height);
+
       if (this._viewChanged) {
         this.updatePosition();
         this._viewChanged = false;
       }
 
-      this.ctx.clearRect(0, 0, this._canvas.width, this._canvas.height);
       for (let engine of this.engines) {
         engine.draw(this.ctx, this._engineFrame);
       }
@@ -221,4 +216,34 @@ export default class Game {
 
     animate(0);
   }
+}
+
+/**
+ * @param {HTMLCanvasElement} canvas
+ * @param {number} rbHz
+ * @returns {Promise<Game>}
+ */
+export async function animate(canvas, rbHz) {
+  const ctx = canvas.getContext("2d");
+  const game = new Game(canvas, ctx, rbHz);
+
+  // loading assets before runninng the game loop
+  const queue = new Set();
+  for (let asset of Data.assets) {
+    game.assets[asset.name] = new Image(asset.width, asset.height);
+
+    console.log("[DEBUG] load image:", asset.src);
+    game.assets[asset.name].src = asset.src;
+    game.assets[asset.name].onerror = (ev) => {
+      console.warn("[WARNING] load game asset failed:", ev.target.src);
+    };
+
+    queue.add(game.assets[asset.name].src);
+    game.assets[asset.name].onload = (ev) => {
+      queue.delete(ev.target.src);
+      if (!queue.size) game.start();
+    };
+  }
+
+  return game;
 }
