@@ -1,6 +1,5 @@
 @font-face {
   font-family: "FiraCode";
   src: local("FiraCode"),
-    url("./fonts/FiraCode-VariableFont_wght.ttf") format("truetype"),
     url("/fonts/FiraCode-VariableFont_wght.ttf") format("truetype");
 }
