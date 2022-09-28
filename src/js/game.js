@@ -13,6 +13,17 @@ import { EngineRollenBahn } from "./engine";
  * }}
  */
 
+/**
+ * @typedef View
+ * @type {{
+ * canvas: HTMLCanvasElement,
+ * pX: number,
+ * x: number,
+ * y: null | number,
+ * getY: () => number
+ * }}
+ */
+
 export default class Game {
   /**
    * @param {HTMLCanvasElement} canvas
@@ -20,7 +31,7 @@ export default class Game {
    * @param {number} hz
    */
   constructor(canvas, ctx, hz) {
-    this.canvas = canvas;
+    this._canvas = canvas;
     this.ctx = ctx;
 
     this.updateHz(hz);
@@ -29,6 +40,20 @@ export default class Game {
 
     /** @type {Assets} */
     this.assets = {};
+
+    this._viewChanged = false;
+
+    /** @type {View} */
+    this.view = {
+      pX: 0, // pointerdown x position
+      x: 0,
+      y: null,
+      canvas: this._canvas,
+
+      getY() {
+        return this.y === null ? this.canvas.height / 2 - 321 / 2 : this.y;
+      },
+    };
 
     /** @type {EngineRollenBahn[]} */
     this.engines = [];
@@ -41,7 +66,7 @@ export default class Game {
     /** @type {null|((ev: PointerEvent) => any)} */
     this._pointerdown = (ev) => {
       console.log(`[DEBUG] pointerdown`);
-      this.view.sX = ev.x;
+      this.view.pX = ev.x;
       this.pointer = true;
     };
 
@@ -52,13 +77,12 @@ export default class Game {
       if (!this.pointer) return;
       console.log(`[DEBUG] pointermove`);
 
-      this.view.x -= this.view.sX - ev.x;
-      this.view.y = this.canvas.height / 2 - 312 / 2;
+      this.view.x -= this.view.pX - ev.x;
+      this.view.y = this.view.canvas.height / 2 - 312 / 2;
 
-      this.view.sX = ev.x;
-      this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-
-      this.moveView(this.view);
+      // update pX value
+      this.view.pX = ev.x;
+      this._viewChanged;
     };
 
     /** @type {null|((ev: PointerEvent) => any)} */
@@ -88,20 +112,13 @@ export default class Game {
       if (this._pointerup) this._pointerup(ev);
     };
 
-    this.canvas.width = window.innerWidth - 2;
-    this.canvas.height = window.innerHeight - 4;
+    this._canvas.width = window.innerWidth - 2;
+    this._canvas.height = window.innerHeight - 4;
 
     window.onresize = () => {
-      this.canvas.width = window.innerWidth - 2;
-      this.canvas.height = window.innerHeight - 4;
-      this.view.y = this.canvas.height / 2 - 312 / 2;
-      this.moveView(this.view);
-    };
-
-    this.view = {
-      sX: 0,
-      x: 0,
-      y: this.canvas.height / 2 - 312 / 2,
+      this._canvas.width = window.innerWidth - 2;
+      this._canvas.height = window.innerHeight - 4;
+      // TODO: redraw
     };
   }
 
@@ -119,9 +136,8 @@ export default class Game {
    * @returns {EngineRollenBahn}
    */
   createEngine(data, x, y) {
-    // create
     let width = data.engine.count * this.assets.rbAluBlockLeft.width;
-    let height = this.canvas.height;
+    let height = this._canvas.height;
 
     let engine = new EngineRollenBahn(
       data.name,
@@ -136,6 +152,17 @@ export default class Game {
     return engine;
   }
 
+  buildEngines() {
+    this.engines = [];
+    let lastX = this.view.x;
+    for (let index = 0; index < Data.rb.length; index++) {
+      let engine = this.createEngine(Data.rb[index], lastX, this.view.y);
+      this.engines.push(engine);
+
+      lastX += engine.width;
+    }
+  }
+
   /**
    * @param {EngineRollenBahn} engine
    * @param {number} x
@@ -143,6 +170,7 @@ export default class Game {
    * @returns {EngineRollenBahn}
    */
   updateEngine(engine, x, y) {
+    // TODO: removed and replaced (see your notes)
     engine.x = x;
     engine.y = y;
     engine.height = this.canvas.height;
@@ -193,19 +221,23 @@ export default class Game {
         this._engineFrame = 0;
       }
 
+      if (this._viewChanged) {
+        // TODO: if view changed => updatePosition
+
+        this._viewChanged = false;
+      }
+
+      this.ctx.clearRect(0, 0, this._canvas.width, this._canvas.height);
       for (let engine of this.engines) {
         engine.draw(this.ctx, this._engineFrame);
       }
     }
   }
 
-  drawBackground() {
-    // TODO: handle canvas background
-  }
-
   async start() {
-    this.moveView(this.view);
+    this.buildEngines();
     this.handleUserInput();
+
     const animate = (/** @type {number} */ frame) => {
       this.draw(frame);
       requestAnimationFrame(animate);
