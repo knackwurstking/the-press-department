@@ -50,6 +50,9 @@ export default class Game {
     this._pointermove = () => {
       if (!this.pointer) return;
       console.log(`[DEBUG] pointermove`);
+
+      // TODO: move x and y axis for all engines...
+      // ...
     };
 
     /** @type {null|((ev: PointerEvent) => any)} */
@@ -80,7 +83,11 @@ export default class Game {
     };
   }
 
-  initialize() {
+  /**
+   * @param {number} x
+   * @param {number} y
+   */
+  initialize(x = null, y = null) {
     this.canvas.width = window.innerWidth - 2;
     this.canvas.height = window.innerHeight - 4;
     window.onresize = () => {
@@ -89,26 +96,33 @@ export default class Game {
 
     this.engines = []; // left to right
 
-    let lastX = 0;
+    if (x === null) {
+      x = 0;
+    }
+    if (y === null) {
+      // (canvas height / 2) - (assets heigth / 2) - position in center (y axis)
+      y = this.canvas.height / 2 - 312 / 2;
+    }
+
+    let lastX = x;
     for (let section of Data.rb) {
-      let x = lastX;
-      let y = this.canvas.height / 2 - 312 / 2;
       let width = section.engine.count * this.assets.rbAluBlockLeft.width;
       let height = this.canvas.height;
-      lastX += width;
 
       this.engines.push(
         new EngineRollenBahn(
           section.name,
           section.engine.side,
           section.engine.count,
-          x,
+          lastX,
           y,
           width,
           height,
           this.assets
         )
       );
+
+      lastX += width;
     }
   }
 
