@@ -68,6 +68,10 @@
       url("/assets/Ground_248x248.png");
   }
 
+  canvas {
+    touch-action: none;
+  }
+
   .overlay {
     position: absolute;
     top: 0;
