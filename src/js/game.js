@@ -1,5 +1,5 @@
 import Data from "./data";
-import { EngineRollenBahn } from "./engine";
+import { Engine } from "./engine";
 
 /**
  * @typedef Assets
@@ -28,15 +28,10 @@ export class Game {
   /**
    * @param {HTMLCanvasElement} canvas
    * @param {CanvasRenderingContext2D} ctx
-   * @param {number} hz
    */
-  constructor(canvas, ctx, hz) {
+  constructor(canvas, ctx) {
     this._canvas = canvas;
     this.ctx = ctx;
-
-    this.updateHz(hz);
-    this._lastFrame = 0 - this._fps;
-    this._engineFrame = -1;
 
     /** @type {Assets} */
     this.assets = {};
@@ -55,7 +50,7 @@ export class Game {
       },
     };
 
-    /** @type {EngineRollenBahn[]} */
+    /** @type {Engine[]} */
     this.engines = [];
 
     // touch event handlers
@@ -112,13 +107,8 @@ export class Game {
     window.onresize = () => {
       this._canvas.width = window.innerWidth - 2;
       this._canvas.height = window.innerHeight - 4;
-      // TODO: redraw
+      this._viewChanged = true;
     };
-  }
-
-  /** @param {number} hz */
-  updateHz(hz) {
-    this._fps = 600 / hz;
   }
 
   /**
@@ -132,13 +122,13 @@ export class Game {
    * }} data
    * @param {number} x
    * @param {number} y
-   * @returns {EngineRollenBahn}
+   * @returns {Engine}
    */
   createEngine(data, x, y) {
     let width = data.engine.count * this.assets.rbAluBlockLeft.width;
     let height = this._canvas.height;
 
-    let engine = new EngineRollenBahn(
+    let engine = new Engine(
       data.name,
       data.engine.side,
       data.engine.count,
@@ -184,24 +174,14 @@ export class Game {
    * @param {number} frame
    */
   draw(frame) {
-    if (frame - this._lastFrame >= this._fps) {
-      this._engineFrame += 1;
-      this._lastFrame = frame;
-
-      if (this._engineFrame > 5) {
-        this._engineFrame = 0;
-      }
-
+    if (this._viewChanged) {
       this.ctx.clearRect(0, 0, this._canvas.width, this._canvas.height);
+      this.updatePosition();
+      this._viewChanged = false;
+    }
 
-      if (this._viewChanged) {
-        this.updatePosition();
-        this._viewChanged = false;
-      }
-
-      for (let engine of this.engines) {
-        engine.draw(this.ctx, this._engineFrame);
-      }
+    for (let engine of this.engines) {
+      engine.draw(this.ctx, frame)
     }
   }
 
@@ -220,12 +200,11 @@ export class Game {
 
 /**
  * @param {HTMLCanvasElement} canvas
- * @param {number} rbHz
  * @returns {Promise<Game>}
  */
-export async function animate(canvas, rbHz) {
+export async function animate(canvas) {
   const ctx = canvas.getContext("2d");
-  const game = new Game(canvas, ctx, rbHz);
+  const game = new Game(canvas, ctx);
 
   // loading assets before runninng the game loop
   const queue = new Set();

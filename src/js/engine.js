@@ -1,4 +1,4 @@
-export class EngineRollenBahn {
+export class Engine {
   /**
    * @param {string} name
    * @param {"left"|"right"} side
@@ -20,7 +20,10 @@ export class EngineRollenBahn {
     this.height = height;
 
     /** @type {number} */
-    this._frameNumber;
+    this._frameNumber = 0;
+
+    this.hz = 12;
+    this.lastFrame = 0 - 600 / this.hz;
   }
 
   /**
@@ -110,26 +113,31 @@ export class EngineRollenBahn {
 
   /**
    * @param {CanvasRenderingContext2D} ctx
-   * @param {number} frameNumber - draw a frame (1-6)
+   * @param {number} frame
    */
-  draw(ctx, frameNumber) {
-    let backup = this._frameNumber || 0;
-    this._frameNumber = frameNumber;
+  draw(ctx, frame) {
+    if (frame - this.lastFrame >= (600 / this.hz)) {
+      this.lastFrame = frame;
+      let backup = this._frameNumber;
 
-    try {
-      this.drawRiemen(ctx, 5);
-    } catch (error) {
-      this._frameNumber = backup;
-    }
+      try {
+        this.drawRiemen(ctx, 5);
+      } catch (error) {
+        this._frameNumber = backup;
+      }
 
-    let index = -1;
-    for (let x = 0; x < this.count; x++) {
-      index += 1;
+      let index = -1;
+      for (let x = 0; x < this.count; x++) {
+        index += 1;
 
-      let posX = index * this.assets.rbAluBlockLeft.width;
-      this.drawAluBlockLeft(ctx, posX);
-      this.drawAluBlockRight(ctx, posX);
-      this.drawRolle(ctx, posX + 7);
+        let posX = index * this.assets.rbAluBlockLeft.width;
+        this.drawAluBlockLeft(ctx, posX);
+        this.drawAluBlockRight(ctx, posX);
+        this.drawRolle(ctx, posX + 7);
+      }
+
+      this._frameNumber += 1;
+      if (this._frameNumber > 5) this._frameNumber = 0
     }
   }
 }

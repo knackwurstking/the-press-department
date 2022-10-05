@@ -12,8 +12,8 @@
   /** @type {import("./js/game").Game} */
   let game
 
-  onMount(() => {
-    animate(canvas, rbHz);
+  onMount(async () => {
+    game = await animate(canvas);
   });
 </script>
 
@@ -22,9 +22,12 @@
     class="hz-rb"
     type="number"
     min={0}
-    max={25}
     value={rbHz}
-    on:change={(ev) => game.updateHz(parseInt(ev.currentTarget.value))}
+    on:change={(ev) => {
+      for (let engine of game.engines) {
+        engine.hz = parseInt(ev.currentTarget.value);
+      }
+    }}
   />
 </div>
 
