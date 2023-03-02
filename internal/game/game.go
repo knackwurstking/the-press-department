@@ -22,8 +22,8 @@ type Game struct {
 
 func NewGame() *Game {
 	game := &Game{
-		Input:      &Input{},
-		Background: &Background{},
+		Input:      NewInput(),
+		Background: NewBackground(),
 		Board:      NewBoard(),
 	}
 
@@ -33,6 +33,8 @@ func NewGame() *Game {
 // Draw implements ebiten.Game
 func (g *Game) Draw(screen *ebiten.Image) {
 	g.Background.Draw(screen)
+
+	// TODO: draw the engines and the tiles from the Press (the Board will handle Press and Engines)
 
 	ebitenutil.DebugPrint(screen, "The Press Department")
 }
@@ -47,6 +49,7 @@ func (g *Game) Layout(outsideWidth int, outsideHeight int) (screenWidth int, scr
 
 // Update implements ebiten.Game
 func (g *Game) Update() error {
+	// user inputs are handled from the board here
 	err := g.Board.Update(g.Input)
 
 	return err

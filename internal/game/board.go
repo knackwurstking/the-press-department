@@ -1,15 +1,20 @@
 package game
 
+import (
+	"the-press-department/internal/game/engines"
+	"the-press-department/internal/game/press"
+)
+
 // Board holds all the data and coordinates (like tiles positions and engine positions)
 type Board struct {
-	Press   *Press
-	Engines *Engines
+	Press   *press.Press
+	Engines *engines.Engines
 }
 
 func NewBoard() *Board {
 	return &Board{
-		Press:   &Press{},
-		Engines: &Engines{},
+		Press:   press.NewPress(),
+		Engines: engines.NewEngines(),
 	}
 }
 

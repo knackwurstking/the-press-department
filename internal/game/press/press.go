@@ -1,4 +1,4 @@
-package game
+package press
 
 type Press struct{}
 
