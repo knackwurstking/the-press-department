@@ -7,6 +7,11 @@ import (
 	"github.com/hajimehoshi/ebiten/ebitenutil"
 )
 
+// Game ...
+//
+// Input 			- handles the controls (with mobile touch support)
+// Background - handles the game background
+// TODO: where to put the engines and the tiles (need some root struct like "Foreground" or "?")
 type Game struct{}
 
 // Layout implements ebiten.Game
