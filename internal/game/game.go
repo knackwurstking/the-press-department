@@ -5,7 +5,7 @@ import (
 	"github.com/hajimehoshi/ebiten/ebitenutil"
 )
 
-// Game ...
+// Game controls all the game logic
 //
 // Input 			- handles the controls (with mobile touch support)
 // Background - handles the game background
