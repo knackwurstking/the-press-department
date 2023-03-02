@@ -1,6 +1,8 @@
 package game
 
 import (
+	"fmt"
+
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 )
@@ -34,9 +36,12 @@ func NewGame() *Game {
 func (g *Game) Draw(screen *ebiten.Image) {
 	g.Background.Draw(screen)
 
-	// TODO: draw the engines and the tiles from the Press (the Board will handle Press and Engines)
+	// do an FPS count debug print on the top left corner
+	ebitenutil.DebugPrintAt(screen, fmt.Sprintf("%.0f", ebiten.ActualFPS()), 0, 0)
+	// NOTE: use text.Draw(...) to print normal text (like a game menu or whatever)
 
-	ebitenutil.DebugPrint(screen, "The Press Department")
+	// TODO: draw the engines and the tiles from the Press (the Board will handle Press and Engines)...
+	// ...
 }
 
 // Layout implements ebiten.Game
