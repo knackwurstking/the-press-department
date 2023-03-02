@@ -11,7 +11,8 @@ import (
 //
 // Input 			- handles the controls (with mobile touch support)
 // Background - handles the game background
-// TODO: where to put the engines and the tiles (need some root struct like "Foreground" or "?")
+// Press 			- produces tiles and outputs each tile to the Engines
+// Engines 		- transports the tiles (from the Press) from A to B
 type Game struct{}
 
 // Layout implements ebiten.Game
