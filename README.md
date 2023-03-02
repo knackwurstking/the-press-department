@@ -52,3 +52,19 @@ Create the HTML file `build/wasm/index.html`
   });
 </script>
 ```
+
+If you want to embed your game into your web page, using iframe is strongly
+recommended. The screen scale is automatically adjusted.
+If the above HTML's name is main.html, the host HTML will be like this:
+
+```html
+<!DOCTYPE html>
+<iframe src="main.html" width="640" height="480"></iframe>
+```
+
+You might find this message with Chrome:
+
+The AudioContext was not allowed to start. It must be resume (or created)
+after a user gesture on the page. [https://goo.gl/7K7WLu]
+
+In this case, you can solve this by putting `allow="autoplay"` on the iframe.
