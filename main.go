@@ -1,11 +1,33 @@
 package main
 
-import "github.com/faiface/pixel/pixelgl"
+import (
+	"log"
 
-func main() {
-	pixelgl.Run(runGame)
+	"github.com/hajimehoshi/ebiten"
+	"github.com/hajimehoshi/ebiten/ebitenutil"
+)
+
+type Game struct{}
+
+// Layout implements ebiten.Game
+func (*Game) Layout(outsideWidth int, outsideHeight int) (screenWidth int, screenHeight int) {
+	log.Printf("DEBUG: *Game.Layout: outsideWidth=%d outsideHeight=%d", outsideWidth, outsideHeight)
+
+	return outsideWidth, outsideHeight
 }
 
-func runGame() {
-	// ...
+// Update implements ebiten.Game
+func (*Game) Update(screen *ebiten.Image) (err error) {
+	err = ebitenutil.DebugPrint(screen, "The Press Department")
+
+	return
+}
+
+func main() {
+	ebiten.SetWindowResizable(true)
+	ebiten.SetWindowTitle("The Press Department")
+
+	if err := ebiten.RunGame(&Game{}); err != nil {
+		log.Fatalf("Run game failed: %s", err.Error())
+	}
 }
