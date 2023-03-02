@@ -11,8 +11,6 @@ type Game struct{}
 
 // Layout implements ebiten.Game
 func (*Game) Layout(outsideWidth int, outsideHeight int) (screenWidth int, screenHeight int) {
-	log.Printf("DEBUG: *Game.Layout: outsideWidth=%d outsideHeight=%d", outsideWidth, outsideHeight)
-
 	return outsideWidth, outsideHeight
 }
 
