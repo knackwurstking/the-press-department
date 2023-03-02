@@ -19,6 +19,7 @@ func main() {
 		game.NewPress(),
 		game.NewEngines(),
 	)
+
 	if err := ebiten.RunGame(g); err != nil {
 		log.Fatalf("Run game failed: %s", err.Error())
 	}
