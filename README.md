@@ -21,16 +21,16 @@ wasmserve ./cmd/the-press-department
 Build the game
 
 ```bash
-env GOOS=js GOARCH=wasm go build -o the-press-department.wasm ./cmd/the-press-department
+env GOOS=js GOARCH=wasm go build -o build/wasm/the-press-department.wasm ./cmd/the-press-department
 ```
 
 Copy the `wasm_exec.js` binary
 
 ```bash
-cp $(go env GOROOT)/misc/wasm/wasm_exec.js .
+cp $(go env GOROOT)/misc/wasm/wasm_exec.js build/wasm/
 ```
 
-Create the HTML file `index.html`
+Create the HTML file `build/wasm/index.html`
 
 ```html
 <!DOCTYPE html>
