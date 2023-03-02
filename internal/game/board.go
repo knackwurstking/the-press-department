@@ -1,6 +1,8 @@
 package game
 
 import (
+	"github.com/hajimehoshi/ebiten/v2"
+
 	"the-press-department/internal/game/engines"
 	"the-press-department/internal/game/press"
 )
@@ -16,6 +18,12 @@ func NewBoard() *Board {
 		Press:   press.NewPress(),
 		Engines: engines.NewEngines(),
 	}
+}
+
+func (*Board) Draw(screen *ebiten.Image) {
+	// TODO: draw the engines and the tiles from the Press
+	// 			 (the Board will handle the Press and Engines)...
+	// ...
 }
 
 func (*Board) Update(input *Input) error {

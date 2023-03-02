@@ -40,8 +40,7 @@ func (g *Game) Draw(screen *ebiten.Image) {
 	ebitenutil.DebugPrintAt(screen, fmt.Sprintf("%.0f", ebiten.ActualFPS()), 0, 0)
 	// NOTE: use text.Draw(...) to print normal text (like a game menu or whatever)
 
-	// TODO: draw the engines and the tiles from the Press (the Board will handle Press and Engines)...
-	// ...
+	g.Board.Draw(screen)
 }
 
 // Layout implements ebiten.Game
