@@ -1,8 +1,8 @@
 package game
 
 import (
-	"github.com/hajimehoshi/ebiten"
-	"github.com/hajimehoshi/ebiten/ebitenutil"
+	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 )
 
 // Game controls all the game logic
@@ -14,29 +14,40 @@ import (
 type Game struct {
 	Input      *Input
 	Background *Background
-	Press      *Press
-	Engines    *Engines
+	Board      *Board
+
+	screenWidth  int
+	screenHeight int
 }
 
-func NewGame(i *Input, b *Background, p *Press, e *Engines) *Game {
+func NewGame() *Game {
 	game := &Game{
-		Input:      i,
-		Background: b,
-		Press:      p,
-		Engines:    e,
+		Input:      &Input{},
+		Background: &Background{},
+		Board:      NewBoard(),
 	}
 
 	return game
 }
 
+// Draw implements ebiten.Game
+func (g *Game) Draw(screen *ebiten.Image) {
+	g.Background.Draw(screen)
+
+	ebitenutil.DebugPrint(screen, "The Press Department")
+}
+
 // Layout implements ebiten.Game
-func (*Game) Layout(outsideWidth int, outsideHeight int) (screenWidth int, screenHeight int) {
-	return outsideWidth, outsideHeight
+func (g *Game) Layout(outsideWidth int, outsideHeight int) (screenWidth int, screenHeight int) {
+	g.screenWidth = outsideWidth
+	g.screenHeight = outsideHeight
+
+	return g.screenWidth, g.screenHeight
 }
 
 // Update implements ebiten.Game
-func (*Game) Update(screen *ebiten.Image) (err error) {
-	err = ebitenutil.DebugPrint(screen, "The Press Department")
+func (g *Game) Update() error {
+	err := g.Board.Update(g.Input)
 
-	return
+	return err
 }
