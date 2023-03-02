@@ -8,8 +8,6 @@ import (
 	"the-press-department/internal/game"
 )
 
-type Game struct{}
-
 func main() {
 	ebiten.SetWindowSize(940, 470)
 	ebiten.SetWindowResizingMode(ebiten.WindowResizingModeEnabled)
