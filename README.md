@@ -68,3 +68,9 @@ The AudioContext was not allowed to start. It must be resume (or created)
 after a user gesture on the page. [https://goo.gl/7K7WLu]
 
 In this case, you can solve this by putting `allow="autoplay"` on the iframe.
+
+## Mind Notes
+
+### How does this `press`, `engines` and `tiles` thing work
+
+- ...
