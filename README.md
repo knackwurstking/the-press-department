@@ -85,3 +85,4 @@ In this case, you can solve this by putting `allow="autoplay"` on the iframe.
 - The `press` produces a tile and outputs the tile to the engine
   - this could be done with channels
 - The engine will transport this tile from A to B (B is null)
+  - when the press outputs a tile the tile sits on the beginning of the first engine
