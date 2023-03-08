@@ -8,9 +8,13 @@ import (
 
 // Board holds all the data and coordinates (like tiles positions and engine positions)
 type Engines struct {
-	Game *Game
-	BPM  float64 // BPM are the bumps per minute (the press speed)
-	Hz   float64 // MPM are the miles per seconds (the engine speed)
+	Game       *Game
+	Conveyor   *Conveyor
+	BPM        float64 // BPM are the bumps per minute (the press speed)
+	Hz         float64 // MPM are the miles per seconds (the engine speed)
+	HzMultiply float64
+
+	scale float64
 
 	tiles      []*Tile
 	lastTile   time.Time
@@ -23,15 +27,28 @@ type Engines struct {
 }
 
 func NewEngines() *Engines {
-	return &Engines{
+	e := &Engines{
 		BPM:        6,
 		Hz:         8,
+		HzMultiply: 2.5,
 		lastTile:   time.Now(),
 		lastUpdate: time.Now(),
+		scale:      DefaultScale,
 	}
+
+	e.Conveyor = NewConveyor(&e.scale)
+
+	return e
 }
 
 func (e *Engines) Draw(screen *ebiten.Image) {
+	// draw the "Conveyor"
+	e.Conveyor.Draw(
+		screen,
+		0, float64(e.Game.ScreenHeight)/2-(e.Conveyor.GetHeight()/2),
+		float64(e.Game.ScreenWidth), float64(e.Game.ScreenHeight),
+	)
+
 	// draw the tile with the given positions
 	for _, e._tile = range e.tiles {
 		e._tile.Draw(
@@ -46,6 +63,8 @@ func (e *Engines) Update(input *Input) error {
 	// update existing tile positions
 	e._nextUpdate = time.Now()
 
+	e.updateConveyor()
+
 	// move tiles
 	e.updateTiles()
 
@@ -58,11 +77,23 @@ func (e *Engines) Update(input *Input) error {
 	return nil
 }
 
+func (e *Engines) GetScale() float64 {
+	return e.scale
+}
+
+func (e *Engines) SetScale(f float64) {
+	e.scale = f
+}
+
+func (e *Engines) updateConveyor() {
+	// TODO: update conveyor (e.Hz based)
+}
+
 func (e *Engines) updatePress() {
 	// check time and get a tile based on BPM
 	if e.lastTile.Add(time.Microsecond*time.Duration(60/e.BPM*1000000)).UnixMicro() <= e._nextUpdate.UnixMicro() {
 		// get a new tile here
-		e.tiles = append(e.tiles, NewTile())
+		e.tiles = append(e.tiles, NewTile(&e.scale))
 
 		e.tilesCount += 1
 
@@ -75,7 +106,7 @@ func (e *Engines) updateTiles() {
 	var i int
 	for i, e._tile = range e.tiles {
 		// update x position (based on time since last update)
-		e._tile.X += (float64(e._nextUpdate.Sub(e.lastUpdate).Seconds()) * 3 * e.Hz) * (e._tile.GetScale() * 10)
+		e._tile.X += (float64(e._nextUpdate.Sub(e.lastUpdate).Seconds()) * (e.HzMultiply * e.Hz)) * (*e._tile.Scale * 10)
 
 		if e._tile.X >= (float64(e.Game.ScreenWidth) + e._tile.GetWidth()) {
 			e.tiles = e.tiles[i+1:]

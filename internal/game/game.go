@@ -7,6 +7,10 @@ import (
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 )
 
+var (
+	DefaultScale float64 = 0.15
+)
+
 // Game controls all the game logic
 //
 // Input 			- handles the controls (with mobile touch support)
@@ -20,6 +24,8 @@ type Game struct {
 	ScreenWidth  int
 	ScreenHeight int
 
+	scale float64
+
 	_debugCounter string
 }
 
@@ -28,6 +34,7 @@ func NewGame() *Game {
 		Input:      NewInput(),
 		Background: NewBackground(),
 		Engines:    NewEngines(),
+		scale:      DefaultScale,
 	}
 
 	// pass game pointer to the engine
@@ -55,7 +62,20 @@ func (g *Game) Layout(outsideWidth int, outsideHeight int) (int, int) {
 
 // Update implements ebiten.Game
 func (g *Game) Update() error {
+	if g.Engines.GetScale() != g.scale {
+		g.Background.SetScale(g.scale)
+		g.Engines.SetScale(g.scale)
+	}
+
 	return g.Engines.Update(g.Input)
+}
+
+func (g *Game) GetScale() float64 {
+	return g.scale
+}
+
+func (g *Game) SetScale(f float64) {
+	g.scale = f
 }
 
 func (g *Game) debugEngines(screen *ebiten.Image) {
