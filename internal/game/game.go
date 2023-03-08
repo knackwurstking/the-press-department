@@ -68,7 +68,7 @@ func (g *Game) debugEngines(screen *ebiten.Image) {
 	ebitenutil.DebugPrintAt(
 		screen,
 		g._debugCounter,
-		g.ScreenWidth-len(g._debugCounter)*6,
+		g.ScreenWidth-(len(g._debugCounter)*6+1),
 		0,
 	)
 
