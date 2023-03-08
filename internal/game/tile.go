@@ -11,7 +11,20 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
-var ()
+var (
+	urbanDoveActive *ebiten.Image
+)
+
+func init() {
+	var err error
+	var img image.Image
+	img, _, err = image.Decode(bytes.NewReader(images.UrbanDoveActive))
+	if err != nil {
+		panic(err)
+	}
+
+	urbanDoveActive = ebiten.NewImageFromImage(img)
+}
 
 type Tile struct {
 	Image   *ebiten.Image
@@ -23,19 +36,14 @@ type Tile struct {
 }
 
 func NewTile() *Tile {
-	image, _, err := image.Decode(bytes.NewReader(images.UrbanDoveActive))
-	if err != nil {
-		panic(err)
-	}
-
 	return &Tile{
-		Image: ebiten.NewImageFromImage(image),
+		Image: ebiten.NewImageFromImage(urbanDoveActive),
 		Options: &ebiten.DrawImageOptions{
 			GeoM: ebiten.GeoM{},
 		},
 		Color: color.RGBA{0, 0, 0, 255},
 		X:     0,
-		scale: 0.2,
+		scale: 0.125,
 	}
 }
 
