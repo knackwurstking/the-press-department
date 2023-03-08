@@ -58,19 +58,6 @@ func (e *Engines) Update(input *Input) (err error) {
 	return
 }
 
-func (e *Engines) updateTiles() {
-	var i int
-	for i, e._tile = range e.tiles {
-		// update x position (based on time since last update)
-		e._tile.X += float64(e._next.Sub(e.lastUpdate).Seconds()) * 3 * e.MPM
-
-		if e._tile.X >= (float64(e.Game.ScreenWidth) + e._tile.Width) {
-			e.tiles = e.tiles[i+1:]
-			break
-		}
-	}
-}
-
 func (e *Engines) updatePress() {
 	// check time and get a tile based on BPM
 	if e.lastTile.Add(time.Second*time.Duration(60/e.BPM)).UnixMicro() <= e._next.UnixMicro() {
@@ -81,5 +68,18 @@ func (e *Engines) updatePress() {
 
 		// and update `e.lastTile`
 		e.lastTile = e._next
+	}
+}
+
+func (e *Engines) updateTiles() {
+	var i int
+	for i, e._tile = range e.tiles {
+		// update x position (based on time since last update)
+		e._tile.X += float64(e._next.Sub(e.lastUpdate).Seconds()) * 3 * e.MPM
+
+		if e._tile.X >= (float64(e.Game.ScreenWidth) + e._tile.Width) {
+			e.tiles = e.tiles[i+1:]
+			break
+		}
 	}
 }

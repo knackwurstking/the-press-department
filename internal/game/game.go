@@ -41,7 +41,7 @@ func (g *Game) Draw(screen *ebiten.Image) {
 	g.Background.Draw(screen)
 
 	g.debugFPS(screen)
-	g.debugCounter(screen)
+	g.debugEngines(screen)
 
 	g.Engines.Draw(screen)
 }
@@ -55,14 +55,18 @@ func (g *Game) Layout(outsideWidth int, outsideHeight int) (int, int) {
 }
 
 // Update implements ebiten.Game
-func (g *Game) Update() (err error) {
-	err = g.Engines.Update(g.Input)
-
-	return
+func (g *Game) Update() error {
+	return g.Engines.Update(g.Input)
 }
 
-func (g *Game) debugCounter(screen *ebiten.Image) {
-	g._debugCounter = fmt.Sprintf("Tiles Produced: %-5d | RB: %2d", g.Engines.tilesCount, len(g.Engines.tiles))
+func (g *Game) debugEngines(screen *ebiten.Image) {
+	g._debugCounter = fmt.Sprintf(
+		"Press Speed: %.1fh | Tiles Produced: %06d | RB: %2d",
+		g.Engines.BPM,
+		g.Engines.tilesCount,
+		len(g.Engines.tiles),
+	)
+
 	ebitenutil.DebugPrintAt(
 		screen,
 		g._debugCounter,
