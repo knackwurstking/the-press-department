@@ -1,7 +1,6 @@
 package game
 
 import (
-	"log"
 	"time"
 
 	"github.com/hajimehoshi/ebiten/v2"
@@ -69,7 +68,6 @@ func (e *Engines) Update(input *Input) (err error) {
 		e.tiles = append(e.tiles, NewTile(60, 120))
 
 		e.tilesCount += 1
-		log.Printf("tiles produced: %d [%d tiles on the road :)]", e.tilesCount, len(e.tiles))
 
 		// and update `e.lastTile`
 		e.lastTile = next
