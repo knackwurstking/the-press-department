@@ -57,7 +57,7 @@ func (e *Engines) Update(input *Input) (err error) {
 	// move tiles
 	for index, e._tile = range e.tiles {
 		// update x position (based on time since last update)
-		e._tile.X += float64(diff.Seconds()) * 4.5 * e.MPM
+		e._tile.X += float64(diff.Seconds()) * 4 * e.MPM
 
 		if e._tile.X >= (float64(e.Game.ScreenWidth) + e._tile.Width) {
 			e.tiles = e.tiles[index+1:]
