@@ -68,21 +68,3 @@ The AudioContext was not allowed to start. It must be resume (or created)
 after a user gesture on the page. [https://goo.gl/7K7WLu]
 
 In this case, you can solve this by putting `allow="autoplay"` on the iframe.
-
-## Mind Notes
-
-### How does this `press`, `engines` and `tiles` thing work
-
-- the `tiles` package contains info about the current product, tiles assets for
-  each product, ...
-- the `press` produces tiles at a given speed (ex.: 6 bumps per minute)
-- the `engines` will transport the `tiles` from the `press` from A to B
-  (right to left), engines can be configured (transport speed).
-- in this first version, there is only one engine (just to simplify things)
-
-- The `board` will turn on the `press` and the `engines`
-  - just setup everything
-- The `press` produces a tile and outputs the tile to the engine
-  - this could be done with channels
-- The engine will transport this tile from A to B (B is null)
-  - when the press outputs a tile the tile sits on the beginning of the first engine
