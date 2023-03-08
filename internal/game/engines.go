@@ -37,7 +37,7 @@ func (e *Engines) Draw(screen *ebiten.Image) {
 		e._tile.Draw(
 			screen,
 			float64(e.Game.ScreenWidth)-e._tile.X, // x - start right
-			float64(e.Game.ScreenHeight)/2-(e._tile.Height/2), // y - center
+			float64(e.Game.ScreenHeight)/2-(e._tile.GetHeight()/2), // y - center
 		)
 	}
 }
@@ -62,7 +62,7 @@ func (e *Engines) updatePress() {
 	// check time and get a tile based on BPM
 	if e.lastTile.Add(time.Microsecond*time.Duration(60/e.BPM*1000000)).UnixMicro() <= e._nextUpdate.UnixMicro() {
 		// get a new tile here
-		e.tiles = append(e.tiles, NewTile(60, 120))
+		e.tiles = append(e.tiles, NewTile())
 
 		e.tilesCount += 1
 
@@ -75,9 +75,9 @@ func (e *Engines) updateTiles() {
 	var i int
 	for i, e._tile = range e.tiles {
 		// update x position (based on time since last update)
-		e._tile.X += float64(e._nextUpdate.Sub(e.lastUpdate).Seconds()) * 3 * e.Hz
+		e._tile.X += (float64(e._nextUpdate.Sub(e.lastUpdate).Seconds()) * 3 * e.Hz) * (e._tile.GetScale() * 10)
 
-		if e._tile.X >= (float64(e.Game.ScreenWidth) + e._tile.Width) {
+		if e._tile.X >= (float64(e.Game.ScreenWidth) + e._tile.GetWidth()) {
 			e.tiles = e.tiles[i+1:]
 			break
 		}

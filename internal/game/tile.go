@@ -1,39 +1,62 @@
 package game
 
 import (
+	"bytes"
+	"image"
+	_ "image/jpeg"
+	"the-press-department/internal/images"
+
 	"image/color"
 
 	"github.com/hajimehoshi/ebiten/v2"
-	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 )
 
+var ()
+
 type Tile struct {
-	Crack  bool // Crack holds whenever this tile has a crack or not
-	Color  color.Color
-	Width  float64
-	Height float64
-	X      float64
+	Image   *ebiten.Image
+	Options *ebiten.DrawImageOptions
+	Color   color.Color
+	X       float64
+
+	scale float64
 }
 
-func NewTile(width, height float64) *Tile {
+func NewTile() *Tile {
+	image, _, err := image.Decode(bytes.NewReader(images.UrbanDoveActive))
+	if err != nil {
+		panic(err)
+	}
+
 	return &Tile{
-		Crack:  false,
-		Color:  color.RGBA{0, 0, 0, 255},
-		Width:  width,
-		Height: height,
-		X:      0,
+		Image: ebiten.NewImageFromImage(image),
+		Options: &ebiten.DrawImageOptions{
+			GeoM: ebiten.GeoM{},
+		},
+		Color: color.RGBA{0, 0, 0, 255},
+		X:     0,
+		scale: 0.2,
 	}
 }
 
-// TODO: adding tile assets
-
 func (t *Tile) Draw(screen *ebiten.Image, x, y float64) {
-	ebitenutil.DrawRect(
-		screen,   // dst
-		x,        // x - start right
-		y,        // y - center
-		t.Width,  // width
-		t.Height, // height
-		t.Color,  // color
-	)
+	t.Options.GeoM.Reset()
+	t.Options.GeoM.Scale(t.scale, t.scale)
+	t.Options.GeoM.Translate(x, y)
+
+	screen.DrawImage(t.Image, t.Options)
+}
+
+func (t *Tile) GetHeight() float64 {
+	_, height := t.Image.Size()
+	return float64(height) * t.scale
+}
+
+func (t *Tile) GetWidth() float64 {
+	width, _ := t.Image.Size()
+	return float64(width) * t.scale
+}
+
+func (t *Tile) GetScale() float64 {
+	return t.scale
 }

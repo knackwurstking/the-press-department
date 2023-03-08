@@ -14,5 +14,5 @@ func NewBackground() *Background {
 }
 
 func (*Background) Draw(screen *ebiten.Image) {
-	screen.Fill(color.RGBA{100, 100, 100, 255})
+	screen.Fill(color.RGBA{180, 180, 180, 255})
 }
