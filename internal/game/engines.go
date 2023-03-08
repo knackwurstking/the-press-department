@@ -1,6 +1,7 @@
 package game
 
 import (
+	"log"
 	"time"
 
 	"github.com/hajimehoshi/ebiten/v2"
@@ -14,8 +15,10 @@ type Engines struct {
 	MPM  float64 // MPM are the miles per seconds (the engine speed)
 
 	tiles      []*Tile
-	lastTile   int64
-	lastUpdate int64
+	lastTile   time.Time
+	lastUpdate time.Time
+
+	tilesCount int
 
 	_tile *Tile
 }
@@ -24,8 +27,8 @@ func NewEngines() *Engines {
 	return &Engines{
 		BPM:        3.5,
 		MPM:        0.5,
-		lastTile:   time.Now().UnixMicro(),
-		lastUpdate: time.Now().UnixMicro(),
+		lastTile:   time.Now(),
+		lastUpdate: time.Now(),
 	}
 }
 
@@ -46,8 +49,8 @@ func (e *Engines) Draw(screen *ebiten.Image) {
 func (e *Engines) Update(input *Input) (err error) {
 	// update existing tile positions
 	var (
-		next = time.Now().UnixMicro()
-		diff = next - e.lastUpdate
+		next = time.Now()
+		diff = next.Sub(e.lastUpdate)
 	)
 
 	for _, e._tile = range e.tiles {
@@ -56,9 +59,12 @@ func (e *Engines) Update(input *Input) (err error) {
 	}
 
 	// check time and get a tile (6 bumps per minute)
-	if next+int64(e.BPM) >= e.lastTile+int64(e.BPM) {
+	if e.lastTile.Add(time.Second*time.Duration(60/e.BPM)).UnixMicro() <= next.UnixMicro() {
 		// get a new tile here
 		e.tiles = append(e.tiles, NewTile(120, 60))
+
+		e.tilesCount += 1
+		log.Printf("tiles produced: %d", e.tilesCount)
 
 		// and update `e.lastTile`
 		e.lastTile = next
