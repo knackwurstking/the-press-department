@@ -42,7 +42,7 @@ func (e *Engines) Draw(screen *ebiten.Image) {
 	}
 }
 
-func (e *Engines) Update(input *Input) (err error) {
+func (e *Engines) Update(input *Input) error {
 	// update existing tile positions
 	e._next = time.Now()
 
@@ -55,7 +55,7 @@ func (e *Engines) Update(input *Input) (err error) {
 	// set the last update field
 	e.lastUpdate = e._next
 
-	return
+	return nil
 }
 
 func (e *Engines) updatePress() {
