@@ -19,6 +19,8 @@ type Game struct {
 	Engines      *Engines
 	ScreenWidth  int
 	ScreenHeight int
+
+	_debugCounter string
 }
 
 func NewGame() *Game {
@@ -38,17 +40,8 @@ func NewGame() *Game {
 func (g *Game) Draw(screen *ebiten.Image) {
 	g.Background.Draw(screen)
 
-	// do an FPS count debug print on the top left corner
-	// NOTE: use text.Draw(...) to print normal text (like a game menu or whatever)
-	ebitenutil.DebugPrintAt(screen, fmt.Sprintf("%.0f", ebiten.ActualFPS()), 0, 0)
-
-	s := fmt.Sprintf("Tiles Produced: %-5d | RB: %2d", g.Engines.tilesCount, len(g.Engines.tiles))
-	ebitenutil.DebugPrintAt(
-		screen,
-		s,
-		g.ScreenWidth-len(s)*6,
-		0,
-	)
+	g.debugFPS(screen)
+	g.debugCounter(screen)
 
 	g.Engines.Draw(screen)
 }
@@ -66,4 +59,18 @@ func (g *Game) Update() (err error) {
 	err = g.Engines.Update(g.Input)
 
 	return
+}
+
+func (g *Game) debugCounter(screen *ebiten.Image) {
+	g._debugCounter = fmt.Sprintf("Tiles Produced: %-5d | RB: %2d", g.Engines.tilesCount, len(g.Engines.tiles))
+	ebitenutil.DebugPrintAt(
+		screen,
+		g._debugCounter,
+		g.ScreenWidth-len(g._debugCounter)*6,
+		0,
+	)
+}
+
+func (g *Game) debugFPS(screen *ebiten.Image) {
+	ebitenutil.DebugPrintAt(screen, fmt.Sprintf("%.0f", ebiten.ActualFPS()), 0, 0)
 }
