@@ -1,23 +1,21 @@
 package game
 
+import "image/color"
+
 type Tile struct {
-	Crack    bool          // Crack holds whenever this tile has a crack or not
-	Position *TilePosition // X holds the position where the tile is moving on the engine
+	Crack  bool // Crack holds whenever this tile has a crack or not
+	Color  color.Color
+	Width  float64
+	Height float64
+	X      float64
 }
 
-func NewTile(position *TilePosition) *Tile {
+func NewTile(width, height float64) *Tile {
 	return &Tile{
-		Crack:    false,
-		Position: position, // tile not exists on engine
-	}
-}
-
-type TilePosition struct {
-	X int64
-}
-
-func NewTilePosition(x int64) *TilePosition {
-	return &TilePosition{
-		X: x,
+		Crack:  false,
+		Color:  color.RGBA{200, 200, 200, 255},
+		Width:  120,
+		Height: 60,
+		X:      0,
 	}
 }

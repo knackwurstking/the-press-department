@@ -14,12 +14,11 @@ import (
 // Press 			- produces tiles and outputs each tile to the Engines
 // Engines 		- transports the tiles (from the Press) from A to B
 type Game struct {
-	Input      *Input
-	Background *Background
-	Engines    *Engines
-
-	screenWidth  int
-	screenHeight int
+	Input        *Input
+	Background   *Background
+	Engines      *Engines
+	ScreenWidth  int
+	ScreenHeight int
 }
 
 func NewGame() *Game {
@@ -28,6 +27,9 @@ func NewGame() *Game {
 		Background: NewBackground(),
 		Engines:    NewEngines(),
 	}
+
+	// pass game pointer to the engine
+	game.Engines.Game = game
 
 	return game
 }
@@ -44,11 +46,11 @@ func (g *Game) Draw(screen *ebiten.Image) {
 }
 
 // Layout implements ebiten.Game
-func (g *Game) Layout(outsideWidth int, outsideHeight int) (screenWidth int, screenHeight int) {
-	g.screenWidth = outsideWidth
-	g.screenHeight = outsideHeight
+func (g *Game) Layout(outsideWidth int, outsideHeight int) (int, int) {
+	g.ScreenWidth = outsideWidth
+	g.ScreenHeight = outsideHeight
 
-	return g.screenWidth, g.screenHeight
+	return g.ScreenWidth, g.ScreenHeight
 }
 
 // Update implements ebiten.Game
