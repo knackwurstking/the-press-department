@@ -27,7 +27,7 @@ func NewEngines() *Engines {
 
 func (*Engines) Draw(screen *ebiten.Image) {
 	// draw the tile with the given positions
-	// TODO: how to draw the tile at X positions
+	// TODO: how to draw the tile at X positions (for now just use rectangles for tiles)
 }
 
 func (e *Engines) Update(input *Input) (err error) {
