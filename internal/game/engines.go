@@ -27,9 +27,10 @@ func NewEngines() *Engines {
 
 func (*Engines) Draw(screen *ebiten.Image) {
 	// draw the tile with the given positions
+	// TODO: how to draw the tile at X positions
 }
 
-func (e *Engines) Update(input *Input) error {
+func (e *Engines) Update(input *Input) (err error) {
 	// update existing tile positions
 	var (
 		next = time.Now().UnixMicro()
@@ -51,5 +52,5 @@ func (e *Engines) Update(input *Input) error {
 		e.lastTile = next
 	}
 
-	return nil
+	return
 }
