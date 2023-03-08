@@ -18,8 +18,8 @@ type Engines struct {
 
 	tilesCount int
 
-	_tile *Tile
-	_next time.Time
+	_tile       *Tile
+	_nextUpdate time.Time
 }
 
 func NewEngines() *Engines {
@@ -44,7 +44,7 @@ func (e *Engines) Draw(screen *ebiten.Image) {
 
 func (e *Engines) Update(input *Input) error {
 	// update existing tile positions
-	e._next = time.Now()
+	e._nextUpdate = time.Now()
 
 	// move tiles
 	e.updateTiles()
@@ -53,21 +53,21 @@ func (e *Engines) Update(input *Input) error {
 	e.updatePress()
 
 	// set the last update field
-	e.lastUpdate = e._next
+	e.lastUpdate = e._nextUpdate
 
 	return nil
 }
 
 func (e *Engines) updatePress() {
 	// check time and get a tile based on BPM
-	if e.lastTile.Add(time.Second*time.Duration(60/e.BPM)).UnixMicro() <= e._next.UnixMicro() {
+	if e.lastTile.Add(time.Second*time.Duration(60/e.BPM)).UnixMicro() <= e._nextUpdate.UnixMicro() {
 		// get a new tile here
 		e.tiles = append(e.tiles, NewTile(60, 120))
 
 		e.tilesCount += 1
 
 		// and update `e.lastTile`
-		e.lastTile = e._next
+		e.lastTile = e._nextUpdate
 	}
 }
 
@@ -75,7 +75,7 @@ func (e *Engines) updateTiles() {
 	var i int
 	for i, e._tile = range e.tiles {
 		// update x position (based on time since last update)
-		e._tile.X += float64(e._next.Sub(e.lastUpdate).Seconds()) * 3 * e.Hz
+		e._tile.X += float64(e._nextUpdate.Sub(e.lastUpdate).Seconds()) * 3 * e.Hz
 
 		if e._tile.X >= (float64(e.Game.ScreenWidth) + e._tile.Width) {
 			e.tiles = e.tiles[i+1:]
