@@ -60,7 +60,7 @@ func (e *Engines) Update(input *Input) error {
 
 func (e *Engines) updatePress() {
 	// check time and get a tile based on BPM
-	if e.lastTile.Add(time.Second*time.Duration(60/e.BPM)).UnixMicro() <= e._nextUpdate.UnixMicro() {
+	if e.lastTile.Add(time.Microsecond*time.Duration(60/e.BPM*1000000)).UnixMicro() <= e._nextUpdate.UnixMicro() {
 		// get a new tile here
 		e.tiles = append(e.tiles, NewTile(60, 120))
 
