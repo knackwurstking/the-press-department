@@ -60,11 +60,10 @@ func (g *Game) Update() error {
 }
 
 func (g *Game) debugEngines(screen *ebiten.Image) {
+	// 1. Row
 	g._debugCounter = fmt.Sprintf(
-		"Press Speed: %.1fh | Tiles Produced: %06d | RB: %2d",
+		"Press Speed: %.1fh",
 		g.Engines.BPM,
-		g.Engines.tilesCount,
-		len(g.Engines.tiles),
 	)
 
 	ebitenutil.DebugPrintAt(
@@ -72,6 +71,32 @@ func (g *Game) debugEngines(screen *ebiten.Image) {
 		g._debugCounter,
 		g.ScreenWidth-len(g._debugCounter)*6,
 		0,
+	)
+
+	// 2. Row
+	g._debugCounter = fmt.Sprintf(
+		"Tiles Produced: %d",
+		g.Engines.tilesCount,
+	)
+
+	ebitenutil.DebugPrintAt(
+		screen,
+		g._debugCounter,
+		g.ScreenWidth-len(g._debugCounter)*6,
+		16,
+	)
+
+	// 3. Row
+	g._debugCounter = fmt.Sprintf(
+		"RB: %d",
+		len(g.Engines.tiles),
+	)
+
+	ebitenutil.DebugPrintAt(
+		screen,
+		g._debugCounter,
+		g.ScreenWidth-len(g._debugCounter)*6,
+		32,
 	)
 }
 
