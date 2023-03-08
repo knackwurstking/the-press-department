@@ -1,0 +1,6 @@
+{
+  "appId": "com.knackwurstking.ThePressDepartment",
+  "appName": "ThePressDepartment",
+  "webDir": "www",
+  "bundledWebRuntime": false
+}
