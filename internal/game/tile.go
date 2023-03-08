@@ -1,37 +1,13 @@
 package game
 
 import (
-	_ "image/jpeg"
-
 	"image/color"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 )
 
-var (
-	UrbanDoveActive = NewTileAsset("assets/tiles/urban-active-urban-dove-active.jpg")
-)
-
-type TileAsset struct {
-	Path  string
-	Image *ebiten.Image
-}
-
-func NewTileAsset(path string) *TileAsset {
-	img, _, err := ebitenutil.NewImageFromFile(path)
-	if err != nil {
-		panic(err)
-	}
-
-	return &TileAsset{
-		Path:  path,
-		Image: img,
-	}
-}
-
 type Tile struct {
-	Src    string
 	Crack  bool // Crack holds whenever this tile has a crack or not
 	Color  color.Color
 	Width  float64
