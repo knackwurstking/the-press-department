@@ -16,7 +16,7 @@ import (
 type Game struct {
 	Input      *Input
 	Background *Background
-	Board      *Board
+	Engines    *Engines
 
 	screenWidth  int
 	screenHeight int
@@ -26,7 +26,7 @@ func NewGame() *Game {
 	game := &Game{
 		Input:      NewInput(),
 		Background: NewBackground(),
-		Board:      NewBoard(),
+		Engines:    NewEngines(),
 	}
 
 	return game
@@ -40,7 +40,7 @@ func (g *Game) Draw(screen *ebiten.Image) {
 	ebitenutil.DebugPrintAt(screen, fmt.Sprintf("%.0f", ebiten.ActualFPS()), 0, 0)
 	// NOTE: use text.Draw(...) to print normal text (like a game menu or whatever)
 
-	g.Board.Draw(screen)
+	g.Engines.Draw(screen)
 }
 
 // Layout implements ebiten.Game
@@ -52,9 +52,8 @@ func (g *Game) Layout(outsideWidth int, outsideHeight int) (screenWidth int, scr
 }
 
 // Update implements ebiten.Game
-func (g *Game) Update() error {
-	// user inputs are handled from the board here
-	err := g.Board.Update(g.Input)
+func (g *Game) Update() (err error) {
+	err = g.Engines.Update(g.Input)
 
-	return err
+	return
 }

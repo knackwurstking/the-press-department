@@ -9,10 +9,10 @@ func NewInput() *Input {
 	return &Input{}
 }
 
-func (*Input) Dir() (ebiten.Key, bool) {
+func (*Input) Dir() (key ebiten.Key, ok bool) {
 	// TODO: read input here... (Up/Down, start/end mouse drag up/down, start/end touch/swipe up/down)
 	// ...
 
 	// no valid input
-	return 0, false
+	return
 }
