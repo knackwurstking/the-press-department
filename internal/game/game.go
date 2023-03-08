@@ -39,11 +39,10 @@ func NewGame() *Game {
 // Draw implements ebiten.Game
 func (g *Game) Draw(screen *ebiten.Image) {
 	g.Background.Draw(screen)
+	g.Engines.Draw(screen)
 
 	g.debugFPS(screen)
 	g.debugEngines(screen)
-
-	g.Engines.Draw(screen)
 }
 
 // Layout implements ebiten.Game
