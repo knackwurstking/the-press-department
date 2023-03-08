@@ -19,6 +19,7 @@ type Engines struct {
 	tilesCount int
 
 	_tile *Tile
+	_next time.Time
 }
 
 func NewEngines() *Engines {
@@ -43,35 +44,42 @@ func (e *Engines) Draw(screen *ebiten.Image) {
 
 func (e *Engines) Update(input *Input) (err error) {
 	// update existing tile positions
-	var (
-		next  = time.Now()
-		diff  = next.Sub(e.lastUpdate)
-		index int
-	)
+	e._next = time.Now()
 
 	// move tiles
-	for index, e._tile = range e.tiles {
+	e.updateTiles()
+
+	// press a tile
+	e.updatePress()
+
+	// set the last update field
+	e.lastUpdate = e._next
+
+	return
+}
+
+func (e *Engines) updateTiles() {
+	var i int
+	for i, e._tile = range e.tiles {
 		// update x position (based on time since last update)
-		e._tile.X += float64(diff.Seconds()) * 3 * e.MPM
+		e._tile.X += float64(e._next.Sub(e.lastUpdate).Seconds()) * 3 * e.MPM
 
 		if e._tile.X >= (float64(e.Game.ScreenWidth) + e._tile.Width) {
-			e.tiles = e.tiles[index+1:]
+			e.tiles = e.tiles[i+1:]
 			break
 		}
 	}
+}
 
-	e.lastUpdate = next
-
+func (e *Engines) updatePress() {
 	// check time and get a tile based on BPM
-	if e.lastTile.Add(time.Second*time.Duration(60/e.BPM)).UnixMicro() <= next.UnixMicro() {
+	if e.lastTile.Add(time.Second*time.Duration(60/e.BPM)).UnixMicro() <= e._next.UnixMicro() {
 		// get a new tile here
 		e.tiles = append(e.tiles, NewTile(60, 120))
 
 		e.tilesCount += 1
 
 		// and update `e.lastTile`
-		e.lastTile = next
+		e.lastTile = e._next
 	}
-
-	return
 }
