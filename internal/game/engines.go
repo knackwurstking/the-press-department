@@ -25,7 +25,7 @@ type Engines struct {
 
 func NewEngines() *Engines {
 	return &Engines{
-		BPM:        5.5,
+		BPM:        6,
 		MPM:        8,
 		lastTile:   time.Now(),
 		lastUpdate: time.Now(),
