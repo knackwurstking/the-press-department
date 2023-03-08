@@ -42,7 +42,7 @@ func (g *Game) Draw(screen *ebiten.Image) {
 	// NOTE: use text.Draw(...) to print normal text (like a game menu or whatever)
 	ebitenutil.DebugPrintAt(screen, fmt.Sprintf("%.0f", ebiten.ActualFPS()), 0, 0)
 
-	s := fmt.Sprintf("Tiles Count: %5d; RB: %2d", g.Engines.tilesCount, len(g.Engines.tiles))
+	s := fmt.Sprintf("Tiles Produced: %-5d | RB: %2d", g.Engines.tilesCount, len(g.Engines.tiles))
 	ebitenutil.DebugPrintAt(
 		screen,
 		s,
