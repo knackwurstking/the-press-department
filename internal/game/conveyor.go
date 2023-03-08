@@ -7,6 +7,7 @@ type Conveyor struct {
 }
 
 func NewConveyor(scale *float64) *Conveyor {
+	// TODO: need some game assets first (to simulate a running rb)
 	return &Conveyor{
 		Scale: scale,
 	}
