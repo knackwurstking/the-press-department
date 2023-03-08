@@ -25,8 +25,8 @@ type Engines struct {
 
 func NewEngines() *Engines {
 	return &Engines{
-		BPM:        3.5,
-		MPM:        0.5,
+		BPM:        5.5,
+		MPM:        8,
 		lastTile:   time.Now(),
 		lastUpdate: time.Now(),
 	}
@@ -36,12 +36,12 @@ func (e *Engines) Draw(screen *ebiten.Image) {
 	// draw the tile with the given positions
 	for _, e._tile = range e.tiles {
 		ebitenutil.DrawRect(
-			screen,                         // dst
-			float64(e.Game.ScreenWidth),    // x - start right
-			float64(e.Game.ScreenHeight)/2, // y - center
-			e._tile.Width,                  // width
-			e._tile.Height,                 // height
-			e._tile.Color,                  // color
+			screen,                                // dst
+			float64(e.Game.ScreenWidth)-e._tile.X, // x - start right
+			float64(e.Game.ScreenHeight)/2-(e._tile.Height/2), // y - center
+			e._tile.Width,  // width
+			e._tile.Height, // height
+			e._tile.Color,  // color
 		)
 	}
 }
@@ -49,22 +49,31 @@ func (e *Engines) Draw(screen *ebiten.Image) {
 func (e *Engines) Update(input *Input) (err error) {
 	// update existing tile positions
 	var (
-		next = time.Now()
-		diff = next.Sub(e.lastUpdate)
+		next  = time.Now()
+		diff  = next.Sub(e.lastUpdate)
+		index int
 	)
 
-	for _, e._tile = range e.tiles {
+	// move tiles
+	for index, e._tile = range e.tiles {
 		// update x position (based on time since last update)
-		e._tile.X += float64(diff) * e.MPM
+		e._tile.X += float64(diff.Seconds()) * 4.5 * e.MPM
+
+		if e._tile.X >= (float64(e.Game.ScreenWidth) + e._tile.Width) {
+			e.tiles = e.tiles[index+1:]
+			break
+		}
 	}
 
-	// check time and get a tile (6 bumps per minute)
+	e.lastUpdate = next
+
+	// check time and get a tile based on BPM
 	if e.lastTile.Add(time.Second*time.Duration(60/e.BPM)).UnixMicro() <= next.UnixMicro() {
 		// get a new tile here
-		e.tiles = append(e.tiles, NewTile(120, 60))
+		e.tiles = append(e.tiles, NewTile(60, 120))
 
 		e.tilesCount += 1
-		log.Printf("tiles produced: %d", e.tilesCount)
+		log.Printf("tiles produced: %d [%v]", e.tilesCount, e.tiles)
 
 		// and update `e.lastTile`
 		e.lastTile = next

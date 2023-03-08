@@ -13,9 +13,9 @@ type Tile struct {
 func NewTile(width, height float64) *Tile {
 	return &Tile{
 		Crack:  false,
-		Color:  color.RGBA{200, 200, 200, 255},
-		Width:  120,
-		Height: 60,
+		Color:  color.RGBA{0, 0, 0, 255},
+		Width:  width,
+		Height: height,
 		X:      0,
 	}
 }
