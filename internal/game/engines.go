@@ -5,7 +5,6 @@ import (
 	"time"
 
 	"github.com/hajimehoshi/ebiten/v2"
-	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 )
 
 // Board holds all the data and coordinates (like tiles positions and engine positions)
@@ -35,13 +34,10 @@ func NewEngines() *Engines {
 func (e *Engines) Draw(screen *ebiten.Image) {
 	// draw the tile with the given positions
 	for _, e._tile = range e.tiles {
-		ebitenutil.DrawRect(
-			screen,                                // dst
+		e._tile.Draw(
+			screen,
 			float64(e.Game.ScreenWidth)-e._tile.X, // x - start right
 			float64(e.Game.ScreenHeight)/2-(e._tile.Height/2), // y - center
-			e._tile.Width,  // width
-			e._tile.Height, // height
-			e._tile.Color,  // color
 		)
 	}
 }
@@ -57,7 +53,7 @@ func (e *Engines) Update(input *Input) (err error) {
 	// move tiles
 	for index, e._tile = range e.tiles {
 		// update x position (based on time since last update)
-		e._tile.X += float64(diff.Seconds()) * 4 * e.MPM
+		e._tile.X += float64(diff.Seconds()) * 3 * e.MPM
 
 		if e._tile.X >= (float64(e.Game.ScreenWidth) + e._tile.Width) {
 			e.tiles = e.tiles[index+1:]
@@ -73,7 +69,7 @@ func (e *Engines) Update(input *Input) (err error) {
 		e.tiles = append(e.tiles, NewTile(60, 120))
 
 		e.tilesCount += 1
-		log.Printf("tiles produced: %d [%v]", e.tilesCount, e.tiles)
+		log.Printf("tiles produced: %d [%d tiles on the road :)]", e.tilesCount, len(e.tiles))
 
 		// and update `e.lastTile`
 		e.lastTile = next
