@@ -10,7 +10,7 @@ import (
 type Engines struct {
 	Game *Game
 	BPM  float64 // BPM are the bumps per minute (the press speed)
-	MPM  float64 // MPM are the miles per seconds (the engine speed)
+	Hz   float64 // MPM are the miles per seconds (the engine speed)
 
 	tiles      []*Tile
 	lastTile   time.Time
@@ -25,7 +25,7 @@ type Engines struct {
 func NewEngines() *Engines {
 	return &Engines{
 		BPM:        6,
-		MPM:        8,
+		Hz:         8,
 		lastTile:   time.Now(),
 		lastUpdate: time.Now(),
 	}
@@ -75,7 +75,7 @@ func (e *Engines) updateTiles() {
 	var i int
 	for i, e._tile = range e.tiles {
 		// update x position (based on time since last update)
-		e._tile.X += float64(e._next.Sub(e.lastUpdate).Seconds()) * 3 * e.MPM
+		e._tile.X += float64(e._next.Sub(e.lastUpdate).Seconds()) * 3 * e.Hz
 
 		if e._tile.X >= (float64(e.Game.ScreenWidth) + e._tile.Width) {
 			e.tiles = e.tiles[i+1:]
