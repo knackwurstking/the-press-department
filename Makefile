@@ -3,4 +3,4 @@ run:
 
 build_wasm:
 	@env GOOS=js GOARCH=wasm go build -o wasm/the-press-department.wasm ./cmd/the-press-department
-	@cp `go env GOROOT`/misc/wasm/wasm_exec.js svelte/public/wasm_exec.js
+	@cp ./wasm/the-press-department.wasm ./svelte/public/the-press-department.wasm
