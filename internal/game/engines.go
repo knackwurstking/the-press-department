@@ -1,6 +1,8 @@
 package game
 
 import (
+	"image"
+	"math/rand"
 	"time"
 
 	"github.com/hajimehoshi/ebiten/v2"
@@ -13,14 +15,16 @@ type Engines struct {
 	BPM        float64 // BPM are the bumps per minute (the press speed)
 	Hz         float64 // MPM are the miles per seconds (the engine speed)
 	HzMultiply float64
-
-	scale float64
+	Scale      float64
+	TilesToUse []image.Image
 
 	tiles      []*Tile
 	lastTile   time.Time
 	lastUpdate time.Time
 
 	tilesCount int
+
+	rand *rand.Rand
 
 	_tile       *Tile
 	_nextUpdate time.Time
@@ -31,12 +35,17 @@ func NewEngines() *Engines {
 		BPM:        6,
 		Hz:         8,
 		HzMultiply: 2.5,
+		Scale:      DefaultScale,
+		TilesToUse: []image.Image{
+			ImageTile,
+			ImageTileWithCrack,
+		},
 		lastTile:   time.Now(),
 		lastUpdate: time.Now(),
-		scale:      DefaultScale,
+		rand:       rand.New(rand.NewSource(time.Now().Unix())),
 	}
 
-	e.Conveyor = NewConveyor(&e.scale)
+	e.Conveyor = NewConveyor(&e.Scale)
 
 	return e
 }
@@ -77,14 +86,6 @@ func (e *Engines) Update(input *Input) error {
 	return nil
 }
 
-func (e *Engines) GetScale() float64 {
-	return e.scale
-}
-
-func (e *Engines) SetScale(f float64) {
-	e.scale = f
-}
-
 func (e *Engines) updateConveyor() {
 	// TODO: update conveyor (e.Hz based)
 }
@@ -93,7 +94,7 @@ func (e *Engines) updatePress() {
 	// check time and get a tile based on BPM
 	if e.lastTile.Add(time.Microsecond*time.Duration(60/e.BPM*1000000)).UnixMicro() <= e._nextUpdate.UnixMicro() {
 		// get a new tile here
-		e.tiles = append(e.tiles, NewTile(&e.scale, ImageTile))
+		e.tiles = append(e.tiles, NewTile(&e.Scale, e.randomTile()))
 
 		e.tilesCount += 1
 
@@ -113,4 +114,8 @@ func (e *Engines) updateTiles() {
 			break
 		}
 	}
+}
+
+func (e *Engines) randomTile() image.Image {
+	return e.TilesToUse[e.rand.Intn(len(e.TilesToUse))]
 }

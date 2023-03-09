@@ -29,12 +29,12 @@ type Game struct {
 	_debugCounter string
 }
 
-func NewGame() *Game {
+func NewGame(scale float64) *Game {
 	game := &Game{
 		Input:      NewInput(),
-		Background: NewBackground(),
+		Background: NewBackground(scale, ImageGround),
 		Engines:    NewEngines(),
-		scale:      DefaultScale,
+		scale:      scale,
 	}
 
 	// pass game pointer to the engine
@@ -45,7 +45,7 @@ func NewGame() *Game {
 
 // Draw implements ebiten.Game
 func (g *Game) Draw(screen *ebiten.Image) {
-	g.Background.Draw(screen)
+	g.Background.Draw(screen, float64(g.ScreenWidth), float64(g.ScreenHeight))
 	g.Engines.Draw(screen)
 
 	g.debugFPS(screen)
@@ -62,9 +62,9 @@ func (g *Game) Layout(outsideWidth int, outsideHeight int) (int, int) {
 
 // Update implements ebiten.Game
 func (g *Game) Update() error {
-	if g.Engines.GetScale() != g.scale {
-		g.Background.SetScale(g.scale)
-		g.Engines.SetScale(g.scale)
+	if g.Engines.Scale != g.scale {
+		g.Engines.Scale = g.scale
+		g.Background.Scale = g.scale
 	}
 
 	return g.Engines.Update(g.Input)

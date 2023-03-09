@@ -10,27 +10,24 @@ import (
 )
 
 var (
-	ImageTile          *ebiten.Image
-	ImageTileWithCrack *ebiten.Image
+	ImageTile          image.Image
+	ImageTileWithCrack image.Image
 )
 
 func init() {
 	var err error
-	var img image.Image
 
 	// Tile
-	img, _, err = image.Decode(bytes.NewReader(images.Tile))
+	ImageTile, _, err = image.Decode(bytes.NewReader(images.Tile))
 	if err != nil {
 		panic(err)
 	}
-	ImageTile = ebiten.NewImageFromImage(img)
 
 	// TileWithCrack
-	img, _, err = image.Decode(bytes.NewReader(images.Tile))
+	ImageTileWithCrack, _, err = image.Decode(bytes.NewReader(images.TileWithCrack))
 	if err != nil {
 		panic(err)
 	}
-	ImageTileWithCrack = ebiten.NewImageFromImage(img)
 }
 
 type Tile struct {
@@ -40,7 +37,7 @@ type Tile struct {
 	X       float64
 }
 
-func NewTile(scale *float64, tile *ebiten.Image) *Tile {
+func NewTile(scale *float64, tile image.Image) *Tile {
 	return &Tile{
 		Image: ebiten.NewImageFromImage(tile),
 		Options: &ebiten.DrawImageOptions{

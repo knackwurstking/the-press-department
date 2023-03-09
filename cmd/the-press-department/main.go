@@ -13,7 +13,7 @@ func main() {
 	ebiten.SetWindowResizingMode(ebiten.WindowResizingModeEnabled)
 	ebiten.SetWindowTitle("The Press Department")
 
-	if err := ebiten.RunGame(game.NewGame()); err != nil {
+	if err := ebiten.RunGame(game.NewGame(game.DefaultScale)); err != nil {
 		log.Fatalf("Run game failed: %s", err.Error())
 	}
 }
