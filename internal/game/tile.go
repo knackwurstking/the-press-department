@@ -10,18 +10,27 @@ import (
 )
 
 var (
-	UrbanDoveActive *ebiten.Image
+	ImageTile          *ebiten.Image
+	ImageTileWithCrack *ebiten.Image
 )
 
 func init() {
 	var err error
 	var img image.Image
-	img, _, err = image.Decode(bytes.NewReader(images.UrbanDoveActive))
+
+	// Tile
+	img, _, err = image.Decode(bytes.NewReader(images.Tile))
 	if err != nil {
 		panic(err)
 	}
+	ImageTile = ebiten.NewImageFromImage(img)
 
-	UrbanDoveActive = ebiten.NewImageFromImage(img)
+	// TileWithCrack
+	img, _, err = image.Decode(bytes.NewReader(images.Tile))
+	if err != nil {
+		panic(err)
+	}
+	ImageTileWithCrack = ebiten.NewImageFromImage(img)
 }
 
 type Tile struct {
