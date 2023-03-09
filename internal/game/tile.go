@@ -6,13 +6,11 @@ import (
 	_ "image/jpeg"
 	"the-press-department/internal/images"
 
-	"image/color"
-
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
 var (
-	urbanDoveActive *ebiten.Image
+	UrbanDoveActive *ebiten.Image
 )
 
 func init() {
@@ -23,24 +21,22 @@ func init() {
 		panic(err)
 	}
 
-	urbanDoveActive = ebiten.NewImageFromImage(img)
+	UrbanDoveActive = ebiten.NewImageFromImage(img)
 }
 
 type Tile struct {
 	Image   *ebiten.Image
 	Options *ebiten.DrawImageOptions
-	Color   color.Color
 	Scale   *float64
 	X       float64
 }
 
-func NewTile(scale *float64) *Tile {
+func NewTile(scale *float64, tile *ebiten.Image) *Tile {
 	return &Tile{
-		Image: ebiten.NewImageFromImage(urbanDoveActive),
+		Image: ebiten.NewImageFromImage(tile),
 		Options: &ebiten.DrawImageOptions{
 			GeoM: ebiten.GeoM{},
 		},
-		Color: color.RGBA{0, 0, 0, 255},
 		Scale: scale,
 		X:     0,
 	}
