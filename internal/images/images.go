@@ -5,6 +5,9 @@ import (
 )
 
 var (
+	//go:embed ground-0.png
+	Ground []byte
+
 	//go:embed tile-0.png
 	Tile []byte
 
