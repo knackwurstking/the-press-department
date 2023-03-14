@@ -1,12 +1,14 @@
 package game
 
 import (
+	_ "image/jpeg"
+
 	"bytes"
 	"image"
-	_ "image/jpeg"
-	"the-press-department/internal/images"
 
 	"github.com/hajimehoshi/ebiten/v2"
+
+	"the-press-department/internal/images"
 )
 
 var (
@@ -58,11 +60,11 @@ func (t *Tile) Draw(screen *ebiten.Image, x, y float64) {
 }
 
 func (t *Tile) GetHeight() float64 {
-	_, height := t.Image.Size()
-	return float64(height) * *t.scale
+	_, h := t.Image.Size()
+	return float64(h) * *t.scale
 }
 
 func (t *Tile) GetWidth() float64 {
-	width, _ := t.Image.Size()
-	return float64(width) * *t.scale
+	w, _ := t.Image.Size()
+	return float64(w) * *t.scale
 }
