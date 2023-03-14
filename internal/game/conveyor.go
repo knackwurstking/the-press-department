@@ -12,6 +12,7 @@ type Conveyor struct {
 	rollTypes  [3]Sprite
 	rolls      []SpriteCoord
 	scale      *float64
+	sprite     Sprite
 }
 
 func NewConveyor(scale *float64, hzMultiply float64) Conveyor {
@@ -29,18 +30,18 @@ func NewConveyor(scale *float64, hzMultiply float64) Conveyor {
 
 func (c *Conveyor) Draw(screen *ebiten.Image) {
 	for i := 0; i < len(c.rolls); i++ {
-		c.rolls[i].Sprite.Draw(screen, c.rolls[i].X, c.rolls[i].Y)
+		c.sprite.Draw(screen, c.rolls[i].X, c.rolls[i].Y)
 	}
 }
 
 func (c *Conveyor) Update(prev, current time.Time, x, y, size float64) {
-	sprite := c.getSprite(prev, current)
-	w := sprite.GetWidth()
+	c.SetSprite(prev, current)
+	w := c.sprite.GetWidth()
 	padding := w * 3
 
 	c.rolls = make([]SpriteCoord, 0)
-	for position := x; x <= size; position += w + padding {
-		c.rolls = append(c.rolls, SpriteCoord{Sprite: sprite, X: position, Y: y})
+	for p := x; p <= size; p += (w + padding) {
+		c.rolls = append(c.rolls, SpriteCoord{X: float64(p), Y: y})
 	}
 }
 
@@ -48,7 +49,7 @@ func (c *Conveyor) GetHeight() float64 {
 	return c.rollTypes[0].GetHeight()
 }
 
-func (c *Conveyor) getSprite(prev, current time.Time) Sprite {
+func (c *Conveyor) SetSprite(prev, current time.Time) {
 	// TODO: get sprite sheet based on the Engines `Hz` and the prev and current values
-	return c.rollTypes[0]
+	c.sprite = c.rollTypes[0]
 }

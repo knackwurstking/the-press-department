@@ -13,6 +13,5 @@ type Sprite interface {
 }
 
 type SpriteCoord struct {
-	Sprite Sprite
-	X, Y   float64
+	X, Y float64
 }
