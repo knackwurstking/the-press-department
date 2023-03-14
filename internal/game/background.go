@@ -28,43 +28,33 @@ type Background struct {
 	Image   *ebiten.Image
 	Options *ebiten.DrawImageOptions
 
-	Scale float64
-
-	w           int
-	h           int
-	imageWidth  float64
-	imageHeight float64
-	col         int
-	row         int
-	r           int
-	c           int
+	scale float64
 }
 
-func NewBackground(scale float64, ground image.Image) *Background {
-	return &Background{
+func NewBackground(scale float64, ground image.Image) Background {
+	return Background{
 		Image: ebiten.NewImageFromImage(ground),
 		Options: &ebiten.DrawImageOptions{
 			GeoM: ebiten.GeoM{},
 		},
-		Scale: scale,
+		scale: scale,
 	}
 }
 
 func (b *Background) Draw(screen *ebiten.Image, screenWidth, screenHeight float64) {
-	b.w, b.h = b.Image.Size()
-	b.imageWidth = float64(b.w) * b.Scale
-	b.imageHeight = float64(b.h) * b.Scale
+	w, h := b.Image.Size()
+	imageWidth := float64(w) * b.scale
+	imageHeight := float64(h) * b.scale
+	col := int(math.Ceil(screenWidth / imageWidth))
+	row := int(math.Ceil(screenHeight / imageHeight))
 
-	b.col = int(math.Ceil(screenWidth / b.imageWidth))
-	b.row = int(math.Ceil(screenHeight / b.imageHeight))
-
-	for b.r = 0; b.r < b.row; b.r++ {
-		for b.c = 0; b.c < b.col; b.c++ {
+	for r := 0; r < row; r++ {
+		for c := 0; c < col; c++ {
 			b.Options.GeoM.Reset()
-			b.Options.GeoM.Scale(b.Scale, b.Scale)
+			b.Options.GeoM.Scale(b.scale, b.scale)
 			b.Options.GeoM.Translate(
-				b.imageWidth*float64(b.c),
-				b.imageHeight*float64(b.r),
+				imageWidth*float64(c),
+				imageHeight*float64(r),
 			)
 			screen.DrawImage(b.Image, b.Options)
 		}

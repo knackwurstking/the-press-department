@@ -5,8 +5,8 @@ import "github.com/hajimehoshi/ebiten/v2"
 // Input reads for example drag input like up/down (touch support for mobile)
 type Input struct{}
 
-func NewInput() *Input {
-	return &Input{}
+func NewInput() Input {
+	return Input{}
 }
 
 func (*Input) Dir() (key ebiten.Key, ok bool) {

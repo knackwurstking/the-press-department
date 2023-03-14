@@ -3,13 +3,13 @@ package game
 import "github.com/hajimehoshi/ebiten/v2"
 
 type Conveyor struct {
-	Scale *float64
+	scale *float64
 }
 
-func NewConveyor(scale *float64) *Conveyor {
+func NewConveyor(scale *float64) Conveyor {
 	// TODO: need some game assets first (to simulate a running rb)
-	return &Conveyor{
-		Scale: scale,
+	return Conveyor{
+		scale: scale,
 	}
 }
 

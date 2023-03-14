@@ -18,19 +18,17 @@ var (
 // Press 			- produces tiles and outputs each tile to the Engines
 // Engines 		- transports the tiles (from the Press) from A to B
 type Game struct {
-	Input        *Input
-	Background   *Background
-	Engines      *Engines
+	Input        Input
+	Background   Background
+	Engines      Engines
 	ScreenWidth  int
 	ScreenHeight int
 
 	scale float64
-
-	_debugCounter string
 }
 
 func NewGame(scale float64) *Game {
-	game := &Game{
+	game := Game{
 		Input:      NewInput(),
 		Background: NewBackground(scale, ImageGround),
 		Engines:    NewEngines(),
@@ -38,9 +36,9 @@ func NewGame(scale float64) *Game {
 	}
 
 	// pass game pointer to the engine
-	game.Engines.Game = game
+	game.Engines.Game = &game
 
-	return game
+	return &game
 }
 
 // Draw implements ebiten.Game
@@ -62,9 +60,9 @@ func (g *Game) Layout(outsideWidth int, outsideHeight int) (int, int) {
 
 // Update implements ebiten.Game
 func (g *Game) Update() error {
-	if g.Engines.Scale != g.scale {
-		g.Engines.Scale = g.scale
-		g.Background.Scale = g.scale
+	if g.Engines.scale != g.scale {
+		g.Engines.scale = g.scale
+		g.Background.scale = g.scale
 	}
 
 	return g.Engines.Update(g.Input)
@@ -80,33 +78,33 @@ func (g *Game) SetScale(f float64) {
 
 func (g *Game) debugEngines(screen *ebiten.Image) {
 	// 1. Row
-	g._debugCounter = fmt.Sprintf(
+	counter := fmt.Sprintf(
 		"Press Speed: %.1fh",
 		g.Engines.BPM,
 	)
 
 	ebitenutil.DebugPrintAt(
 		screen,
-		g._debugCounter,
-		g.ScreenWidth-(len(g._debugCounter)*6+2),
+		counter,
+		g.ScreenWidth-(len(counter)*6+2),
 		0,
 	)
 
 	// 2. Row
-	g._debugCounter = fmt.Sprintf(
+	counter = fmt.Sprintf(
 		"Tiles Produced: %d",
 		g.Engines.tilesCount,
 	)
 
 	ebitenutil.DebugPrintAt(
 		screen,
-		g._debugCounter,
-		g.ScreenWidth-(len(g._debugCounter)*6+2),
+		counter,
+		g.ScreenWidth-(len(counter)*6+2),
 		16,
 	)
 
 	// 3. Row
-	g._debugCounter = fmt.Sprintf(
+	counter = fmt.Sprintf(
 		"RB: %d [%.1f hz]",
 		len(g.Engines.tiles),
 		g.Engines.Hz,
@@ -114,8 +112,8 @@ func (g *Game) debugEngines(screen *ebiten.Image) {
 
 	ebitenutil.DebugPrintAt(
 		screen,
-		g._debugCounter,
-		g.ScreenWidth-(len(g._debugCounter)*6+2),
+		counter,
+		g.ScreenWidth-(len(counter)*6+2),
 		32,
 	)
 }
