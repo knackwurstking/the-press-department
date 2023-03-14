@@ -7,21 +7,23 @@ import (
 )
 
 type Conveyor struct {
-	hz         float64
-	hzMultiply float64
-	rollTypes  [3]Sprite
-	rolls      []SpriteCoord
-	scale      *float64
-	sprite     Sprite
+	hz               float64
+	hzMultiply       float64
+	rollTypes        [3]Sprite
+	rolls            []SpriteCoord
+	scale            *float64
+	sprite           Sprite
+	lastSpriteRender time.Time
+	nextSprite       int
 }
 
 func NewConveyor(scale *float64, hzMultiply float64) Conveyor {
 	return Conveyor{
 		hzMultiply: hzMultiply,
 		rollTypes: [3]Sprite{
-			NewRoll(scale, ImageRoll0),
-			NewRoll(scale, ImageRoll1),
 			NewRoll(scale, ImageRoll2),
+			NewRoll(scale, ImageRoll1),
+			NewRoll(scale, ImageRoll0),
 		},
 		rolls: make([]SpriteCoord, 0),
 		scale: scale,
@@ -50,6 +52,14 @@ func (c *Conveyor) GetHeight() float64 {
 }
 
 func (c *Conveyor) SetSprite(prev, current time.Time) {
-	// TODO: get sprite sheet based on the Engines `Hz` and the prev and current values
-	c.sprite = c.rollTypes[0]
+	if current.Sub(c.lastSpriteRender).Seconds()*(c.hz*c.hzMultiply)*(*c.scale*10) > (60 / (c.hz)) {
+		c.lastSpriteRender = current
+
+		c.nextSprite += 1
+		if c.nextSprite >= len(c.rollTypes) {
+			c.nextSprite = 0
+		}
+	}
+
+	c.sprite = c.rollTypes[c.nextSprite]
 }

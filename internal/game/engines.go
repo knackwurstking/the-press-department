@@ -27,7 +27,7 @@ type Engines struct {
 	rand *rand.Rand
 }
 
-func NewEngines() Engines {
+func NewEngines(scale float64) Engines {
 	e := Engines{
 		BPM: 6,
 		TilesToUse: []*ebiten.Image{
@@ -36,9 +36,9 @@ func NewEngines() Engines {
 			ImageTile,
 			ImageTileWithCrack,
 		},
-		hz:         8,
+		hz:         7, // NOTE: cycles/seconds
 		hzMultiply: 2.5,
-		scale:      DefaultScale,
+		scale:      scale,
 		lastTile:   time.Now(),
 		lastUpdate: time.Now(),
 		rand:       rand.New(rand.NewSource(time.Now().Unix())),
@@ -90,6 +90,8 @@ func (e *Engines) GetHzMultiply() float64 {
 }
 
 func (e *Engines) updateConveyor(next time.Time) {
+	e.Conveyor.hz = e.hz
+	e.Conveyor.hzMultiply = e.hzMultiply
 	e.Conveyor.Update(
 		e.lastUpdate, next,
 		0, // x
@@ -102,7 +104,7 @@ func (e *Engines) updatePress(next time.Time) {
 	// check time and get a tile based on BPM
 	if e.lastTile.Add(time.Microsecond*time.Duration(60/e.BPM*1000000)).UnixMicro() <= next.UnixMicro() {
 		// get a new tile here
-		e.tiles = append(e.tiles, NewTile(&e.scale, e.randomTile()))
+		e.tiles = append(e.tiles, NewTile(e.scale, e.randomTile()))
 
 		e.tilesCount += 1
 
@@ -114,7 +116,7 @@ func (e *Engines) updatePress(next time.Time) {
 func (e *Engines) updateTiles(next time.Time) {
 	for i := 0; i < len(e.tiles); i++ {
 		// update x position (based on time since last update)
-		e.tiles[i].X += (float64(next.Sub(e.lastUpdate).Seconds()) * (e.hzMultiply * e.hz)) * (*e.tiles[i].scale * 10)
+		e.tiles[i].X += (float64(next.Sub(e.lastUpdate).Seconds()) * (e.hzMultiply * e.hz)) * (e.tiles[i].scale * 10)
 
 		if e.tiles[i].X >= (float64(e.Game.ScreenWidth) + e.tiles[i].GetWidth()) {
 			e.tiles = e.tiles[i+1:]

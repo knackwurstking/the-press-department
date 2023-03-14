@@ -8,7 +8,7 @@ import (
 )
 
 var (
-	DefaultScale float64 = 0.15
+	DefaultScale float64 = 0.1
 )
 
 // Game controls all the game logic
@@ -31,7 +31,7 @@ func NewGame(scale float64) *Game {
 	game := Game{
 		Input:      NewInput(),
 		Background: NewBackground(scale, ImageGround),
-		Engines:    NewEngines(),
+		Engines:    NewEngines(scale),
 		scale:      scale,
 	}
 
@@ -73,6 +73,7 @@ func (g *Game) GetScale() float64 {
 }
 
 func (g *Game) SetScale(f float64) {
+	// TODO: set scale
 	g.scale = f
 }
 
