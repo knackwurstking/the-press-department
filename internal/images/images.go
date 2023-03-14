@@ -14,6 +14,9 @@ var (
 	//go:embed tile-1.png
 	TileWithCrack []byte
 
+	//go:embed roll-asset-x6-width.png
+	RollAsset []byte
+
 	//go:embed roll-0.1.png
 	Roll0 []byte
 
