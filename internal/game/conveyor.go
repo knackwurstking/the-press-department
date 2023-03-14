@@ -3,12 +3,19 @@ package game
 import "github.com/hajimehoshi/ebiten/v2"
 
 type Conveyor struct {
-	scale *float64
+	rollTypes [3]Roll
+	rolls     []Roll
+	scale     *float64
 }
 
 func NewConveyor(scale *float64) Conveyor {
-	// TODO: need some game assets first (to simulate a running rb)
 	return Conveyor{
+		rollTypes: [3]Roll{
+			NewRoll(scale, ImageRoll0),
+			NewRoll(scale, ImageRoll1),
+			NewRoll(scale, ImageRoll2),
+		},
+		rolls: make([]Roll, 0),
 		scale: scale,
 	}
 }
@@ -18,6 +25,5 @@ func (c *Conveyor) Draw(screen *ebiten.Image, x, y, width, height float64) {
 }
 
 func (c *Conveyor) GetHeight() float64 {
-	// TODO: get height from image assets (only rollers for now)
-	return 0
+	return c.rollTypes[0].GetHeight()
 }
