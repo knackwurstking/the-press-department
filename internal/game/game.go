@@ -107,7 +107,7 @@ func (g *Game) debugEngines(screen *ebiten.Image) {
 	counter = fmt.Sprintf(
 		"RB: %d [%.1f hz]",
 		len(g.Engines.tiles),
-		g.Engines.Hz,
+		g.Engines.GetHz(),
 	)
 
 	ebitenutil.DebugPrintAt(

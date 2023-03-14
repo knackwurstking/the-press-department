@@ -1,28 +1,29 @@
 package game
 
-import "github.com/hajimehoshi/ebiten/v2"
+import (
+	"time"
+
+	"github.com/hajimehoshi/ebiten/v2"
+)
 
 type Conveyor struct {
-	rollTypes [3]Sprite
-	rolls     []SpriteCoord
-	scale     *float64
-
-	x, y, width, height float64
+	hz         float64
+	hzMultiply float64
+	rollTypes  [3]Sprite
+	rolls      []SpriteCoord
+	scale      *float64
 }
 
-func NewConveyor(scale *float64, x, y, width, height float64) Conveyor {
+func NewConveyor(scale *float64, hzMultiply float64) Conveyor {
 	return Conveyor{
+		hzMultiply: hzMultiply,
 		rollTypes: [3]Sprite{
 			NewRoll(scale, ImageRoll0),
 			NewRoll(scale, ImageRoll1),
 			NewRoll(scale, ImageRoll2),
 		},
-		rolls:  make([]SpriteCoord, 0),
-		scale:  scale,
-		x:      x,
-		y:      y,
-		width:  width,
-		height: height,
+		rolls: make([]SpriteCoord, 0),
+		scale: scale,
 	}
 }
 
@@ -32,14 +33,14 @@ func (c *Conveyor) Draw(screen *ebiten.Image) {
 	}
 }
 
-func (c *Conveyor) Update() {
-	sprite := c.getSprite()
+func (c *Conveyor) Update(prev, current time.Time, x, y, size float64) {
+	sprite := c.getSprite(prev, current)
 	w := sprite.GetWidth()
-	p := w * 3 // padding
+	padding := w * 3
 
 	c.rolls = make([]SpriteCoord, 0)
-	for x := c.x; x <= c.width; x += w + p {
-		c.rolls = append(c.rolls, SpriteCoord{Sprite: sprite, X: x, Y: c.y})
+	for position := x; x <= size; position += w + padding {
+		c.rolls = append(c.rolls, SpriteCoord{Sprite: sprite, X: position, Y: y})
 	}
 }
 
@@ -47,6 +48,7 @@ func (c *Conveyor) GetHeight() float64 {
 	return c.rollTypes[0].GetHeight()
 }
 
-func (c *Conveyor) getSprite() Sprite {
+func (c *Conveyor) getSprite(prev, current time.Time) Sprite {
+	// TODO: get sprite sheet based on the Engines `Hz` and the prev and current values
 	return c.rollTypes[0]
 }
