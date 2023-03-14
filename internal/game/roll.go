@@ -54,7 +54,7 @@ func NewRoll(scale *float64, roll *ebiten.Image) Roll {
 	}
 }
 
-func (r *Roll) Draw(screen *ebiten.Image, x, y float64) {
+func (r Roll) Draw(screen *ebiten.Image, x, y float64) {
 	r.Options.GeoM.Reset()
 	r.Options.GeoM.Scale(*r.scale, *r.scale)
 	r.Options.GeoM.Translate(x, y)
@@ -62,12 +62,12 @@ func (r *Roll) Draw(screen *ebiten.Image, x, y float64) {
 	screen.DrawImage(r.Image, r.Options)
 }
 
-func (r *Roll) GetHeight() float64 {
+func (r Roll) GetHeight() float64 {
 	_, h := r.Image.Size()
 	return float64(h) * *r.scale
 }
 
-func (r *Roll) GetWidth() float64 {
+func (r Roll) GetWidth() float64 {
 	w, _ := r.Image.Size()
 	return float64(w) * *r.scale
 }
