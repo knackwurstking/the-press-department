@@ -101,11 +101,11 @@ func (e *Engines) updatePress(next time.Time) {
 }
 
 func (e *Engines) updateTiles(next time.Time) {
-	for i, t := range e.tiles {
+	for i := 0; i < len(e.tiles); i++ {
 		// update x position (based on time since last update)
-		t.X += (float64(next.Sub(e.lastUpdate).Seconds()) * (e.HzMultiply * e.Hz)) * (*t.scale * 10)
+		e.tiles[i].X += (float64(next.Sub(e.lastUpdate).Seconds()) * (e.HzMultiply * e.Hz)) * (*e.tiles[i].scale * 10)
 
-		if t.X >= (float64(e.Game.ScreenWidth) + t.GetWidth()) {
+		if e.tiles[i].X >= (float64(e.Game.ScreenWidth) + e.tiles[i].GetWidth()) {
 			e.tiles = e.tiles[i+1:]
 			break
 		}
