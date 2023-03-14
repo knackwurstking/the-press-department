@@ -34,6 +34,8 @@ func NewEngines() Engines {
 		HzMultiply: 2.5,
 		TilesToUse: []*ebiten.Image{
 			ImageTile,
+			ImageTile,
+			ImageTile,
 			ImageTileWithCrack,
 		},
 		scale:      DefaultScale,
