@@ -58,23 +58,16 @@ func (e *Engines) Draw(screen *ebiten.Image) {
 	for _, tile := range e.tiles {
 		tile.Draw(
 			screen,
-			float64(e.Game.ScreenWidth)-tile.X, // x - start right
+			float64(e.Game.ScreenWidth), // x - start right
 			float64(e.Game.ScreenHeight)/2-(tile.GetHeight()/2), // y - center
 		)
 	}
 }
 
 func (e *Engines) Update(input Input) error {
-	swipe, ok := input.Dir(e.tiles)
+	ok := input.Dir(e.tiles) // TODO: work in progress (finish Input first)
 	if ok {
-		switch swipe.GetType() {
-		case SwipeUp:
-			// TODO: Do something here...
-			log.Println("User swiped up...")
-		case SwipeDown:
-			// TODO: Do something here...
-			log.Println("User swiped down..")
-		}
+		log.Println("user input detected?")
 	}
 
 	// update existing tile positions
@@ -117,7 +110,10 @@ func (e *Engines) updatePress(next time.Time) {
 	// check time and get a tile based on BPM
 	if e.lastTile.Add(time.Microsecond*time.Duration(60/e.BPM*1000000)).UnixMicro() <= next.UnixMicro() {
 		// get a new tile here
-		e.tiles = append(e.tiles, NewTile(e.scale, e.randomTile()))
+		tile := NewTile(e.scale, e.randomTile())
+		tile.Y = float64(e.Game.ScreenWidth) - (tile.GetHeight() / 2)
+
+		e.tiles = append(e.tiles, tile)
 
 		e.tilesCount += 1
 
@@ -129,7 +125,7 @@ func (e *Engines) updatePress(next time.Time) {
 func (e *Engines) updateTiles(next time.Time) {
 	for i := 0; i < len(e.tiles); i++ {
 		// update x position (based on time since last update)
-		e.tiles[i].X += e.calcR(next)
+		e.tiles[i].X += float64(e.Game.ScreenWidth) - e.calcR(next)
 
 		if e.tiles[i].X >= (float64(e.Game.ScreenWidth) + e.tiles[i].GetWidth()) {
 			e.tiles = e.tiles[i+1:]

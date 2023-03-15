@@ -35,7 +35,9 @@ func init() {
 type Tile struct {
 	Image   *ebiten.Image
 	Options *ebiten.DrawImageOptions
-	X       float64
+
+	X float64
+	Y float64
 
 	scale float64
 }
@@ -51,10 +53,10 @@ func NewTile(scale float64, tile *ebiten.Image) *Tile {
 	}
 }
 
-func (t *Tile) Draw(screen *ebiten.Image, x, y float64) {
+func (t *Tile) Draw(screen *ebiten.Image) {
 	t.Options.GeoM.Reset()
 	t.Options.GeoM.Scale(t.scale, t.scale)
-	t.Options.GeoM.Translate(x, y)
+	t.Options.GeoM.Translate(t.X, t.Y)
 
 	screen.DrawImage(t.Image, t.Options)
 }
