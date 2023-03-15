@@ -90,12 +90,10 @@ func (e *Engines) GetHzMultiply() float64 {
 }
 
 func (e *Engines) updateConveyor(next time.Time) {
-	r := (float64(next.Sub(e.lastUpdate).Seconds()) * (e.hzMultiply * e.hz)) * (*e.Conveyor.scale * 10)
-
 	e.Conveyor.hz = e.hz
 	e.Conveyor.hzMultiply = e.hzMultiply
 	e.Conveyor.Update(
-		r,
+		e.calcR(next),
 		0, // x
 		float64(e.Game.ScreenHeight)/2-(e.Conveyor.GetHeight()/2), // y
 		float64(e.Game.ScreenWidth),                               // width
@@ -118,14 +116,17 @@ func (e *Engines) updatePress(next time.Time) {
 func (e *Engines) updateTiles(next time.Time) {
 	for i := 0; i < len(e.tiles); i++ {
 		// update x position (based on time since last update)
-		r := (float64(next.Sub(e.lastUpdate).Seconds()) * (e.hzMultiply * e.hz)) * (e.tiles[i].scale * 10)
-		e.tiles[i].X += r
+		e.tiles[i].X += e.calcR(next)
 
 		if e.tiles[i].X >= (float64(e.Game.ScreenWidth) + e.tiles[i].GetWidth()) {
 			e.tiles = e.tiles[i+1:]
 			break
 		}
 	}
+}
+
+func (e *Engines) calcR(next time.Time) float64 {
+	return (float64(next.Sub(e.lastUpdate).Seconds()) * (e.hzMultiply * e.hz)) * (e.scale * 10)
 }
 
 func (e *Engines) randomTile() *ebiten.Image {
