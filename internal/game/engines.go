@@ -36,7 +36,7 @@ func NewEngines(scale float64) Engines {
 			ImageTile,
 			ImageTileWithCrack,
 		},
-		hz:         7, // NOTE: cycles/seconds
+		hz:         8, // NOTE: cycles/seconds
 		hzMultiply: 2.5,
 		scale:      scale,
 		lastTile:   time.Now(),
@@ -90,10 +90,12 @@ func (e *Engines) GetHzMultiply() float64 {
 }
 
 func (e *Engines) updateConveyor(next time.Time) {
+	r := (float64(next.Sub(e.lastUpdate).Seconds()) * (e.hzMultiply * e.hz)) * (*e.Conveyor.scale * 10)
+
 	e.Conveyor.hz = e.hz
 	e.Conveyor.hzMultiply = e.hzMultiply
 	e.Conveyor.Update(
-		next,
+		r,
 		0, // x
 		float64(e.Game.ScreenHeight)/2-(e.Conveyor.GetHeight()/2), // y
 		float64(e.Game.ScreenWidth),                               // width
@@ -116,7 +118,8 @@ func (e *Engines) updatePress(next time.Time) {
 func (e *Engines) updateTiles(next time.Time) {
 	for i := 0; i < len(e.tiles); i++ {
 		// update x position (based on time since last update)
-		e.tiles[i].X += (float64(next.Sub(e.lastUpdate).Seconds()) * (e.hzMultiply * e.hz)) * (e.tiles[i].scale * 10)
+		r := (float64(next.Sub(e.lastUpdate).Seconds()) * (e.hzMultiply * e.hz)) * (e.tiles[i].scale * 10)
+		e.tiles[i].X += r
 
 		if e.tiles[i].X >= (float64(e.Game.ScreenWidth) + e.tiles[i].GetWidth()) {
 			e.tiles = e.tiles[i+1:]

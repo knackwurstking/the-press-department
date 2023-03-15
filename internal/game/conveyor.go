@@ -1,18 +1,16 @@
 package game
 
 import (
-	"time"
-
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
 type Conveyor struct {
-	hz               float64
-	hzMultiply       float64
-	rolls            []Coord
-	scale            *float64
-	sprite           *Roll
-	lastSpriteRender time.Time
+	hz         float64
+	hzMultiply float64
+	rolls      []Coord
+	scale      *float64
+	sprite     *Roll
+	r          float64
 }
 
 func NewConveyor(scale *float64, hzMultiply float64) Conveyor {
@@ -30,8 +28,8 @@ func (c *Conveyor) Draw(screen *ebiten.Image) {
 	}
 }
 
-func (c *Conveyor) Update(current time.Time, x, y, size float64) {
-	c.SetSprite(current)
+func (c *Conveyor) Update(r, x, y, size float64) {
+	c.SetSprite(r)
 	w, _ := c.sprite.GetAssetSize()
 	padding := w * 3
 
@@ -46,9 +44,11 @@ func (c *Conveyor) GetHeight() float64 {
 	return h
 }
 
-func (c *Conveyor) SetSprite(current time.Time) {
-	if current.Sub(c.lastSpriteRender).Seconds()*(c.hz*c.hzMultiply)*(*c.scale*10) > (60 / (c.hz)) {
-		c.lastSpriteRender = current
+func (c *Conveyor) SetSprite(r float64) {
+	c.r += r
+	w, _ := c.sprite.GetAssetSize()
+	if c.r >= w {
 		c.sprite.NextSprite()
+		c.r = 0
 	}
 }
