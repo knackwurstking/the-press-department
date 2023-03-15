@@ -1,18 +1,33 @@
 package game
 
-import "github.com/hajimehoshi/ebiten/v2"
+import (
+	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/hajimehoshi/ebiten/v2/inpututil"
+)
 
 // Input reads for example drag input like up/down (touch support for mobile)
-type Input struct{}
+type Input struct {
+	touchIDs []ebiten.TouchID
+}
 
 func NewInput() Input {
 	return Input{}
 }
 
-func (*Input) Dir() (key ebiten.Key, ok bool) {
-	// TODO: read input here... (Up/Down, start/end mouse drag up/down, start/end touch/swipe up/down)
+func (i *Input) Dir() (key ebiten.Key, ok bool) {
+	// TODO: catch drag (mouse and touch)...
+	if inpututil.IsMouseButtonJustPressed(ebiten.MouseButtonLeft) {
+		// ...
+	}
+
+	i.touchIDs = inpututil.AppendJustPressedTouchIDs(i.touchIDs[:0])
 	// ...
 
-	// no valid input
 	return
+}
+
+func (i *Input) IsSwipeUp() {
+}
+
+func (i *Input) IsSwipeDown() {
 }

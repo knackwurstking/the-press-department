@@ -64,6 +64,8 @@ func (e *Engines) Draw(screen *ebiten.Image) {
 }
 
 func (e *Engines) Update(input Input) error {
+	// TODO: get user input - if tile was dragged up or down
+
 	// update existing tile positions
 	next := time.Now()
 
