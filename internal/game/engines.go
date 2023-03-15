@@ -67,7 +67,7 @@ func (e *Engines) Draw(screen *ebiten.Image) {
 func (e *Engines) Update(input Input) error {
 	swipe, ok := input.Dir(e.tiles)
 	if ok {
-		switch swipe.Type {
+		switch swipe.GetType() {
 		case SwipeUp:
 			// TODO: Do something here...
 			log.Println("User swiped up...")
