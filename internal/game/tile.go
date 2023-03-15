@@ -40,8 +40,8 @@ type Tile struct {
 	scale float64
 }
 
-func NewTile(scale float64, tile *ebiten.Image) Tile {
-	return Tile{
+func NewTile(scale float64, tile *ebiten.Image) *Tile {
+	return &Tile{
 		Image: tile,
 		Options: &ebiten.DrawImageOptions{
 			GeoM: ebiten.GeoM{},

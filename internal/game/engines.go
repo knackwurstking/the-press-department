@@ -19,7 +19,7 @@ type Engines struct {
 	hzMultiply float64
 	scale      float64
 
-	tiles      []Tile
+	tiles      []*Tile
 	lastTile   time.Time
 	lastUpdate time.Time
 
@@ -65,7 +65,7 @@ func (e *Engines) Draw(screen *ebiten.Image) {
 }
 
 func (e *Engines) Update(input Input) error {
-	swipe, ok := input.Dir()
+	swipe, ok := input.Dir(e.tiles)
 	if ok {
 		switch swipe {
 		case SwipeUp:
