@@ -8,15 +8,28 @@ import (
 )
 
 var (
-	SwipeNone = Swipe(0)
-	SwipeUp   = Swipe(1)
-	SwipeDown = Swipe(2)
+	SwipeNone = SwipeType(0)
+	SwipeUp   = SwipeType(1)
+	SwipeDown = SwipeType(2)
 )
 
-type Swipe int
+type SwipeType int
+
+type SwipeTile struct {
+	Type SwipeType
+	Tile *Tile
+}
+
+func NewSwipeTile(t SwipeType, tile *Tile) *SwipeTile {
+	return &SwipeTile{
+		Type: t,
+		Tile: tile,
+	}
+}
 
 // Input reads for example drag input like up/down (touch support for mobile)
 type Input struct {
+	Game     *Game
 	touchIDs []ebiten.TouchID
 }
 
@@ -24,7 +37,7 @@ func NewInput() Input {
 	return Input{}
 }
 
-func (i *Input) Dir(tiles []*Tile) (Swipe, bool) {
+func (i *Input) Dir(tiles []*Tile) (*SwipeTile, bool) {
 	// TODO: catch drag (mouse and touch)...
 	if inpututil.IsMouseButtonJustPressed(ebiten.MouseButtonLeft) {
 		log.Println("Left mouse button pressed...")
@@ -36,6 +49,7 @@ func (i *Input) Dir(tiles []*Tile) (Swipe, bool) {
 		tile := i.checkForTile(float64(x), float64(y), tiles)
 		if tile != nil {
 			log.Printf("Got a tile at the cursors position (%d, %d) %#v", x, y, tile)
+			return NewSwipeTile(SwipeNone, tile), true
 		}
 	}
 
@@ -48,10 +62,11 @@ func (i *Input) Dir(tiles []*Tile) (Swipe, bool) {
 		tile := i.checkForTile(float64(x), float64(y), tiles)
 		if tile != nil {
 			log.Printf("Got a tile at touch position (%d, %d) %#v", x, y, tile)
+			return NewSwipeTile(SwipeNone, tile), true
 		}
 	}
 
-	return SwipeNone, false
+	return nil, false
 }
 
 func (i *Input) IsSwipeUp() bool {
@@ -64,7 +79,9 @@ func (i *Input) IsSwipeDown() bool {
 
 func (i *Input) checkForTile(x, y float64, tiles []*Tile) *Tile {
 	for _, tile := range tiles {
-		if tile.X >= x && x <= tile.GetWidth() {
+		txS := float64(i.Game.ScreenWidth) - tile.X
+		txE := float64(i.Game.ScreenWidth) - tile.X + tile.GetWidth()
+		if x >= txS && x <= txE {
 			return tile
 		}
 	}

@@ -37,6 +37,7 @@ func NewGame(scale float64) *Game {
 
 	// pass game pointer to the engine
 	game.Engines.Game = &game
+	game.Input.Game = &game
 
 	return &game
 }
