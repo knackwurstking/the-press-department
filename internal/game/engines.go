@@ -56,11 +56,7 @@ func (e *Engines) Draw(screen *ebiten.Image) {
 
 	// draw the tile with the given positions
 	for _, tile := range e.tiles {
-		tile.Draw(
-			screen,
-			float64(e.Game.ScreenWidth), // x - start right
-			float64(e.Game.ScreenHeight)/2-(tile.GetHeight()/2), // y - center
-		)
+		tile.Draw(screen)
 	}
 }
 
