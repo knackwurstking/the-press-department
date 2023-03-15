@@ -16,14 +16,22 @@ var (
 type SwipeType int
 
 type SwipeTile struct {
-	Type SwipeType
-	Tile *Tile
+	swipeType SwipeType
+	tile      *Tile
+}
+
+func (s *SwipeTile) GetType() SwipeType {
+	return s.swipeType
+}
+
+func (s *SwipeTile) GetTile() *Tile {
+	return s.tile
 }
 
 func NewSwipeTile(t SwipeType, tile *Tile) *SwipeTile {
 	return &SwipeTile{
-		Type: t,
-		Tile: tile,
+		swipeType: t,
+		tile:      tile,
 	}
 }
 
@@ -67,14 +75,6 @@ func (i *Input) Dir(tiles []*Tile) (*SwipeTile, bool) {
 	}
 
 	return nil, false
-}
-
-func (i *Input) IsSwipeUp() bool {
-	return false
-}
-
-func (i *Input) IsSwipeDown() bool {
-	return false
 }
 
 func (i *Input) checkForTile(x, y float64, tiles []*Tile) *Tile {
