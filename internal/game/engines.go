@@ -93,7 +93,7 @@ func (e *Engines) updateConveyor(next time.Time) {
 	e.Conveyor.hz = e.hz
 	e.Conveyor.hzMultiply = e.hzMultiply
 	e.Conveyor.Update(
-		e.lastUpdate, next,
+		next,
 		0, // x
 		float64(e.Game.ScreenHeight)/2-(e.Conveyor.GetHeight()/2), // y
 		float64(e.Game.ScreenWidth),                               // width

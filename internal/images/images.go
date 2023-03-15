@@ -14,15 +14,27 @@ var (
 	//go:embed tile-1.png
 	TileWithCrack []byte
 
-	//go:embed roll-asset-x6-width.png
-	RollAsset []byte
-
-	//go:embed roll-0.1.png
+	//go:embed roll-0_0.png
 	Roll0 []byte
 
-	//go:embed roll-0.2.png
+	//go:embed roll-0_1.png
 	Roll1 []byte
 
-	//go:embed roll-0.3.png
+	//go:embed roll-0_2.png
 	Roll2 []byte
+
+	//go:embed roll-0_3.png
+	Roll3 []byte
+
+	//go:embed roll-0_4.png
+	Roll4 []byte
+
+	//go:embed roll-0_5.png
+	Roll5 []byte
+
+	//go:embed roll-0_6.png
+	Roll6 []byte
+
+	//go:embed roll-0_7.png
+	Roll7 []byte
 )

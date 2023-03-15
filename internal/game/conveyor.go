@@ -9,24 +9,18 @@ import (
 type Conveyor struct {
 	hz               float64
 	hzMultiply       float64
-	rollTypes        [3]Sprite
-	rolls            []SpriteCoord
+	rolls            []Coord
 	scale            *float64
-	sprite           Sprite
+	sprite           *Roll
 	lastSpriteRender time.Time
-	nextSprite       int
 }
 
 func NewConveyor(scale *float64, hzMultiply float64) Conveyor {
 	return Conveyor{
 		hzMultiply: hzMultiply,
-		rollTypes: [3]Sprite{
-			NewRoll(scale, ImageRoll2),
-			NewRoll(scale, ImageRoll1),
-			NewRoll(scale, ImageRoll0),
-		},
-		rolls: make([]SpriteCoord, 0),
-		scale: scale,
+		rolls:      make([]Coord, 0),
+		scale:      scale,
+		sprite:     NewRoll(scale),
 	}
 }
 
@@ -36,30 +30,25 @@ func (c *Conveyor) Draw(screen *ebiten.Image) {
 	}
 }
 
-func (c *Conveyor) Update(prev, current time.Time, x, y, size float64) {
-	c.SetSprite(prev, current)
-	w := c.sprite.GetWidth()
+func (c *Conveyor) Update(current time.Time, x, y, size float64) {
+	c.SetSprite(current)
+	w, _ := c.sprite.GetAssetSize()
 	padding := w * 3
 
-	c.rolls = make([]SpriteCoord, 0)
+	c.rolls = make([]Coord, 0)
 	for p := x; p <= size; p += (w + padding) {
-		c.rolls = append(c.rolls, SpriteCoord{X: float64(p), Y: y})
+		c.rolls = append(c.rolls, Coord{X: float64(p), Y: y})
 	}
 }
 
 func (c *Conveyor) GetHeight() float64 {
-	return c.rollTypes[0].GetHeight()
+	_, h := c.sprite.GetAssetSize()
+	return h
 }
 
-func (c *Conveyor) SetSprite(prev, current time.Time) {
+func (c *Conveyor) SetSprite(current time.Time) {
 	if current.Sub(c.lastSpriteRender).Seconds()*(c.hz*c.hzMultiply)*(*c.scale*10) > (60 / (c.hz)) {
 		c.lastSpriteRender = current
-
-		c.nextSprite += 1
-		if c.nextSprite >= len(c.rollTypes) {
-			c.nextSprite = 0
-		}
+		c.sprite.NextSprite()
 	}
-
-	c.sprite = c.rollTypes[c.nextSprite]
 }
