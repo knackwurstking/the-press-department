@@ -1,6 +1,7 @@
 package game
 
 import (
+	"log"
 	"math/rand"
 	"time"
 
@@ -64,7 +65,17 @@ func (e *Engines) Draw(screen *ebiten.Image) {
 }
 
 func (e *Engines) Update(input Input) error {
-	// TODO: get user input - if tile was dragged up or down
+	swipe, ok := input.Dir()
+	if ok {
+		switch swipe {
+		case SwipeUp:
+			// TODO: Do something here...
+			log.Println("User swiped up...")
+		case SwipeDown:
+			// TODO: Do something here...
+			log.Println("User swiped down..")
+		}
+	}
 
 	// update existing tile positions
 	next := time.Now()
