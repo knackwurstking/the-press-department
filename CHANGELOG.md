@@ -14,4 +14,4 @@
 
 ## v0.0.4
 
-- Cleaned up game components: `Input`, `BackGround`, `Engines`
+- Cleaned up game components: `Input`, `BackGround`, `Engines`, `Conveyor`
