@@ -107,7 +107,9 @@ func (e *Engines) updatePress(next time.Time) {
 	if e.lastTile.Add(time.Microsecond*time.Duration(60/e.BPM*1000000)).UnixMicro() <= next.UnixMicro() {
 		// get a new tile here
 		tile := NewTile(e.scale, e.randomTile())
-		tile.Y = float64(e.Game.ScreenWidth) - (tile.GetHeight() / 2)
+
+		tile.X = float64(e.Game.ScreenWidth)
+		tile.Y = (float64(e.Game.ScreenHeight) / 2) - (tile.GetHeight() / 2)
 
 		e.tiles = append(e.tiles, tile)
 
@@ -121,9 +123,9 @@ func (e *Engines) updatePress(next time.Time) {
 func (e *Engines) updateTiles(next time.Time) {
 	for i := 0; i < len(e.tiles); i++ {
 		// update x position (based on time since last update)
-		e.tiles[i].X += float64(e.Game.ScreenWidth) - e.calcR(next)
+		e.tiles[i].X -= e.calcR(next)
 
-		if e.tiles[i].X >= (float64(e.Game.ScreenWidth) + e.tiles[i].GetWidth()) {
+		if e.tiles[i].X <= 0-e.tiles[i].GetWidth() {
 			e.tiles = e.tiles[i+1:]
 			break
 		}
