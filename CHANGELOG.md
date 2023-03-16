@@ -14,4 +14,5 @@
 
 ## v0.0.4
 
-- Cleaned up game components: `Input`, `BackGround`, `Engines`, `Conveyor`
+- Doing some code clean up
+- Adding `GameComponents` interface (`Input`, `BackGround`, `Engines`, `Conveyor`)
