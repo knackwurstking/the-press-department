@@ -5,6 +5,9 @@ import (
 )
 
 type Conveyor struct {
+	X float64
+	Y float64
+
 	hz         float64
 	hzMultiply float64
 	rolls      []Coord
@@ -13,13 +16,15 @@ type Conveyor struct {
 	r          float64
 }
 
-func NewConveyor(scale *float64, hzMultiply float64) Conveyor {
-	return Conveyor{
+func NewConveyor(scale *float64, hzMultiply float64) *Conveyor {
+	c := &Conveyor{
 		hzMultiply: hzMultiply,
 		rolls:      make([]Coord, 0),
 		scale:      scale,
 		sprite:     NewRoll(scale),
 	}
+
+	return c
 }
 
 func (c *Conveyor) Draw(screen *ebiten.Image) {
@@ -29,13 +34,16 @@ func (c *Conveyor) Draw(screen *ebiten.Image) {
 }
 
 func (c *Conveyor) Update(r, x, y, size float64) {
+	c.X = x
+	c.Y = y
+
 	c.SetSprite(r)
 	w, _ := c.sprite.GetAssetSize()
 	padding := w * 3
 
 	c.rolls = make([]Coord, 0)
-	for p := x; p <= size; p += (w + padding) {
-		c.rolls = append(c.rolls, Coord{X: float64(p), Y: y})
+	for p := c.X; p <= size; p += (w + padding) {
+		c.rolls = append(c.rolls, Coord{X: float64(p), Y: c.Y})
 	}
 }
 

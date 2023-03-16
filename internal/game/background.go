@@ -31,8 +31,8 @@ type Background struct {
 	scale float64
 }
 
-func NewBackground(scale float64, ground image.Image) Background {
-	return Background{
+func NewBackground(scale float64, ground image.Image) *Background {
+	return &Background{
 		Image: ebiten.NewImageFromImage(ground),
 		Options: &ebiten.DrawImageOptions{
 			GeoM: ebiten.GeoM{},

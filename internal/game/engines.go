@@ -1,7 +1,6 @@
 package game
 
 import (
-	"log"
 	"math/rand"
 	"time"
 
@@ -11,7 +10,7 @@ import (
 // Board holds all the data and coordinates (like tiles positions and engine positions)
 type Engines struct {
 	Game       *Game
-	Conveyor   Conveyor
+	Conveyor   *Conveyor
 	BPM        float64 // BPM are the bumps per minute (the press speed)
 	TilesToUse []*ebiten.Image
 
@@ -28,8 +27,8 @@ type Engines struct {
 	rand *rand.Rand
 }
 
-func NewEngines(scale float64) Engines {
-	e := Engines{
+func NewEngines(scale float64) *Engines {
+	e := &Engines{
 		BPM: 6,
 		TilesToUse: []*ebiten.Image{
 			ImageTile,
@@ -60,11 +59,10 @@ func (e *Engines) Draw(screen *ebiten.Image) {
 	}
 }
 
-func (e *Engines) Update(input Input) error {
-	ok := input.Dir(e.tiles) // TODO: work in progress (finish Input first)
-	if ok {
-		log.Println("user input detected?")
-	}
+func (e *Engines) Update(input *Input) error {
+	input.ThrowAwayPaddingTop = e.Conveyor.Y
+	input.ThrowAwayPaddingBottom = e.Conveyor.Y + e.Conveyor.GetHeight()
+	input.Update(e.tiles)
 
 	// update existing tile positions
 	next := time.Now()
@@ -121,13 +119,37 @@ func (e *Engines) updatePress(next time.Time) {
 }
 
 func (e *Engines) updateTiles(next time.Time) {
+	toRemove := make([]*Tile, 0)
 	for i := 0; i < len(e.tiles); i++ {
+		// check for thrownAway tiles firs
+		if e.tiles[i].IsThrownAway() {
+			// throw away animation (up if tiles y lower then the initial y set from the press)
+			pressY := (float64(e.Game.ScreenHeight) / 2) - (e.tiles[i].GetHeight() / 2)
+			r := float64(next.Sub(e.lastUpdate).Seconds()) * (250) * (e.scale * 10)
+			if e.tiles[i].Y <= pressY {
+				e.tiles[i].Y -= r
+			} else {
+				e.tiles[i].Y += r
+			}
+		}
+
 		// update x position (based on time since last update)
 		e.tiles[i].X -= e.calcR(next)
 
 		if e.tiles[i].X <= 0-e.tiles[i].GetWidth() {
 			e.tiles = e.tiles[i+1:]
 			break
+		} else if e.tiles[i].Y <= 0-e.tiles[i].GetHeight() || e.tiles[i].Y >= float64(e.Game.ScreenHeight) {
+			toRemove = append(toRemove, e.tiles[i])
+		}
+	}
+
+	for _, t := range toRemove {
+		for i, t2 := range e.tiles {
+			if t == t2 {
+				e.tiles = append(e.tiles[:i], e.tiles[i+1:]...)
+				break
+			}
 		}
 	}
 }

@@ -18,9 +18,9 @@ var (
 // Press 			- produces tiles and outputs each tile to the Engines
 // Engines 		- transports the tiles (from the Press) from A to B
 type Game struct {
-	Input        Input
-	Background   Background
-	Engines      Engines
+	Input        *Input
+	Background   *Background
+	Engines      *Engines
 	ScreenWidth  int
 	ScreenHeight int
 

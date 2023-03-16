@@ -40,6 +40,9 @@ type Tile struct {
 	Y float64
 
 	scale float64
+
+	dragFn     func(tileX float64, tileY float64) (x float64, y float64)
+	thrownAway bool
 }
 
 func NewTile(scale float64, tile *ebiten.Image) *Tile {
@@ -48,14 +51,20 @@ func NewTile(scale float64, tile *ebiten.Image) *Tile {
 		Options: &ebiten.DrawImageOptions{
 			GeoM: ebiten.GeoM{},
 		},
-		X:     0,
-		scale: scale,
+		X:      0,
+		scale:  scale,
+		dragFn: nil,
 	}
 }
 
 func (t *Tile) Draw(screen *ebiten.Image) {
 	t.Options.GeoM.Reset()
 	t.Options.GeoM.Scale(t.scale, t.scale)
+
+	if t.dragFn != nil {
+		t.X, t.Y = t.dragFn(t.X, t.Y)
+	}
+
 	t.Options.GeoM.Translate(t.X, t.Y)
 
 	screen.DrawImage(t.Image, t.Options)
@@ -69,4 +78,16 @@ func (t *Tile) GetHeight() float64 {
 func (t *Tile) GetWidth() float64 {
 	w, _ := t.Image.Size()
 	return float64(w) * t.scale
+}
+
+func (t *Tile) SetDragged(fn func(tileX float64, tileY float64) (x float64, y float64)) {
+	t.dragFn = fn
+}
+
+func (t *Tile) SetThrownAway() {
+	t.thrownAway = true
+}
+
+func (t *Tile) IsThrownAway() bool {
+	return t.thrownAway
 }
