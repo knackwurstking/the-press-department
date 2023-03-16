@@ -1,8 +1,6 @@
 package game
 
 import (
-	"log"
-
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
 )
@@ -38,15 +36,11 @@ func NewInput() *Input {
 }
 
 func (i *Input) Update(tiles []*Tile) bool {
+	// handle mouse input
 	if inpututil.IsMouseButtonJustPressed(ebiten.MouseButtonLeft) {
-		log.Println("Left mouse button pressed...")
-
 		x, y := ebiten.CursorPosition()
-
 		i.tile = i.checkForTile(float64(x), float64(y), tiles)
 		if i.tile != nil {
-			log.Printf("Got a tile at the cursors position (%d, %d) %#v", x, y, i.tile)
-
 			i.startY = float64(y)
 			i.lastY = i.startY
 			i.tile.SetDragged(func(tileX, tileY float64) (float64, float64) {
@@ -57,8 +51,6 @@ func (i *Input) Update(tiles []*Tile) bool {
 			})
 		}
 	} else if inpututil.IsMouseButtonJustReleased(ebiten.MouseButtonLeft) {
-		log.Println("release mouse button", i.tile)
-
 		if i.tile != nil {
 			i.tile.SetDragged(nil)
 
@@ -71,13 +63,22 @@ func (i *Input) Update(tiles []*Tile) bool {
 		}
 	}
 
-	// TODO: catch drag (touch)...
+	// Handle touch input
 	i.touchIDs = inpututil.AppendJustPressedTouchIDs(i.touchIDs[:0])
-	for _, touchID := range i.touchIDs {
+	if len(i.touchIDs) == 1 {
+		// single finger touch
+		touchID := i.touchIDs[0]
 		x, y := ebiten.TouchPosition(touchID)
-		tile := i.checkForTile(float64(x), float64(y), tiles)
-		if tile != nil {
-			log.Printf("Got a tile at touch position (%d, %d) %#v", x, y, tile)
+		i.tile = i.checkForTile(float64(x), float64(y), tiles)
+		if i.tile != nil {
+			i.startY = float64(y)
+			i.lastY = i.startY
+			i.tile.SetDragged(func(tileX, tileY float64) (float64, float64) {
+				_, _y := ebiten.TouchPosition(touchID)
+				tileY -= i.lastY - float64(_y)
+				i.lastY = float64(_y)
+				return tileX, tileY
+			})
 		}
 	}
 
