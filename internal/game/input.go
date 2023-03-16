@@ -54,8 +54,8 @@ func (i *Input) Update(tiles []*Tile) bool {
 		if i.tile != nil {
 			i.tile.SetDragged(nil)
 
-			if i.tile.Y+i.tile.GetHeight() > i.ThrowAwayPaddingBottom+(i.tile.GetHeight()/6) ||
-				i.tile.Y < i.ThrowAwayPaddingTop-(i.tile.GetHeight()/6) {
+			if i.tile.Y+i.tile.GetHeight() > i.ThrowAwayPaddingBottom ||
+				i.tile.Y < i.ThrowAwayPaddingTop {
 				i.tile.SetThrownAway()
 			}
 
@@ -65,7 +65,7 @@ func (i *Input) Update(tiles []*Tile) bool {
 
 	// Handle touch input
 	i.touchIDs = inpututil.AppendJustPressedTouchIDs(i.touchIDs[:0])
-	if len(i.touchIDs) == 1 {
+	if len(i.touchIDs) > 0 {
 		// single finger touch
 		touchID := i.touchIDs[0]
 		x, y := ebiten.TouchPosition(touchID)
@@ -73,8 +73,21 @@ func (i *Input) Update(tiles []*Tile) bool {
 		if i.tile != nil {
 			i.startY = float64(y)
 			i.lastY = i.startY
+
 			i.tile.SetDragged(func(tileX, tileY float64) (float64, float64) {
-				_, _y := ebiten.TouchPosition(touchID)
+				_x, _y := ebiten.TouchPosition(touchID)
+				if _x == 0 && _y == 0 {
+					i.tile.SetDragged(nil)
+
+					if i.tile.Y+i.tile.GetHeight() > i.ThrowAwayPaddingBottom ||
+						i.tile.Y < i.ThrowAwayPaddingTop {
+						i.tile.SetThrownAway()
+					}
+
+					i.tile = nil
+					return tileX, tileY
+				}
+
 				tileY -= i.lastY - float64(_y)
 				i.lastY = float64(_y)
 				return tileX, tileY

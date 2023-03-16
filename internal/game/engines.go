@@ -60,8 +60,8 @@ func (e *Engines) Draw(screen *ebiten.Image) {
 }
 
 func (e *Engines) Update(input *Input) error {
-	input.ThrowAwayPaddingTop = e.Conveyor.Y
-	input.ThrowAwayPaddingBottom = e.Conveyor.Y + e.Conveyor.GetHeight()
+	input.ThrowAwayPaddingTop = e.Conveyor.Y - 10
+	input.ThrowAwayPaddingBottom = e.Conveyor.Y + e.Conveyor.GetHeight() + 10
 	input.Update(e.tiles)
 
 	// update existing tile positions
