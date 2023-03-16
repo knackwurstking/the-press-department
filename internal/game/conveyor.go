@@ -4,6 +4,8 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
+// TODO: convert to GameComponent type
+
 type Conveyor struct {
 	X float64
 	Y float64
