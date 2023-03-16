@@ -68,9 +68,7 @@ func (i *Input) Dir(tiles []*Tile) bool {
 
 func (i *Input) checkForTile(x, y float64, tiles []*Tile) *Tile {
 	for _, tile := range tiles {
-		txS := float64(i.Game.ScreenWidth) - tile.X
-		txE := float64(i.Game.ScreenWidth) - tile.X + tile.GetWidth()
-		if x >= txS && x <= txE {
+		if x >= tile.X && x <= tile.X+tile.GetWidth() {
 			return tile
 		}
 	}
