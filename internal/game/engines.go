@@ -33,7 +33,7 @@ type Engines struct {
 	game   *Game
 	config *EnginesConfig
 
-	Conveyor *Conveyor
+	Conveyor *Conveyor // TODO: convert to GameComponent[ConveyorConfig]
 
 	tilesToUse []*ebiten.Image
 	lastTile   time.Time
