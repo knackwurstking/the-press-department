@@ -4,26 +4,49 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
-// TODO: convert to GameComponent type
+type ConveyorConfig struct {
+	Sprite     *RollSprite
+	Scale      *float64
+	Hz         float64
+	HzMultiply float64
 
-type Conveyor struct {
-	X float64
-	Y float64
+	X, Y float64
 
-	hz         float64
-	hzMultiply float64
-	rolls      []Coord
-	scale      *float64
-	sprite     *Roll
-	r          float64
+	// Update fields
+	rSum, r, x, y, size float64
 }
 
-func NewConveyor(scale *float64, hzMultiply float64) *Conveyor {
+func (c *ConveyorConfig) SetUpdateData(r, x, y, size float64) {
+	c.r = r
+	c.x = x
+	c.y = y
+	c.size = size
+}
+
+func (c *ConveyorConfig) SetSprite() {
+	c.rSum += c.r
+	w, _ := c.Sprite.GetAssetSize()
+	if c.rSum >= w {
+		c.Sprite.NextSprite()
+		c.rSum = 0
+	}
+}
+
+func (c *ConveyorConfig) GetHeight() float64 {
+	_, h := c.Sprite.GetAssetSize()
+	return h
+}
+
+type Conveyor struct {
+	game   *Game
+	config *ConveyorConfig
+	rolls  []Coord
+}
+
+func NewConveyor(config *ConveyorConfig) *Conveyor {
 	c := &Conveyor{
-		hzMultiply: hzMultiply,
-		rolls:      make([]Coord, 0),
-		scale:      scale,
-		sprite:     NewRoll(scale),
+		config: config,
+		rolls:  make([]Coord, 0),
 	}
 
 	return c
@@ -31,34 +54,34 @@ func NewConveyor(scale *float64, hzMultiply float64) *Conveyor {
 
 func (c *Conveyor) Draw(screen *ebiten.Image) {
 	for i := 0; i < len(c.rolls); i++ {
-		c.sprite.Draw(screen, c.rolls[i].X, c.rolls[i].Y)
+		c.config.Sprite.Draw(screen, c.rolls[i].X, c.rolls[i].Y)
 	}
 }
 
-func (c *Conveyor) Update(r, x, y, size float64) {
-	c.X = x
-	c.Y = y
+func (c *Conveyor) Update() error {
+	c.config.X = c.config.x
+	c.config.Y = c.config.y
 
-	c.SetSprite(r)
-	w, _ := c.sprite.GetAssetSize()
+	c.config.SetSprite()
+	w, _ := c.config.Sprite.GetAssetSize()
 	padding := w * 3
 
 	c.rolls = make([]Coord, 0)
-	for p := c.X; p <= size; p += (w + padding) {
-		c.rolls = append(c.rolls, Coord{X: float64(p), Y: c.Y})
+	for p := c.config.X; p <= c.config.size; p += (w + padding) {
+		c.rolls = append(c.rolls, Coord{X: float64(p), Y: c.config.Y})
 	}
+
+	return nil
 }
 
-func (c *Conveyor) GetHeight() float64 {
-	_, h := c.sprite.GetAssetSize()
-	return h
+func (c *Conveyor) SetGame(game *Game) {
+	c.game = game
 }
 
-func (c *Conveyor) SetSprite(r float64) {
-	c.r += r
-	w, _ := c.sprite.GetAssetSize()
-	if c.r >= w {
-		c.sprite.NextSprite()
-		c.r = 0
-	}
+func (c *Conveyor) SetConfig(config *ConveyorConfig) {
+	c.config = config
+}
+
+func (c *Conveyor) GetConfig() *ConveyorConfig {
+	return c.config
 }

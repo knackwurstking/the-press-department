@@ -33,7 +33,7 @@ type Engines struct {
 	game   *Game
 	config *EnginesConfig
 
-	Conveyor *Conveyor // TODO: convert to GameComponent[ConveyorConfig]
+	Conveyor GameComponent[ConveyorConfig]
 
 	tilesToUse []*ebiten.Image
 	lastTile   time.Time
@@ -56,7 +56,11 @@ func NewEngines(config *EnginesConfig) *Engines {
 		rand:       rand.New(rand.NewSource(time.Now().Unix())),
 	}
 
-	e.Conveyor = NewConveyor(&config.Scale, e.config.HzMultiply)
+	e.Conveyor = NewConveyor(&ConveyorConfig{
+		Scale:      &e.config.Scale,
+		HzMultiply: e.config.HzMultiply,
+		Sprite:     NewRollSprite(&e.config.Scale),
+	})
 
 	return e
 }
@@ -72,8 +76,8 @@ func (e *Engines) Draw(screen *ebiten.Image) {
 }
 
 func (e *Engines) Update() error {
-	e.config.Input.GetConfig().ThrowAwayPaddingTop = e.Conveyor.Y - 10
-	e.config.Input.GetConfig().ThrowAwayPaddingBottom = e.Conveyor.Y + e.Conveyor.GetHeight() + 10
+	e.config.Input.GetConfig().ThrowAwayPaddingTop = e.Conveyor.GetConfig().Y - 10
+	e.config.Input.GetConfig().ThrowAwayPaddingBottom = e.Conveyor.GetConfig().Y + e.Conveyor.GetConfig().GetHeight() + 10
 	e.config.Input.GetConfig().Tiles = e.config.tiles
 	_ = e.config.Input.Update()
 
@@ -107,14 +111,15 @@ func (e *Engines) GetConfig() *EnginesConfig {
 }
 
 func (e *Engines) updateConveyor(next time.Time) {
-	e.Conveyor.hz = e.config.Hz
-	e.Conveyor.hzMultiply = e.config.HzMultiply
-	e.Conveyor.Update(
-		e.calcR(next),
-		0, // x
-		float64(e.game.ScreenHeight)/2-(e.Conveyor.GetHeight()/2), // y
-		float64(e.game.ScreenWidth),                               // width
+	e.Conveyor.GetConfig().Hz = e.config.Hz
+	e.Conveyor.GetConfig().HzMultiply = e.config.HzMultiply
+	e.Conveyor.GetConfig().SetUpdateData(
+		e.calcR(next), // r
+		0,             // x
+		float64(e.game.ScreenHeight)/2-(e.Conveyor.GetConfig().GetHeight()/2), // y
+		float64(e.game.ScreenWidth), // width
 	)
+	_ = e.Conveyor.Update()
 }
 
 func (e *Engines) updatePress(next time.Time) {
