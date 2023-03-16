@@ -12,7 +12,7 @@
 
 - Handle user swipe (up or down) for throwing away a tile
 
-## v0.0.4
+## v0.0.4 [unreleased]
 
 - Doing some code clean up
 - Adding `GameComponents` interface (`Input`, `BackGround`, `Engines`, `Conveyor`)
