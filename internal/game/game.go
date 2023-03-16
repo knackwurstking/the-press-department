@@ -74,7 +74,6 @@ func (g *Game) GetScale() float64 {
 }
 
 func (g *Game) SetScale(f float64) {
-	// TODO: set scale
 	g.scale = f
 }
 
