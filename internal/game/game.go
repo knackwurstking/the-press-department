@@ -18,8 +18,8 @@ var (
 // Press 			- produces tiles and outputs each tile to the Engines
 // Engines 		- transports the tiles (from the Press) from A to B
 type Game struct {
-	Input        *Input
-	Background   *Background
+	Input        GameComponent[InputConfig]
+	Background   GameComponent[BackgroundConfig]
 	Engines      *Engines
 	ScreenWidth  int
 	ScreenHeight int
@@ -28,23 +28,27 @@ type Game struct {
 }
 
 func NewGame(scale float64) *Game {
-	game := Game{
-		Input:      NewInput(),
-		Background: NewBackground(scale, ImageGround),
-		Engines:    NewEngines(scale),
-		scale:      scale,
+	game := &Game{
+		Input: NewInput(&InputConfig{}),
+		Background: NewBackground(&BackgroundConfig{
+			Scale: scale,
+			Image: ebiten.NewImageFromImage(ImageGround),
+		}),
+		Engines: NewEngines(scale),
+		scale:   scale,
 	}
 
 	// pass game pointer to the engine
-	game.Engines.Game = &game
-	game.Input.Game = &game
+	game.Engines.Game = game
+	game.Background.SetGame(game)
+	game.Input.SetGame(game)
 
-	return &game
+	return game
 }
 
 // Draw implements ebiten.Game
 func (g *Game) Draw(screen *ebiten.Image) {
-	g.Background.Draw(screen, float64(g.ScreenWidth), float64(g.ScreenHeight))
+	g.Background.Draw(screen)
 	g.Engines.Draw(screen)
 
 	g.debugFPS(screen)
@@ -63,7 +67,7 @@ func (g *Game) Layout(outsideWidth int, outsideHeight int) (int, int) {
 func (g *Game) Update() error {
 	if g.Engines.scale != g.scale {
 		g.Engines.scale = g.scale
-		g.Background.scale = g.scale
+		g.Background.GetConfig().Scale = g.scale
 	}
 
 	return g.Engines.Update(g.Input)

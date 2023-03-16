@@ -23,40 +23,59 @@ func init() {
 	}
 }
 
-// Background for the game (just some shit with grey)
-type Background struct {
-	Image   *ebiten.Image
-	Options *ebiten.DrawImageOptions
-
-	scale float64
+type BackgroundConfig struct {
+	Scale float64
+	Image *ebiten.Image
 }
 
-func NewBackground(scale float64, ground image.Image) *Background {
+// Background for the game (just some shit with grey)
+type Background struct {
+	game         *Game
+	config       *BackgroundConfig
+	imageOptions *ebiten.DrawImageOptions
+}
+
+func NewBackground(config *BackgroundConfig) *Background {
 	return &Background{
-		Image: ebiten.NewImageFromImage(ground),
-		Options: &ebiten.DrawImageOptions{
+		config: config,
+		imageOptions: &ebiten.DrawImageOptions{
 			GeoM: ebiten.GeoM{},
 		},
-		scale: scale,
 	}
 }
 
-func (b *Background) Draw(screen *ebiten.Image, screenWidth, screenHeight float64) {
-	w, h := b.Image.Size()
-	imageWidth := float64(w) * b.scale
-	imageHeight := float64(h) * b.scale
-	col := int(math.Ceil(screenWidth / imageWidth))
-	row := int(math.Ceil(screenHeight / imageHeight))
+func (b *Background) Update() error {
+	return nil
+}
+
+func (b *Background) Draw(screen *ebiten.Image) {
+	w, h := b.config.Image.Size()
+	imageWidth := float64(w) * b.config.Scale
+	imageHeight := float64(h) * b.config.Scale
+	col := int(math.Ceil(float64(b.game.ScreenWidth) / imageWidth))
+	row := int(math.Ceil(float64(b.game.ScreenHeight) / imageHeight))
 
 	for r := 0; r < row; r++ {
 		for c := 0; c < col; c++ {
-			b.Options.GeoM.Reset()
-			b.Options.GeoM.Scale(b.scale, b.scale)
-			b.Options.GeoM.Translate(
+			b.imageOptions.GeoM.Reset()
+			b.imageOptions.GeoM.Scale(b.config.Scale, b.config.Scale)
+			b.imageOptions.GeoM.Translate(
 				imageWidth*float64(c),
 				imageHeight*float64(r),
 			)
-			screen.DrawImage(b.Image, b.Options)
+			screen.DrawImage(b.config.Image, b.imageOptions)
 		}
 	}
+}
+
+func (b *Background) SetGame(game *Game) {
+	b.game = game
+}
+
+func (b *Background) SetConfig(config *BackgroundConfig) {
+	b.config = config
+}
+
+func (b *Background) GetConfig() *BackgroundConfig {
+	return b.config
 }

@@ -5,20 +5,16 @@ import (
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
 )
 
-var (
-	SwipeNone = SwipeType(0)
-	SwipeUp   = SwipeType(1)
-	SwipeDown = SwipeType(2)
-)
-
-type SwipeType int
+type InputConfig struct {
+	ThrowAwayPaddingTop    float64
+	ThrowAwayPaddingBottom float64
+	Tiles                  []*Tile
+}
 
 // Input reads for example drag input like up/down (touch support for mobile)
 type Input struct {
-	Game *Game
-
-	ThrowAwayPaddingTop    float64
-	ThrowAwayPaddingBottom float64
+	game   *Game
+	config *InputConfig
 
 	touchIDs []ebiten.TouchID
 
@@ -29,17 +25,21 @@ type Input struct {
 	touch map[ebiten.TouchID]struct{}
 }
 
-func NewInput() *Input {
+func NewInput(config *InputConfig) *Input {
 	return &Input{
-		touch: make(map[ebiten.TouchID]struct{}),
+		config: config,
+		touch:  make(map[ebiten.TouchID]struct{}),
 	}
 }
 
-func (i *Input) Update(tiles []*Tile) bool {
+func (i *Input) Draw(screen *ebiten.Image) {
+}
+
+func (i *Input) Update() error {
 	// handle mouse input
 	if inpututil.IsMouseButtonJustPressed(ebiten.MouseButtonLeft) {
 		x, y := ebiten.CursorPosition()
-		i.tile = i.checkForTile(float64(x), float64(y), tiles)
+		i.tile = i.checkForTile(float64(x), float64(y), i.config.Tiles)
 		if i.tile != nil {
 			i.startY = float64(y)
 			i.lastY = i.startY
@@ -54,8 +54,8 @@ func (i *Input) Update(tiles []*Tile) bool {
 		if i.tile != nil {
 			i.tile.SetDragged(nil)
 
-			if i.tile.Y+i.tile.GetHeight() > i.ThrowAwayPaddingBottom ||
-				i.tile.Y < i.ThrowAwayPaddingTop {
+			if i.tile.Y+i.tile.GetHeight() > i.config.ThrowAwayPaddingBottom ||
+				i.tile.Y < i.config.ThrowAwayPaddingTop {
 				i.tile.SetThrownAway()
 			}
 
@@ -69,7 +69,7 @@ func (i *Input) Update(tiles []*Tile) bool {
 		// single finger touch
 		touchID := i.touchIDs[0]
 		x, y := ebiten.TouchPosition(touchID)
-		i.tile = i.checkForTile(float64(x), float64(y), tiles)
+		i.tile = i.checkForTile(float64(x), float64(y), i.config.Tiles)
 		if i.tile != nil {
 			i.startY = float64(y)
 			i.lastY = i.startY
@@ -79,8 +79,8 @@ func (i *Input) Update(tiles []*Tile) bool {
 				if _x == 0 && _y == 0 {
 					i.tile.SetDragged(nil)
 
-					if i.tile.Y+i.tile.GetHeight() > i.ThrowAwayPaddingBottom ||
-						i.tile.Y < i.ThrowAwayPaddingTop {
+					if i.tile.Y+i.tile.GetHeight() > i.config.ThrowAwayPaddingBottom ||
+						i.tile.Y < i.config.ThrowAwayPaddingTop {
 						i.tile.SetThrownAway()
 					}
 
@@ -95,7 +95,7 @@ func (i *Input) Update(tiles []*Tile) bool {
 		}
 	}
 
-	return false
+	return nil
 }
 
 func (i *Input) checkForTile(x, y float64, tiles []*Tile) *Tile {
@@ -106,4 +106,16 @@ func (i *Input) checkForTile(x, y float64, tiles []*Tile) *Tile {
 	}
 
 	return nil
+}
+
+func (i *Input) SetGame(game *Game) {
+	i.game = game
+}
+
+func (i *Input) SetConfig(config *InputConfig) {
+	i.config = config
+}
+
+func (i *Input) GetConfig() *InputConfig {
+	return i.config
 }

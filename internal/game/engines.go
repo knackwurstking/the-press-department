@@ -59,10 +59,11 @@ func (e *Engines) Draw(screen *ebiten.Image) {
 	}
 }
 
-func (e *Engines) Update(input *Input) error {
-	input.ThrowAwayPaddingTop = e.Conveyor.Y - 10
-	input.ThrowAwayPaddingBottom = e.Conveyor.Y + e.Conveyor.GetHeight() + 10
-	input.Update(e.tiles)
+func (e *Engines) Update(input GameComponent[InputConfig]) error {
+	input.GetConfig().ThrowAwayPaddingTop = e.Conveyor.Y - 10
+	input.GetConfig().ThrowAwayPaddingBottom = e.Conveyor.Y + e.Conveyor.GetHeight() + 10
+	input.GetConfig().Tiles = e.tiles
+	_ = input.Update()
 
 	// update existing tile positions
 	next := time.Now()
