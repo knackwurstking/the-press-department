@@ -7,44 +7,56 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
-// Board holds all the data and coordinates (like tiles positions and engine positions)
-type Engines struct {
-	Game       *Game
-	Conveyor   *Conveyor
-	BPM        float64 // BPM are the bumps per minute (the press speed)
-	TilesToUse []*ebiten.Image
+type EnginesConfig struct {
+	Scale float64
+	Input GameComponent[InputConfig]
 
-	hz         float64 // MPM are the miles per seconds (the engine speed)
-	hzMultiply float64
-	scale      float64
+	BPM float64 // BPM are the bumps per minute (the press speed)
 
-	tiles      []*Tile
-	lastTile   time.Time
-	lastUpdate time.Time
+	Hz         float64 // MPM are the miles per seconds (the engine speed)
+	HzMultiply float64
 
 	tilesCount int
+	tiles      []*Tile
+}
+
+func (c *EnginesConfig) GetTilesCount() int {
+	return c.tilesCount
+}
+
+func (c *EnginesConfig) GetTiles() []*Tile {
+	return c.tiles
+}
+
+// Board holds all the data and coordinates (like tiles positions and engine positions)
+type Engines struct {
+	game   *Game
+	config *EnginesConfig
+
+	Conveyor *Conveyor
+
+	tilesToUse []*ebiten.Image
+	lastTile   time.Time
+	lastUpdate time.Time
 
 	rand *rand.Rand
 }
 
-func NewEngines(scale float64) *Engines {
+func NewEngines(config *EnginesConfig) *Engines {
 	e := &Engines{
-		BPM: 6,
-		TilesToUse: []*ebiten.Image{
+		config: config,
+		tilesToUse: []*ebiten.Image{
 			ImageTile,
 			ImageTile,
 			ImageTile,
 			ImageTileWithCrack,
 		},
-		hz:         8, // NOTE: cycles/seconds
-		hzMultiply: 2.5,
-		scale:      scale,
 		lastTile:   time.Now(),
 		lastUpdate: time.Now(),
 		rand:       rand.New(rand.NewSource(time.Now().Unix())),
 	}
 
-	e.Conveyor = NewConveyor(&e.scale, e.hzMultiply)
+	e.Conveyor = NewConveyor(&config.Scale, e.config.HzMultiply)
 
 	return e
 }
@@ -54,16 +66,16 @@ func (e *Engines) Draw(screen *ebiten.Image) {
 	e.Conveyor.Draw(screen)
 
 	// draw the tile with the given positions
-	for _, tile := range e.tiles {
+	for _, tile := range e.config.tiles {
 		tile.Draw(screen)
 	}
 }
 
-func (e *Engines) Update(input GameComponent[InputConfig]) error {
-	input.GetConfig().ThrowAwayPaddingTop = e.Conveyor.Y - 10
-	input.GetConfig().ThrowAwayPaddingBottom = e.Conveyor.Y + e.Conveyor.GetHeight() + 10
-	input.GetConfig().Tiles = e.tiles
-	_ = input.Update()
+func (e *Engines) Update() error {
+	e.config.Input.GetConfig().ThrowAwayPaddingTop = e.Conveyor.Y - 10
+	e.config.Input.GetConfig().ThrowAwayPaddingBottom = e.Conveyor.Y + e.Conveyor.GetHeight() + 10
+	e.config.Input.GetConfig().Tiles = e.config.tiles
+	_ = e.config.Input.Update()
 
 	// update existing tile positions
 	next := time.Now()
@@ -82,37 +94,41 @@ func (e *Engines) Update(input GameComponent[InputConfig]) error {
 	return nil
 }
 
-func (e *Engines) GetHz() float64 {
-	return e.hz
+func (e *Engines) SetGame(game *Game) {
+	e.game = game
 }
 
-func (e *Engines) GetHzMultiply() float64 {
-	return e.hzMultiply
+func (e *Engines) SetConfig(config *EnginesConfig) {
+	e.config = config
+}
+
+func (e *Engines) GetConfig() *EnginesConfig {
+	return e.config
 }
 
 func (e *Engines) updateConveyor(next time.Time) {
-	e.Conveyor.hz = e.hz
-	e.Conveyor.hzMultiply = e.hzMultiply
+	e.Conveyor.hz = e.config.Hz
+	e.Conveyor.hzMultiply = e.config.HzMultiply
 	e.Conveyor.Update(
 		e.calcR(next),
 		0, // x
-		float64(e.Game.ScreenHeight)/2-(e.Conveyor.GetHeight()/2), // y
-		float64(e.Game.ScreenWidth),                               // width
+		float64(e.game.ScreenHeight)/2-(e.Conveyor.GetHeight()/2), // y
+		float64(e.game.ScreenWidth),                               // width
 	)
 }
 
 func (e *Engines) updatePress(next time.Time) {
 	// check time and get a tile based on BPM
-	if e.lastTile.Add(time.Microsecond*time.Duration(60/e.BPM*1000000)).UnixMicro() <= next.UnixMicro() {
+	if e.lastTile.Add(time.Microsecond*time.Duration(60/e.config.BPM*1000000)).UnixMicro() <= next.UnixMicro() {
 		// get a new tile here
-		tile := NewTile(e.scale, e.randomTile())
+		tile := NewTile(e.config.Scale, e.randomTile())
 
-		tile.X = float64(e.Game.ScreenWidth)
-		tile.Y = (float64(e.Game.ScreenHeight) / 2) - (tile.GetHeight() / 2)
+		tile.X = float64(e.game.ScreenWidth)
+		tile.Y = (float64(e.game.ScreenHeight) / 2) - (tile.GetHeight() / 2)
 
-		e.tiles = append(e.tiles, tile)
+		e.config.tiles = append(e.config.tiles, tile)
 
-		e.tilesCount += 1
+		e.config.tilesCount += 1
 
 		// and update `e.lastTile`
 		e.lastTile = next
@@ -121,34 +137,34 @@ func (e *Engines) updatePress(next time.Time) {
 
 func (e *Engines) updateTiles(next time.Time) {
 	toRemove := make([]*Tile, 0)
-	for i := 0; i < len(e.tiles); i++ {
+	for i := 0; i < len(e.config.tiles); i++ {
 		// check for thrownAway tiles firs
-		if e.tiles[i].IsThrownAway() {
+		if e.config.tiles[i].IsThrownAway() {
 			// throw away animation (up if tiles y lower then the initial y set from the press)
-			pressY := (float64(e.Game.ScreenHeight) / 2) - (e.tiles[i].GetHeight() / 2)
-			r := float64(next.Sub(e.lastUpdate).Seconds()) * (250) * (e.scale * 10)
-			if e.tiles[i].Y <= pressY {
-				e.tiles[i].Y -= r
+			pressY := (float64(e.game.ScreenHeight) / 2) - (e.config.tiles[i].GetHeight() / 2)
+			r := float64(next.Sub(e.lastUpdate).Seconds()) * (250) * (e.config.Scale * 10)
+			if e.config.tiles[i].Y <= pressY {
+				e.config.tiles[i].Y -= r
 			} else {
-				e.tiles[i].Y += r
+				e.config.tiles[i].Y += r
 			}
 		}
 
 		// update x position (based on time since last update)
-		e.tiles[i].X -= e.calcR(next)
+		e.config.tiles[i].X -= e.calcR(next)
 
-		if e.tiles[i].X <= 0-e.tiles[i].GetWidth() {
-			e.tiles = e.tiles[i+1:]
+		if e.config.tiles[i].X <= 0-e.config.tiles[i].GetWidth() {
+			e.config.tiles = e.config.tiles[i+1:]
 			break
-		} else if e.tiles[i].Y <= 0-e.tiles[i].GetHeight() || e.tiles[i].Y >= float64(e.Game.ScreenHeight) {
-			toRemove = append(toRemove, e.tiles[i])
+		} else if e.config.tiles[i].Y <= 0-e.config.tiles[i].GetHeight() || e.config.tiles[i].Y >= float64(e.game.ScreenHeight) {
+			toRemove = append(toRemove, e.config.tiles[i])
 		}
 	}
 
 	for _, t := range toRemove {
-		for i, t2 := range e.tiles {
+		for i, t2 := range e.config.tiles {
 			if t == t2 {
-				e.tiles = append(e.tiles[:i], e.tiles[i+1:]...)
+				e.config.tiles = append(e.config.tiles[:i], e.config.tiles[i+1:]...)
 				break
 			}
 		}
@@ -156,9 +172,9 @@ func (e *Engines) updateTiles(next time.Time) {
 }
 
 func (e *Engines) calcR(next time.Time) float64 {
-	return (float64(next.Sub(e.lastUpdate).Seconds()) * (e.hzMultiply * e.hz)) * (e.scale * 10)
+	return (float64(next.Sub(e.lastUpdate).Seconds()) * (e.config.HzMultiply * e.config.Hz)) * (e.config.Scale * 10)
 }
 
 func (e *Engines) randomTile() *ebiten.Image {
-	return e.TilesToUse[e.rand.Intn(len(e.TilesToUse))]
+	return e.tilesToUse[e.rand.Intn(len(e.tilesToUse))]
 }

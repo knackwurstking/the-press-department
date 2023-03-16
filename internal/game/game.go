@@ -20,7 +20,7 @@ var (
 type Game struct {
 	Input        GameComponent[InputConfig]
 	Background   GameComponent[BackgroundConfig]
-	Engines      *Engines
+	Engines      GameComponent[EnginesConfig]
 	ScreenWidth  int
 	ScreenHeight int
 
@@ -34,12 +34,18 @@ func NewGame(scale float64) *Game {
 			Scale: scale,
 			Image: ebiten.NewImageFromImage(ImageGround),
 		}),
-		Engines: NewEngines(scale),
-		scale:   scale,
+		Engines: NewEngines(&EnginesConfig{
+			Scale:      scale,
+			BPM:        6.5,
+			Hz:         8,
+			HzMultiply: 2.5,
+		}),
+		scale: scale,
 	}
 
 	// pass game pointer to the engine
-	game.Engines.Game = game
+	game.Engines.SetGame(game)
+	game.Engines.GetConfig().Input = game.Input
 	game.Background.SetGame(game)
 	game.Input.SetGame(game)
 
@@ -65,12 +71,12 @@ func (g *Game) Layout(outsideWidth int, outsideHeight int) (int, int) {
 
 // Update implements ebiten.Game
 func (g *Game) Update() error {
-	if g.Engines.scale != g.scale {
-		g.Engines.scale = g.scale
+	if g.Engines.GetConfig().Scale != g.scale {
+		g.Engines.GetConfig().Scale = g.scale
 		g.Background.GetConfig().Scale = g.scale
 	}
 
-	return g.Engines.Update(g.Input)
+	return g.Engines.Update()
 }
 
 func (g *Game) GetScale() float64 {
@@ -85,7 +91,7 @@ func (g *Game) debugEngines(screen *ebiten.Image) {
 	// 1. Row
 	counter := fmt.Sprintf(
 		"Press Speed: %.1fh",
-		g.Engines.BPM,
+		g.Engines.GetConfig().BPM,
 	)
 
 	ebitenutil.DebugPrintAt(
@@ -98,7 +104,7 @@ func (g *Game) debugEngines(screen *ebiten.Image) {
 	// 2. Row
 	counter = fmt.Sprintf(
 		"Tiles Produced: %d",
-		g.Engines.tilesCount,
+		g.Engines.GetConfig().GetTilesCount(),
 	)
 
 	ebitenutil.DebugPrintAt(
@@ -111,8 +117,8 @@ func (g *Game) debugEngines(screen *ebiten.Image) {
 	// 3. Row
 	counter = fmt.Sprintf(
 		"RB: %d [%.1f hz]",
-		len(g.Engines.tiles),
-		g.Engines.GetHz(),
+		len(g.Engines.GetConfig().GetTiles()),
+		g.Engines.GetConfig().Hz,
 	)
 
 	ebitenutil.DebugPrintAt(
