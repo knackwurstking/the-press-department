@@ -7,3 +7,7 @@
 ## v0.0.3
 
 - Handle user swipe (up or down) for throwing away a tile
+
+## v0.0.4
+
+- Cleaned up game components: `Input`, `BackGround`, `Engines`
