@@ -13,10 +13,9 @@ type EnginesConfig struct {
 	Scale float64
 	Input GameComponent[EnginesInputConfig]
 
-	bpm float64 // BPM are the bumps per minute (the press speed)
-
-	hz         float64 // MPM are the miles per seconds (the engine speed)
-	HzMultiply float64
+	bpm        *float64 // BPM are the bumps per minute (the press speed)
+	hz         *float64 // MPM are the miles per seconds (the engine speed)
+	hzMultiply *float64
 
 	tilesCount int
 	tiles      []*Tile
@@ -31,25 +30,37 @@ func (c *EnginesConfig) GetTiles() []*Tile {
 }
 
 func (c *EnginesConfig) GetBPM() float64 {
-	if c.Pause {
+	if c.Pause || c.bpm == nil {
 		return 0
 	}
-	return c.bpm
+	return *c.bpm
 }
 
-func (c *EnginesConfig) SetBPM(bpm float64) {
+func (c *EnginesConfig) SetBPM(bpm *float64) {
 	c.bpm = bpm
 }
 
 func (c *EnginesConfig) GetHz() float64 {
-	if c.Pause {
+	if c.Pause || c.hz == nil {
 		return 0
 	}
-	return c.hz
+	return *c.hz
 }
 
-func (c *EnginesConfig) SetHz(hz float64) {
-	c.hz = hz
+func (c *EnginesConfig) SetHz(n *float64) {
+	c.hz = n
+}
+
+func (c *EnginesConfig) GetHzMultiply() float64 {
+	if c.hzMultiply == nil {
+		return 0
+	}
+
+	return *c.hzMultiply
+}
+
+func (c *EnginesConfig) SetHzMultiply(n *float64) {
+	c.hzMultiply = n
 }
 
 // Board holds all the data and coordinates (like tiles positions and engine positions)
@@ -82,7 +93,7 @@ func NewEngines(config *EnginesConfig) *Engines {
 
 	e.Conveyor = NewConveyor(&ConveyorConfig{
 		Scale:      &e.config.Scale,
-		HzMultiply: e.config.HzMultiply,
+		HzMultiply: e.config.GetHzMultiply(),
 		Sprite:     NewRollSprite(&e.config.Scale),
 	})
 
@@ -154,7 +165,7 @@ func (e *Engines) GetConfig() *EnginesConfig {
 
 func (e *Engines) updateConveyor(next time.Time) {
 	e.Conveyor.GetConfig().Hz = e.config.GetHz()
-	e.Conveyor.GetConfig().HzMultiply = e.config.HzMultiply
+	e.Conveyor.GetConfig().HzMultiply = e.config.GetHzMultiply()
 	e.Conveyor.GetConfig().SetUpdateData(
 		e.calcR(next), // r
 		0,             // x
@@ -221,7 +232,7 @@ func (e *Engines) updateTiles(next time.Time) {
 }
 
 func (e *Engines) calcR(next time.Time) float64 {
-	return (float64(next.Sub(e.lastUpdate).Seconds()) * (e.config.HzMultiply * e.config.GetHz())) * (e.config.Scale * 10)
+	return (float64(next.Sub(e.lastUpdate).Seconds()) * (e.config.GetHzMultiply() * e.config.GetHz())) * (e.config.Scale * 10)
 }
 
 func (e *Engines) randomTile() *ebiten.Image {

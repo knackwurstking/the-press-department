@@ -111,20 +111,25 @@ type Game struct {
 func NewGame(scale float64) *Game {
 	game := &Game{
 		Mode: ModePause,
+		Stats: Stats{
+			PressBPM:           6.5,
+			ConveyorHz:         8.0,
+			ConveyorHzMultiply: 2.5,
+		},
 		Background: NewBackground(&BackgroundConfig{
 			Scale: scale,
 			Image: ebiten.NewImageFromImage(ImageGround),
 		}),
 		Engines: NewEngines(&EnginesConfig{
-			Input:      NewEnginesInput(&EnginesInputConfig{}),
-			Scale:      scale,
-			HzMultiply: 2.5,
+			Input: NewEnginesInput(&EnginesInputConfig{}),
+			Scale: scale,
 		}),
 		scale: scale,
 	}
 
-	game.Engines.GetConfig().SetHz(8.0)
-	game.Engines.GetConfig().SetBPM(6.5)
+	game.Engines.GetConfig().SetBPM(&game.Stats.PressBPM)
+	game.Engines.GetConfig().SetHz(&game.Stats.ConveyorHz)
+	game.Engines.GetConfig().SetHzMultiply(&game.Stats.ConveyorHzMultiply)
 
 	return game
 }
