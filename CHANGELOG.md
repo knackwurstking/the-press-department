@@ -10,7 +10,7 @@
 
 ## v0.0.4 [unreleased]
 
-- [ ] Pause game if screen off, stop/start the press, stop/start the conveyor
+- [-] Adding a pause menu, stop/start the press, stop/start the conveyor
 - [ ] ~Update debug stuff (tiles counter)~
 - [ ] Add some overlay (Pause and continue button)
 - [ ] Add Money system (overlay), get 100$ for a good tile and loose 200$ for a

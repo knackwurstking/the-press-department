@@ -3,10 +3,12 @@ package game
 import (
 	"fmt"
 	"image/color"
+	"time"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 	"github.com/hajimehoshi/ebiten/v2/examples/resources/fonts"
+	"github.com/hajimehoshi/ebiten/v2/inpututil"
 	"github.com/hajimehoshi/ebiten/v2/text"
 
 	"golang.org/x/image/font"
@@ -76,6 +78,8 @@ type Game struct {
 
 	screenWidth, screenHeight int
 	scale                     float64
+
+	lastUpdate time.Time
 }
 
 func NewGame(scale float64) *Game {
@@ -112,6 +116,11 @@ func (g *Game) Layout(outsideWidth int, outsideHeight int) (int, int) {
 
 // Update implements ebiten.Game
 func (g *Game) Update() error {
+	// catch standby and pause the game (check for standby via time package)
+	if time.Since(g.lastUpdate) >= time.Second {
+		g.Mode = ModePause
+	}
+
 	g.Background.GetConfig().Scale = g.scale
 	g.Engines.GetConfig().Scale = g.scale
 
@@ -130,6 +139,8 @@ func (g *Game) Update() error {
 	_ = g.Background.Update()
 	_ = g.Engines.Update()
 
+	g.lastUpdate = time.Now()
+
 	return nil
 }
 
@@ -144,8 +155,13 @@ func (g *Game) Draw(screen *ebiten.Image) {
 }
 
 func (g *Game) isKeyPressed() bool {
-	// TODO: catch any possible key
-	return false
+	if inpututil.IsMouseButtonJustPressed(ebiten.MouseButtonLeft) {
+		return true
+	}
+
+	touchIDs := make([]ebiten.TouchID, 0)
+	touchIDs = inpututil.AppendJustPressedTouchIDs(touchIDs[:0])
+	return len(touchIDs) > 0
 }
 
 func (g *Game) drawPause(screen *ebiten.Image) {
@@ -157,7 +173,7 @@ func (g *Game) drawPause(screen *ebiten.Image) {
 	}
 
 	texts := []string{
-		"Press a key (or just touch) to start.",
+		"Click (or Touch) to start.",
 	}
 
 	for i, l := range titleTexts {
