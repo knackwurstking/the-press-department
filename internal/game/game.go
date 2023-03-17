@@ -195,7 +195,12 @@ func (g *Game) drawGame(screen *ebiten.Image) {
 	// run the game
 	g.Background.Draw(screen)
 	g.Engines.Draw(screen)
+	g.drawStatsOverlay(screen)
 	g.drawDebug(screen)
+}
+
+func (g *Game) drawStatsOverlay(screen *ebiten.Image) {
+	// TODO: Drawing stats like +/- money for each tile...
 }
 
 func (g *Game) drawDebug(screen *ebiten.Image) {
