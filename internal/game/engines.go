@@ -12,7 +12,6 @@ type EnginesData struct {
 	Pause bool // Pause will top the machines :)
 
 	Scale float64
-	Input Component[EnginesInputData]
 
 	tiles []*Tile
 }
@@ -53,7 +52,8 @@ func (c *EnginesData) SetHzMultiply(n float64) {
 
 // Board holds all the data and coordinates (like tiles positions and engine positions)
 type Engines struct {
-	Conveyor Component[ConveyorData]
+	conveyor Component[ConveyorData]
+	input    Component[EnginesInputData]
 
 	data                      *EnginesData
 	screenWidth, screenHeight float64
@@ -67,7 +67,8 @@ type Engines struct {
 
 func NewEngines(data *EnginesData) *Engines {
 	e := &Engines{
-		data: data,
+		input: NewEnginesInput(&EnginesInputData{}),
+		data:  data,
 		tilesToUse: []*ebiten.Image{
 			ImageTile,
 			ImageTile,
@@ -79,7 +80,7 @@ func NewEngines(data *EnginesData) *Engines {
 		rand:       rand.New(rand.NewSource(time.Now().Unix())),
 	}
 
-	e.Conveyor = NewConveyor(&ConveyorData{
+	e.conveyor = NewConveyor(&ConveyorData{
 		Scale:      &e.data.Scale,
 		HzMultiply: e.data.GetHzMultiply(),
 		Sprite:     NewRollSprite(&e.data.Scale),
@@ -102,8 +103,8 @@ func (e *Engines) Layout(outsideWidth, outsideHeight int) (int, int) {
 
 	e.screenWidth = float64(outsideWidth)
 
-	e.Conveyor.Layout(outsideWidth, outsideHeight)
-	e.data.Input.Layout(outsideWidth, outsideHeight)
+	e.conveyor.Layout(outsideWidth, outsideHeight)
+	e.input.Layout(outsideWidth, outsideHeight)
 
 	return outsideWidth, outsideWidth
 }
@@ -118,10 +119,10 @@ func (e *Engines) Update() error {
 	// Only handle user input if not on Pause
 	if !e.data.Pause {
 		// Handle user input
-		e.data.Input.GetData().ThrowAwayPaddingTop = e.Conveyor.GetData().Y - 10
-		e.data.Input.GetData().ThrowAwayPaddingBottom = e.Conveyor.GetData().Y + e.Conveyor.GetData().GetHeight() + 10
-		e.data.Input.GetData().Tiles = e.data.tiles
-		_ = e.data.Input.Update()
+		e.input.GetData().ThrowAwayPaddingTop = e.conveyor.GetData().Y - 10
+		e.input.GetData().ThrowAwayPaddingBottom = e.conveyor.GetData().Y + e.conveyor.GetData().GetHeight() + 10
+		e.input.GetData().Tiles = e.data.tiles
+		_ = e.input.Update()
 	}
 
 	// Move tiles
@@ -135,7 +136,7 @@ func (e *Engines) Update() error {
 
 func (e *Engines) Draw(screen *ebiten.Image) {
 	// Draw the "Conveyor"
-	e.Conveyor.Draw(screen)
+	e.conveyor.Draw(screen)
 
 	// Draw the tile with the given positions
 	for _, tile := range e.data.tiles {
@@ -152,15 +153,15 @@ func (e *Engines) GetData() *EnginesData {
 }
 
 func (e *Engines) updateConveyor(next time.Time) {
-	e.Conveyor.GetData().Hz = e.data.GetHz()
-	e.Conveyor.GetData().HzMultiply = e.data.GetHzMultiply()
-	e.Conveyor.GetData().SetUpdateData(
+	e.conveyor.GetData().Hz = e.data.GetHz()
+	e.conveyor.GetData().HzMultiply = e.data.GetHzMultiply()
+	e.conveyor.GetData().SetUpdateData(
 		e.calcR(next), // r
 		0,             // x
-		e.screenHeight/2-(e.Conveyor.GetData().GetHeight()/2), // y
+		e.screenHeight/2-(e.conveyor.GetData().GetHeight()/2), // y
 		e.screenWidth, // width
 	)
-	_ = e.Conveyor.Update()
+	_ = e.conveyor.Update()
 }
 
 func (e *Engines) updatePress(next time.Time) {

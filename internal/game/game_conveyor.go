@@ -4,6 +4,10 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
+type Coord struct {
+	X, Y float64
+}
+
 type ConveyorData struct {
 	Sprite     *RollSprite
 	Scale      *float64

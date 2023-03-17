@@ -101,7 +101,6 @@ func NewGame(scale float64) *Game {
 		}),
 		Engines: NewEngines(&EnginesData{
 			Stats: stats,
-			Input: NewEnginesInput(&EnginesInputData{}),
 			Scale: scale,
 		}),
 		scale: scale,
