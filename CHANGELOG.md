@@ -18,6 +18,6 @@
 
 - Doing some code clean up
 - Adding `Components` interface (`Input`, `BackGround`, `Engines`, `Conveyor`)
-- Handle `Game.ScreenHeight` and `Game.ScreenWidth` change
+- Handle `screenHeight` and `screenWidth` change (`Layout`)
 - Adding a pause menu
-- Adding Tiles interface
+- Adding `Tiles` interface
