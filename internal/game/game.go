@@ -119,8 +119,12 @@ func (g *Game) Update() error {
 	case ModePause:
 		g.Engines.GetConfig().Pause = true
 		// TODO: Listen for keys to continue (or start the game)
+		if g.isKeyPressed() {
+			// Continue or start the game
+			g.Engines.GetConfig().Pause = false
+			g.Mode = ModeGame
+		}
 	case ModeGame:
-		g.Engines.GetConfig().Pause = false
 	}
 
 	_ = g.Background.Update()
@@ -145,6 +149,10 @@ func (g *Game) GetScale() float64 {
 
 func (g *Game) SetScale(f float64) {
 	g.scale = f
+}
+
+func (g *Game) isKeyPressed() bool {
+	return false
 }
 
 func (g *Game) drawPause(screen *ebiten.Image) {
