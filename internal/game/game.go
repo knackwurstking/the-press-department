@@ -167,8 +167,8 @@ func (g *Game) isKeyPressed() bool {
 		return true
 	}
 
-	touchIDs := make([]ebiten.TouchID, 0)
-	touchIDs = inpututil.AppendJustPressedTouchIDs(touchIDs[:0])
+	var touchIDs []ebiten.TouchID
+	touchIDs = inpututil.AppendJustPressedTouchIDs(touchIDs)
 	return len(touchIDs) > 0
 }
 
