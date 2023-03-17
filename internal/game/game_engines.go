@@ -116,11 +116,14 @@ func (e *Engines) Update() error {
 	// Press a tile
 	e.updatePress(next)
 
-	// Handle user input
-	e.config.Input.GetConfig().ThrowAwayPaddingTop = e.Conveyor.GetConfig().Y - 10
-	e.config.Input.GetConfig().ThrowAwayPaddingBottom = e.Conveyor.GetConfig().Y + e.Conveyor.GetConfig().GetHeight() + 10
-	e.config.Input.GetConfig().Tiles = e.config.tiles
-	_ = e.config.Input.Update()
+	// Only handle user input if not on Pause
+	if !e.config.Pause {
+		// Handle user input
+		e.config.Input.GetConfig().ThrowAwayPaddingTop = e.Conveyor.GetConfig().Y - 10
+		e.config.Input.GetConfig().ThrowAwayPaddingBottom = e.Conveyor.GetConfig().Y + e.Conveyor.GetConfig().GetHeight() + 10
+		e.config.Input.GetConfig().Tiles = e.config.tiles
+		_ = e.config.Input.Update()
+	}
 
 	// Move tiles
 	e.updateTiles(next)

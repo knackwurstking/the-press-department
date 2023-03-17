@@ -118,6 +118,7 @@ func (g *Game) Update() error {
 	switch g.Mode {
 	case ModePause:
 		g.Engines.GetConfig().Pause = true
+		// TODO: Listen for keys to continue (or start the game)
 	case ModeGame:
 		g.Engines.GetConfig().Pause = false
 	}
