@@ -1,7 +1,6 @@
 package game
 
 import (
-	"log"
 	"math/rand"
 	"time"
 
@@ -229,13 +228,6 @@ func (e *Engines) updateTiles(next time.Time) {
 
 	// Remove it
 	for _, t := range toRemove {
-		// Money management
-		if t.IsThrownAway() {
-			// Handle game stats counter for "Money" (check the tile state first)
-			log.Println("Add tile throw away", t)
-			e.data.Stats.AddThrownAwayTile(t)
-		}
-
 		for i, t2 := range e.data.tiles {
 			if t == t2 {
 				e.data.tiles = append(e.data.tiles[:i], e.data.tiles[i+1:]...)

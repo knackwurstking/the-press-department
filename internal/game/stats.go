@@ -26,12 +26,12 @@ type Stats struct {
 
 func (s *Stats) AddGoodTile() {
 	s.GoodTiles++
-	s.Money += 100
+	s.Money += 150
 }
 
 func (s *Stats) AddBadTile() {
 	s.BadTiles++
-	s.Money -= 500
+	s.Money -= 450
 }
 
 // "add thrown away good tile", "add thrown away bad tile"
@@ -45,6 +45,6 @@ func (s *Stats) AddThrownAwayTile(tile Tiles) {
 	case StateCrack:
 		s.Money -= 50
 	case StateOK:
-		s.Money -= 1000
+		s.Money -= 850
 	}
 }
