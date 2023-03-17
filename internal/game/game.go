@@ -100,6 +100,8 @@ type Game struct {
 	Background GameComponent[BackgroundConfig]
 	Engines    GameComponent[EnginesConfig]
 
+	Stats Stats
+
 	screenWidth, screenHeight int
 	scale                     float64
 
@@ -163,6 +165,7 @@ func (g *Game) Update() error {
 	_ = g.Background.Update()
 	_ = g.Engines.Update()
 
+	g.updateStats()
 	g.lastUpdate = time.Now()
 
 	return nil
@@ -176,6 +179,10 @@ func (g *Game) Draw(screen *ebiten.Image) {
 	case ModeGame:
 		g.drawGame(screen)
 	}
+}
+
+func (g *Game) updateStats() {
+	// TODO: update game status (put everything in g.Stats)
 }
 
 func (g *Game) isKeyPressed() bool {
@@ -219,11 +226,11 @@ func (g *Game) drawGame(screen *ebiten.Image) {
 	// run the game
 	g.Background.Draw(screen)
 	g.Engines.Draw(screen)
-	g.drawStatsOverlay(screen)
+	g.drawStats(screen)
 	g.drawDebug(screen)
 }
 
-func (g *Game) drawStatsOverlay(screen *ebiten.Image) {
+func (g *Game) drawStats(screen *ebiten.Image) {
 	// TODO: Drawing stats like +/- money for each tile... (Need a State object with json support for saving)
 	//  - bottom/left corner: money in the bank
 	//  - +<dollar>, green
