@@ -3,7 +3,7 @@ package game
 import "github.com/hajimehoshi/ebiten/v2"
 
 type GameComponentConfig interface {
-	InputConfig | BackgroundConfig | EnginesConfig | ConveyorConfig
+	BackgroundConfig | EnginesConfig | EnginesInputConfig | ConveyorConfig
 }
 
 type GameComponent[T GameComponentConfig] interface {

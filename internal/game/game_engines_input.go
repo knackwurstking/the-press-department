@@ -5,15 +5,15 @@ import (
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
 )
 
-type InputConfig struct {
+type EnginesInputConfig struct {
 	ThrowAwayPaddingTop    float64
 	ThrowAwayPaddingBottom float64
 	Tiles                  []*Tile
 }
 
 // Input reads for example drag input like up/down (touch support for mobile)
-type Input struct {
-	config *InputConfig
+type EnginesInput struct {
+	config *EnginesInputConfig
 
 	touchIDs []ebiten.TouchID
 
@@ -24,21 +24,21 @@ type Input struct {
 	touch map[ebiten.TouchID]struct{}
 }
 
-func NewInput(config *InputConfig) *Input {
-	return &Input{
+func NewEnginesInput(config *EnginesInputConfig) *EnginesInput {
+	return &EnginesInput{
 		config: config,
 		touch:  make(map[ebiten.TouchID]struct{}),
 	}
 }
 
-func (i *Input) Layout(outsideWidth, outsideHeight int) (int, int) {
+func (i *EnginesInput) Layout(outsideWidth, outsideHeight int) (int, int) {
 	return outsideWidth, outsideHeight
 }
 
-func (i *Input) Draw(screen *ebiten.Image) {
+func (i *EnginesInput) Draw(screen *ebiten.Image) {
 }
 
-func (i *Input) Update() error {
+func (i *EnginesInput) Update() error {
 	// handle mouse input
 	if inpututil.IsMouseButtonJustPressed(ebiten.MouseButtonLeft) {
 		x, y := ebiten.CursorPosition()
@@ -101,7 +101,7 @@ func (i *Input) Update() error {
 	return nil
 }
 
-func (i *Input) checkForTile(x, y float64, tiles []*Tile) *Tile {
+func (i *EnginesInput) checkForTile(x, y float64, tiles []*Tile) *Tile {
 	for _, tile := range tiles {
 		if x >= tile.X && x <= tile.X+tile.GetWidth() {
 			return tile
@@ -111,10 +111,10 @@ func (i *Input) checkForTile(x, y float64, tiles []*Tile) *Tile {
 	return nil
 }
 
-func (i *Input) SetConfig(config *InputConfig) {
+func (i *EnginesInput) SetConfig(config *EnginesInputConfig) {
 	i.config = config
 }
 
-func (i *Input) GetConfig() *InputConfig {
+func (i *EnginesInput) GetConfig() *EnginesInputConfig {
 	return i.config
 }

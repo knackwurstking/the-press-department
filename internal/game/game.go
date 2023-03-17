@@ -18,14 +18,8 @@ var (
 type Mode int
 
 // Game controls all the game logic
-//
-// Input 			- handles the controls (with mobile touch support)
-// Background - handles the game background
-// Press 			- produces tiles and outputs each tile to the Engines
-// Engines 		- transports the tiles (from the Press) from A to B
 type Game struct {
 	Mode       Mode
-	Input      GameComponent[InputConfig]
 	Background GameComponent[BackgroundConfig]
 	Engines    GameComponent[EnginesConfig]
 
@@ -35,13 +29,13 @@ type Game struct {
 
 func NewGame(scale float64) *Game {
 	game := &Game{
-		Mode:  ModeGame,
-		Input: NewInput(&InputConfig{}),
+		Mode: ModeGame,
 		Background: NewBackground(&BackgroundConfig{
 			Scale: scale,
 			Image: ebiten.NewImageFromImage(ImageGround),
 		}),
 		Engines: NewEngines(&EnginesConfig{
+			Input:      NewEnginesInput(&EnginesInputConfig{}),
 			Scale:      scale,
 			BPM:        6.5,
 			Hz:         8,
@@ -49,9 +43,6 @@ func NewGame(scale float64) *Game {
 		}),
 		scale: scale,
 	}
-
-	// pass game pointer to the engine
-	game.Engines.GetConfig().Input = game.Input
 
 	return game
 }
@@ -63,26 +54,31 @@ func (g *Game) Layout(outsideWidth int, outsideHeight int) (int, int) {
 
 	g.Background.Layout(outsideWidth, outsideHeight)
 	g.Engines.Layout(outsideWidth, outsideHeight)
-	g.Input.Layout(outsideWidth, outsideHeight)
 
 	return outsideWidth, outsideHeight
 }
 
 // Update implements ebiten.Game
 func (g *Game) Update() error {
-	g.Engines.GetConfig().Scale = g.scale
 	g.Background.GetConfig().Scale = g.scale
+	g.Engines.GetConfig().Scale = g.scale
 
-	_ = g.Input.Update()
-	_ = g.Background.Update()
-	return g.Engines.Update()
+	switch g.Mode {
+	case ModePause:
+		g.Engines.GetConfig().Pause = true
+	case ModeGame:
+		_ = g.Background.Update()
+		_ = g.Engines.Update()
+	}
+
+	return nil
 }
 
 // Draw implements ebiten.Game
 func (g *Game) Draw(screen *ebiten.Image) {
 	switch g.Mode {
 	case ModePause:
-		// TODO: print pause menu and catch key for switch to game mode
+		g.drawPause(screen)
 	case ModeGame:
 		g.drawGame(screen)
 	}
@@ -94,6 +90,15 @@ func (g *Game) GetScale() float64 {
 
 func (g *Game) SetScale(f float64) {
 	g.scale = f
+}
+
+func (g *Game) drawPause(screen *ebiten.Image) {
+	g.Background.Draw(screen)
+
+	g.Engines.GetConfig().Pause = true
+	g.Engines.Draw(screen)
+
+	// TODO: Draw pause menu here and catch input for continue
 }
 
 func (g *Game) drawGame(screen *ebiten.Image) {

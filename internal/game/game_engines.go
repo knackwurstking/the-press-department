@@ -8,8 +8,10 @@ import (
 )
 
 type EnginesConfig struct {
+	Pause bool
+
 	Scale float64
-	Input GameComponent[InputConfig]
+	Input GameComponent[EnginesInputConfig]
 
 	BPM float64 // BPM are the bumps per minute (the press speed)
 
@@ -80,38 +82,38 @@ func (e *Engines) Layout(outsideWidth, outsideHeight int) (int, int) {
 	e.screenWidth = float64(outsideWidth)
 
 	e.Conveyor.Layout(outsideWidth, outsideHeight)
+	e.config.Input.Layout(outsideWidth, outsideHeight)
 
 	return outsideWidth, outsideWidth
 }
 
 func (e *Engines) Update() error {
+	next := time.Now()
+	e.updateConveyor(next)
+
+	// Press a tile
+	e.updatePress(next)
+
+	// Handle user input
 	e.config.Input.GetConfig().ThrowAwayPaddingTop = e.Conveyor.GetConfig().Y - 10
 	e.config.Input.GetConfig().ThrowAwayPaddingBottom = e.Conveyor.GetConfig().Y + e.Conveyor.GetConfig().GetHeight() + 10
 	e.config.Input.GetConfig().Tiles = e.config.tiles
 	_ = e.config.Input.Update()
 
-	// update existing tile positions
-	next := time.Now()
-
-	e.updateConveyor(next)
-
-	// move tiles
+	// Move tiles
 	e.updateTiles(next)
 
-	// press a tile
-	e.updatePress(next)
-
-	// set the last update field
+	// Set the last update field
 	e.lastUpdate = next
 
 	return nil
 }
 
 func (e *Engines) Draw(screen *ebiten.Image) {
-	// draw the "Conveyor"
+	// Draw the "Conveyor"
 	e.Conveyor.Draw(screen)
 
-	// draw the tile with the given positions
+	// Draw the tile with the given positions
 	for _, tile := range e.config.tiles {
 		tile.Draw(screen)
 	}
