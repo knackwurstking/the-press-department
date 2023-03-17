@@ -2,9 +2,15 @@ package game
 
 import (
 	"fmt"
+	"image/color"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
+	"github.com/hajimehoshi/ebiten/v2/examples/resources/fonts"
+	"github.com/hajimehoshi/ebiten/v2/text"
+
+	"golang.org/x/image/font"
+	"golang.org/x/image/font/opentype"
 )
 
 var (
@@ -13,7 +19,52 @@ var (
 	// modes
 	ModePause = Mode(1)
 	ModeGame  = Mode(2)
+
+	FontDPI = float64(71)
+
+	FontSize = float64(24)
+	FontFace font.Face
+
+	FontSizeSmall = float64(16)
+	FontFaceSmall font.Face
+
+	FontSizeBig = float64(31)
+	FontFaceBig font.Face
 )
+
+func init() {
+	ttf, err := opentype.Parse(fonts.PressStart2P_ttf)
+	if err != nil {
+		panic(err)
+	}
+
+	FontFace, err = opentype.NewFace(ttf, &opentype.FaceOptions{
+		Size:    FontSize,
+		DPI:     FontDPI,
+		Hinting: font.HintingFull,
+	})
+	if err != nil {
+		panic(err)
+	}
+
+	FontFaceSmall, err = opentype.NewFace(ttf, &opentype.FaceOptions{
+		Size:    FontSizeSmall,
+		DPI:     FontDPI,
+		Hinting: font.HintingFull,
+	})
+	if err != nil {
+		panic(err)
+	}
+
+	FontFaceBig, err = opentype.NewFace(ttf, &opentype.FaceOptions{
+		Size:    FontSizeBig,
+		DPI:     FontDPI,
+		Hinting: font.HintingFull,
+	})
+	if err != nil {
+		panic(err)
+	}
+}
 
 type Mode int
 
@@ -29,7 +80,7 @@ type Game struct {
 
 func NewGame(scale float64) *Game {
 	game := &Game{
-		Mode: ModeGame,
+		Mode: ModePause,
 		Background: NewBackground(&BackgroundConfig{
 			Scale: scale,
 			Image: ebiten.NewImageFromImage(ImageGround),
@@ -98,7 +149,25 @@ func (g *Game) drawPause(screen *ebiten.Image) {
 	g.Engines.GetConfig().Pause = true
 	g.Engines.Draw(screen)
 
-	// TODO: Draw pause menu here and catch input for continue
+	titleTexts := []string{
+		"PAUSE",
+	}
+
+	texts := []string{
+		"Press a key (or just touch) to start.",
+	}
+
+	for i, l := range titleTexts {
+		x := int((g.screenWidth - len(l)*int(FontSizeBig)) / 2)
+		y := (i + 4) * int(FontSizeBig)
+		text.Draw(screen, l, FontFaceBig, x, y, color.White)
+	}
+
+	for i, l := range texts {
+		x := int((g.screenWidth - len(l)*int(FontSizeSmall)) / 2)
+		y := ((len(titleTexts) + 3) * int(FontSizeBig)) + ((i + 4) * int(FontSizeSmall))
+		text.Draw(screen, l, FontFaceSmall, x, y, color.White)
+	}
 }
 
 func (g *Game) drawGame(screen *ebiten.Image) {
