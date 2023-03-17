@@ -10,7 +10,7 @@
 
 ## v0.0.4 [unreleased]
 
-- [ ] Handle `Game.ScreenHeight` and `Game.ScreenWidth` change
+- [-] Handle `Game.ScreenHeight` and `Game.ScreenWidth` change
 - [ ] Update debug stuff (tiles counter)
 - [ ] Pause game if screen off
 - [ ] Add some overlay (Pause and continue button)

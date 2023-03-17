@@ -30,9 +30,9 @@ type BackgroundConfig struct {
 
 // Background for the game (just some shit with grey)
 type Background struct {
-	game         *Game
-	config       *BackgroundConfig
-	imageOptions *ebiten.DrawImageOptions
+	config                    *BackgroundConfig
+	imageOptions              *ebiten.DrawImageOptions
+	screenWidth, screenHeight float64
 }
 
 func NewBackground(config *BackgroundConfig) *Background {
@@ -44,6 +44,13 @@ func NewBackground(config *BackgroundConfig) *Background {
 	}
 }
 
+func (b *Background) Layout(outsideWidth, outsideHeight int) (int, int) {
+	b.screenWidth = float64(outsideHeight)
+	b.screenHeight = float64(outsideHeight)
+
+	return outsideWidth, outsideHeight
+}
+
 func (b *Background) Update() error {
 	return nil
 }
@@ -52,8 +59,8 @@ func (b *Background) Draw(screen *ebiten.Image) {
 	w, h := b.config.Image.Size()
 	imageWidth := float64(w) * b.config.Scale
 	imageHeight := float64(h) * b.config.Scale
-	col := int(math.Ceil(float64(b.game.ScreenWidth) / imageWidth))
-	row := int(math.Ceil(float64(b.game.ScreenHeight) / imageHeight))
+	col := int(math.Ceil(b.screenWidth / imageWidth))
+	row := int(math.Ceil(b.screenHeight / imageHeight))
 
 	for r := 0; r < row; r++ {
 		for c := 0; c < col; c++ {
@@ -66,10 +73,6 @@ func (b *Background) Draw(screen *ebiten.Image) {
 			screen.DrawImage(b.config.Image, b.imageOptions)
 		}
 	}
-}
-
-func (b *Background) SetGame(game *Game) {
-	b.game = game
 }
 
 func (b *Background) SetConfig(config *BackgroundConfig) {

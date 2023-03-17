@@ -18,13 +18,13 @@ var (
 // Press 			- produces tiles and outputs each tile to the Engines
 // Engines 		- transports the tiles (from the Press) from A to B
 type Game struct {
-	Input        GameComponent[InputConfig]
-	Background   GameComponent[BackgroundConfig]
-	Engines      GameComponent[EnginesConfig]
-	ScreenWidth  int
-	ScreenHeight int
+	Input      GameComponent[InputConfig]
+	Background GameComponent[BackgroundConfig]
+	Engines    GameComponent[EnginesConfig]
 
-	scale float64
+	screenWidth  int
+	screenHeight int
+	scale        float64
 }
 
 func NewGame(scale float64) *Game {
@@ -44,12 +44,31 @@ func NewGame(scale float64) *Game {
 	}
 
 	// pass game pointer to the engine
-	game.Engines.SetGame(game)
 	game.Engines.GetConfig().Input = game.Input
-	game.Background.SetGame(game)
-	game.Input.SetGame(game)
 
 	return game
+}
+
+// Layout implements ebiten.Game
+func (g *Game) Layout(outsideWidth int, outsideHeight int) (int, int) {
+	g.screenWidth = outsideWidth
+	g.screenHeight = outsideHeight
+
+	g.Input.Layout(g.screenWidth, g.screenHeight)
+	g.Background.Layout(g.screenWidth, g.screenHeight)
+	g.Engines.Layout(g.screenWidth, g.screenHeight)
+
+	return g.screenWidth, g.screenHeight
+}
+
+// Update implements ebiten.Game
+func (g *Game) Update() error {
+	g.Engines.GetConfig().Scale = g.scale
+	g.Background.GetConfig().Scale = g.scale
+
+	_ = g.Input.Update()
+	_ = g.Background.Update()
+	return g.Engines.Update()
 }
 
 // Draw implements ebiten.Game
@@ -59,24 +78,6 @@ func (g *Game) Draw(screen *ebiten.Image) {
 
 	g.debugFPS(screen)
 	g.debugEngines(screen)
-}
-
-// Layout implements ebiten.Game
-func (g *Game) Layout(outsideWidth int, outsideHeight int) (int, int) {
-	g.ScreenWidth = outsideWidth
-	g.ScreenHeight = outsideHeight
-
-	return g.ScreenWidth, g.ScreenHeight
-}
-
-// Update implements ebiten.Game
-func (g *Game) Update() error {
-	if g.Engines.GetConfig().Scale != g.scale {
-		g.Engines.GetConfig().Scale = g.scale
-		g.Background.GetConfig().Scale = g.scale
-	}
-
-	return g.Engines.Update()
 }
 
 func (g *Game) GetScale() float64 {
@@ -97,7 +98,7 @@ func (g *Game) debugEngines(screen *ebiten.Image) {
 	ebitenutil.DebugPrintAt(
 		screen,
 		counter,
-		g.ScreenWidth-(len(counter)*6+2),
+		g.screenWidth-(len(counter)*6+2),
 		0,
 	)
 
@@ -110,7 +111,7 @@ func (g *Game) debugEngines(screen *ebiten.Image) {
 	ebitenutil.DebugPrintAt(
 		screen,
 		counter,
-		g.ScreenWidth-(len(counter)*6+2),
+		g.screenWidth-(len(counter)*6+2),
 		16,
 	)
 
@@ -124,7 +125,7 @@ func (g *Game) debugEngines(screen *ebiten.Image) {
 	ebitenutil.DebugPrintAt(
 		screen,
 		counter,
-		g.ScreenWidth-(len(counter)*6+2),
+		g.screenWidth-(len(counter)*6+2),
 		32,
 	)
 }

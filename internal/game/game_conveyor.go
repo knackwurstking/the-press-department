@@ -38,9 +38,9 @@ func (c *ConveyorConfig) GetHeight() float64 {
 }
 
 type Conveyor struct {
-	game   *Game
-	config *ConveyorConfig
-	rolls  []Coord
+	config                    *ConveyorConfig
+	rolls                     []Coord
+	screenWidth, screenHeight float64
 }
 
 func NewConveyor(config *ConveyorConfig) *Conveyor {
@@ -52,10 +52,11 @@ func NewConveyor(config *ConveyorConfig) *Conveyor {
 	return c
 }
 
-func (c *Conveyor) Draw(screen *ebiten.Image) {
-	for i := 0; i < len(c.rolls); i++ {
-		c.config.Sprite.Draw(screen, c.rolls[i].X, c.rolls[i].Y)
-	}
+func (c *Conveyor) Layout(outsideWidth, outsideHeight int) (int, int) {
+	c.screenWidth = float64(outsideHeight)
+	c.screenHeight = float64(outsideHeight)
+
+	return outsideWidth, outsideHeight
 }
 
 func (c *Conveyor) Update() error {
@@ -74,8 +75,10 @@ func (c *Conveyor) Update() error {
 	return nil
 }
 
-func (c *Conveyor) SetGame(game *Game) {
-	c.game = game
+func (c *Conveyor) Draw(screen *ebiten.Image) {
+	for i := 0; i < len(c.rolls); i++ {
+		c.config.Sprite.Draw(screen, c.rolls[i].X, c.rolls[i].Y)
+	}
 }
 
 func (c *Conveyor) SetConfig(config *ConveyorConfig) {

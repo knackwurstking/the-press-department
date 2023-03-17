@@ -13,7 +13,6 @@ type InputConfig struct {
 
 // Input reads for example drag input like up/down (touch support for mobile)
 type Input struct {
-	game   *Game
 	config *InputConfig
 
 	touchIDs []ebiten.TouchID
@@ -30,6 +29,10 @@ func NewInput(config *InputConfig) *Input {
 		config: config,
 		touch:  make(map[ebiten.TouchID]struct{}),
 	}
+}
+
+func (i *Input) Layout(outsideWidth, outsideHeight int) (int, int) {
+	return outsideWidth, outsideHeight
 }
 
 func (i *Input) Draw(screen *ebiten.Image) {
@@ -106,10 +109,6 @@ func (i *Input) checkForTile(x, y float64, tiles []*Tile) *Tile {
 	}
 
 	return nil
-}
-
-func (i *Input) SetGame(game *Game) {
-	i.game = game
 }
 
 func (i *Input) SetConfig(config *InputConfig) {

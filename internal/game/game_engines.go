@@ -30,10 +30,10 @@ func (c *EnginesConfig) GetTiles() []*Tile {
 
 // Board holds all the data and coordinates (like tiles positions and engine positions)
 type Engines struct {
-	game   *Game
-	config *EnginesConfig
-
 	Conveyor GameComponent[ConveyorConfig]
+
+	config                    *EnginesConfig
+	screenWidth, screenHeight float64
 
 	tilesToUse []*ebiten.Image
 	lastTile   time.Time
@@ -65,14 +65,23 @@ func NewEngines(config *EnginesConfig) *Engines {
 	return e
 }
 
-func (e *Engines) Draw(screen *ebiten.Image) {
-	// draw the "Conveyor"
-	e.Conveyor.Draw(screen)
+func (e *Engines) Layout(outsideWidth, outsideHeight int) (int, int) {
+	if e.screenHeight != float64(outsideHeight) {
+		e.screenHeight = float64(outsideHeight)
 
-	// draw the tile with the given positions
-	for _, tile := range e.config.tiles {
-		tile.Draw(screen)
+		// update tiles
+		for _, t := range e.config.tiles {
+			if !t.IsThrownAway() {
+				t.Y = (e.screenHeight / 2) - (t.GetHeight() / 2)
+			}
+		}
 	}
+
+	e.screenWidth = float64(outsideHeight)
+
+	e.Conveyor.Layout(outsideWidth, outsideHeight)
+
+	return outsideWidth, outsideWidth
 }
 
 func (e *Engines) Update() error {
@@ -98,8 +107,14 @@ func (e *Engines) Update() error {
 	return nil
 }
 
-func (e *Engines) SetGame(game *Game) {
-	e.game = game
+func (e *Engines) Draw(screen *ebiten.Image) {
+	// draw the "Conveyor"
+	e.Conveyor.Draw(screen)
+
+	// draw the tile with the given positions
+	for _, tile := range e.config.tiles {
+		tile.Draw(screen)
+	}
 }
 
 func (e *Engines) SetConfig(config *EnginesConfig) {
@@ -116,8 +131,8 @@ func (e *Engines) updateConveyor(next time.Time) {
 	e.Conveyor.GetConfig().SetUpdateData(
 		e.calcR(next), // r
 		0,             // x
-		float64(e.game.ScreenHeight)/2-(e.Conveyor.GetConfig().GetHeight()/2), // y
-		float64(e.game.ScreenWidth), // width
+		e.screenHeight/2-(e.Conveyor.GetConfig().GetHeight()/2), // y
+		e.screenWidth, // width
 	)
 	_ = e.Conveyor.Update()
 }
@@ -127,15 +142,11 @@ func (e *Engines) updatePress(next time.Time) {
 	if e.lastTile.Add(time.Microsecond*time.Duration(60/e.config.BPM*1000000)).UnixMicro() <= next.UnixMicro() {
 		// get a new tile here
 		tile := NewTile(e.config.Scale, e.randomTile())
-
-		tile.X = float64(e.game.ScreenWidth)
-		tile.Y = (float64(e.game.ScreenHeight) / 2) - (tile.GetHeight() / 2)
+		tile.X = e.screenWidth
+		tile.Y = (e.screenHeight / 2) - (tile.GetHeight() / 2)
 
 		e.config.tiles = append(e.config.tiles, tile)
-
 		e.config.tilesCount += 1
-
-		// and update `e.lastTile`
 		e.lastTile = next
 	}
 }
@@ -146,7 +157,7 @@ func (e *Engines) updateTiles(next time.Time) {
 		// check for thrownAway tiles firs
 		if e.config.tiles[i].IsThrownAway() {
 			// throw away animation (up if tiles y lower then the initial y set from the press)
-			pressY := (float64(e.game.ScreenHeight) / 2) - (e.config.tiles[i].GetHeight() / 2)
+			pressY := (e.screenHeight / 2) - (e.config.tiles[i].GetHeight() / 2)
 			r := float64(next.Sub(e.lastUpdate).Seconds()) * (250) * (e.config.Scale * 10)
 			if e.config.tiles[i].Y <= pressY {
 				e.config.tiles[i].Y -= r
@@ -161,7 +172,7 @@ func (e *Engines) updateTiles(next time.Time) {
 		if e.config.tiles[i].X <= 0-e.config.tiles[i].GetWidth() {
 			e.config.tiles = e.config.tiles[i+1:]
 			break
-		} else if e.config.tiles[i].Y <= 0-e.config.tiles[i].GetHeight() || e.config.tiles[i].Y >= float64(e.game.ScreenHeight) {
+		} else if e.config.tiles[i].Y <= 0-e.config.tiles[i].GetHeight() || e.config.tiles[i].Y >= e.screenHeight {
 			toRemove = append(toRemove, e.config.tiles[i])
 		}
 	}

@@ -7,9 +7,9 @@ type GameComponentConfig interface {
 }
 
 type GameComponent[T GameComponentConfig] interface {
-	SetGame(game *Game)
 	SetConfig(config *T)
 	GetConfig() *T
+	Layout(outsideWidth, outsideHeight int) (int, int)
 	Draw(screen *ebiten.Image)
 	Update() error
 }
