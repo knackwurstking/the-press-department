@@ -88,12 +88,13 @@ func NewGame(scale float64) *Game {
 		Engines: NewEngines(&EnginesConfig{
 			Input:      NewEnginesInput(&EnginesInputConfig{}),
 			Scale:      scale,
-			BPM:        6.5,
-			Hz:         8,
 			HzMultiply: 2.5,
 		}),
 		scale: scale,
 	}
+
+	game.Engines.GetConfig().SetHz(8.0)
+	game.Engines.GetConfig().SetBPM(6.5)
 
 	return game
 }
@@ -118,9 +119,11 @@ func (g *Game) Update() error {
 	case ModePause:
 		g.Engines.GetConfig().Pause = true
 	case ModeGame:
-		_ = g.Background.Update()
-		_ = g.Engines.Update()
+		g.Engines.GetConfig().Pause = false
 	}
+
+	_ = g.Background.Update()
+	_ = g.Engines.Update()
 
 	return nil
 }
@@ -145,8 +148,6 @@ func (g *Game) SetScale(f float64) {
 
 func (g *Game) drawPause(screen *ebiten.Image) {
 	g.Background.Draw(screen)
-
-	g.Engines.GetConfig().Pause = true
 	g.Engines.Draw(screen)
 
 	titleTexts := []string{
@@ -168,19 +169,24 @@ func (g *Game) drawPause(screen *ebiten.Image) {
 		y := ((len(titleTexts) + 3) * int(FontSizeBig)) + ((i + 4) * int(FontSizeSmall))
 		text.Draw(screen, l, FontFaceSmall, x, y, color.White)
 	}
+
+	g.drawDebug(screen)
 }
 
 func (g *Game) drawGame(screen *ebiten.Image) {
 	// run the game
 	g.Background.Draw(screen)
 	g.Engines.Draw(screen)
+	g.drawDebug(screen)
+}
 
+func (g *Game) drawDebug(screen *ebiten.Image) {
 	// debug overlay: "FPS"
 	ebitenutil.DebugPrintAt(screen, fmt.Sprintf("%.0f", ebiten.ActualFPS()), 0, 0)
 
 	// debug overlay: "Engines Info"
 	// 1. Row
-	counter := fmt.Sprintf("Press Speed: %.1fh", g.Engines.GetConfig().BPM)
+	counter := fmt.Sprintf("Press Speed: %.1fh", g.Engines.GetConfig().GetBPM())
 	ebitenutil.DebugPrintAt(screen, counter, g.screenWidth-(len(counter)*6+2), 0)
 
 	// 2. Row
@@ -190,6 +196,6 @@ func (g *Game) drawGame(screen *ebiten.Image) {
 
 	// 3. Row
 	counter = fmt.Sprintf("RB: %d [%.1f hz]", len(g.Engines.GetConfig().GetTiles()),
-		g.Engines.GetConfig().Hz)
+		g.Engines.GetConfig().GetHz())
 	ebitenutil.DebugPrintAt(screen, counter, g.screenWidth-(len(counter)*6+2), 32)
 }

@@ -8,14 +8,14 @@ import (
 )
 
 type EnginesConfig struct {
-	Pause bool
+	Pause bool // Pause will top the machines :)
 
 	Scale float64
 	Input GameComponent[EnginesInputConfig]
 
-	BPM float64 // BPM are the bumps per minute (the press speed)
+	bpm float64 // BPM are the bumps per minute (the press speed)
 
-	Hz         float64 // MPM are the miles per seconds (the engine speed)
+	hz         float64 // MPM are the miles per seconds (the engine speed)
 	HzMultiply float64
 
 	tilesCount int
@@ -28,6 +28,28 @@ func (c *EnginesConfig) GetTilesCount() int {
 
 func (c *EnginesConfig) GetTiles() []*Tile {
 	return c.tiles
+}
+
+func (c *EnginesConfig) GetBPM() float64 {
+	if c.Pause {
+		return 0
+	}
+	return c.bpm
+}
+
+func (c *EnginesConfig) SetBPM(bpm float64) {
+	c.bpm = bpm
+}
+
+func (c *EnginesConfig) GetHz() float64 {
+	if c.Pause {
+		return 0
+	}
+	return c.hz
+}
+
+func (c *EnginesConfig) SetHz(hz float64) {
+	c.hz = hz
 }
 
 // Board holds all the data and coordinates (like tiles positions and engine positions)
@@ -128,7 +150,7 @@ func (e *Engines) GetConfig() *EnginesConfig {
 }
 
 func (e *Engines) updateConveyor(next time.Time) {
-	e.Conveyor.GetConfig().Hz = e.config.Hz
+	e.Conveyor.GetConfig().Hz = e.config.GetHz()
 	e.Conveyor.GetConfig().HzMultiply = e.config.HzMultiply
 	e.Conveyor.GetConfig().SetUpdateData(
 		e.calcR(next), // r
@@ -140,8 +162,14 @@ func (e *Engines) updateConveyor(next time.Time) {
 }
 
 func (e *Engines) updatePress(next time.Time) {
+	if e.config.Pause {
+		// on pause just add the diff between next and last and add it to last
+		e.lastTile = e.lastTile.Add(next.Sub(e.lastTile))
+		return
+	}
+
 	// check time and get a tile based on BPM
-	if e.lastTile.Add(time.Microsecond*time.Duration(60/e.config.BPM*1000000)).UnixMicro() <= next.UnixMicro() {
+	if e.lastTile.Add(time.Microsecond*time.Duration(60/e.config.GetBPM()*1000000)).UnixMicro() <= next.UnixMicro() {
 		// get a new tile here
 		tile := NewTile(e.config.Scale, e.randomTile())
 		tile.X = e.screenWidth
@@ -190,7 +218,7 @@ func (e *Engines) updateTiles(next time.Time) {
 }
 
 func (e *Engines) calcR(next time.Time) float64 {
-	return (float64(next.Sub(e.lastUpdate).Seconds()) * (e.config.HzMultiply * e.config.Hz)) * (e.config.Scale * 10)
+	return (float64(next.Sub(e.lastUpdate).Seconds()) * (e.config.HzMultiply * e.config.GetHz())) * (e.config.Scale * 10)
 }
 
 func (e *Engines) randomTile() *ebiten.Image {
