@@ -31,7 +31,7 @@ func (s *Stats) AddGoodTile() {
 
 func (s *Stats) AddBadTile() {
 	s.BadTiles++
-	s.Money -= 250
+	s.Money -= 500
 }
 
 // "add thrown away good tile", "add thrown away bad tile"

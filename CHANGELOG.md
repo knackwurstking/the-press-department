@@ -10,8 +10,6 @@
 
 ## v0.0.4 [unreleased]
 
-- [ ] Display debug stats for good tiles and bad tiles
-
 - Doing some code clean up
 - Adding `Components` interface (`Input`, `BackGround`, `Engines`, `Conveyor`)
 - Handle `screenHeight` and `screenWidth` change (`Layout`)
