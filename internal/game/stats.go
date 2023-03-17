@@ -23,3 +23,28 @@ type Stats struct {
 	// ConveyorHzMultiply (setup value)
 	ConveyorHzMultiply float64 `json:"conveyor-hz-multiply"`
 }
+
+func (s *Stats) AddGoodTile() {
+	s.GoodTiles++
+	s.Money += 100
+}
+
+func (s *Stats) AddBadTile() {
+	s.BadTiles++
+	s.Money -= 250
+}
+
+// TODO: "add thrown away good tile", "add thrown away bad tile"
+func (s *Stats) AddThrownAwayTile(tile *Tile) {
+	if !tile.IsThrownAway() {
+		return
+	}
+
+	// TODO: check if tile was ok (if ok then add a penalty "-1000$")...
+	//switch tile.State {
+	//case StateCrack:
+	//	s.Money -= 50
+	//case StateOK:
+	//	s.Money -= 1000
+	//}
+}

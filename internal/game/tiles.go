@@ -91,3 +91,6 @@ func (t *Tile) SetThrownAway() {
 func (t *Tile) IsThrownAway() bool {
 	return t.thrownAway
 }
+
+// TODO: add type State (StateCrack, StateOK)
+// TODO: add public Tile field "State"
