@@ -112,6 +112,7 @@ func NewGame(scale float64) *Game {
 	game := &Game{
 		Mode: ModePause,
 		Stats: Stats{
+			TilesProduced:      0,
 			PressBPM:           6.5,
 			ConveyorHz:         8.0,
 			ConveyorHzMultiply: 2.5,
@@ -130,6 +131,7 @@ func NewGame(scale float64) *Game {
 	game.Engines.GetConfig().SetBPM(&game.Stats.PressBPM)
 	game.Engines.GetConfig().SetHz(&game.Stats.ConveyorHz)
 	game.Engines.GetConfig().SetHzMultiply(&game.Stats.ConveyorHzMultiply)
+	game.Engines.GetConfig().SetTilesCount(&game.Stats.TilesProduced)
 
 	return game
 }

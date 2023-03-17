@@ -16,17 +16,25 @@ type EnginesConfig struct {
 	bpm        *float64 // BPM are the bumps per minute (the press speed)
 	hz         *float64 // MPM are the miles per seconds (the engine speed)
 	hzMultiply *float64
+	tilesCount *int
 
-	tilesCount int
-	tiles      []*Tile
-}
-
-func (c *EnginesConfig) GetTilesCount() int {
-	return c.tilesCount
+	tiles []*Tile
 }
 
 func (c *EnginesConfig) GetTiles() []*Tile {
 	return c.tiles
+}
+
+func (c *EnginesConfig) GetTilesCount() int {
+	if c.tilesCount == nil {
+		return 0
+	}
+
+	return *c.tilesCount
+}
+
+func (c *EnginesConfig) SetTilesCount(n *int) {
+	c.tilesCount = n
 }
 
 func (c *EnginesConfig) GetBPM() float64 {
@@ -190,7 +198,7 @@ func (e *Engines) updatePress(next time.Time) {
 		tile.Y = (e.screenHeight / 2) - (tile.GetHeight() / 2)
 
 		e.config.tiles = append(e.config.tiles, tile)
-		e.config.tilesCount += 1
+		*e.config.tilesCount++
 		e.lastTile = next
 	}
 }
