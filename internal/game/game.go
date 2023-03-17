@@ -118,7 +118,7 @@ func (g *Game) Update() error {
 	switch g.Mode {
 	case ModePause:
 		g.Engines.GetConfig().Pause = true
-		// TODO: Listen for keys to continue (or start the game)
+		// Listen for keys to continue (or start the game)
 		if g.isKeyPressed() {
 			// Continue or start the game
 			g.Engines.GetConfig().Pause = false
@@ -143,15 +143,8 @@ func (g *Game) Draw(screen *ebiten.Image) {
 	}
 }
 
-func (g *Game) GetScale() float64 {
-	return g.scale
-}
-
-func (g *Game) SetScale(f float64) {
-	g.scale = f
-}
-
 func (g *Game) isKeyPressed() bool {
+	// TODO: catch any possible key
 	return false
 }
 
