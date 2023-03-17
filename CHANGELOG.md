@@ -12,11 +12,12 @@
 
 - [ ] Add some overlay (Pause and continue button)
 - [ ] Add Money system (overlay), get 100$ for a good tile and loose 200$ for a
-      bad tile, loose 10$ for a thrown away (bad) tile and loose 1000$ for a 
+      bad tile, loose 10$ for a thrown away (bad) tile and loose 1000$ for a
       thrown away good tile
 - [ ] Find a way to save the game (stats only)
 
 - Doing some code clean up
-- Adding `GameComponents` interface (`Input`, `BackGround`, `Engines`, `Conveyor`)
+- Adding `Components` interface (`Input`, `BackGround`, `Engines`, `Conveyor`)
 - Handle `Game.ScreenHeight` and `Game.ScreenWidth` change
 - Adding a pause menu
+- Adding Tiles interface
