@@ -53,7 +53,7 @@ func NewConveyor(config *ConveyorConfig) *Conveyor {
 }
 
 func (c *Conveyor) Layout(outsideWidth, outsideHeight int) (int, int) {
-	c.screenWidth = float64(outsideHeight)
+	c.screenWidth = float64(outsideWidth)
 	c.screenHeight = float64(outsideHeight)
 
 	return outsideWidth, outsideHeight

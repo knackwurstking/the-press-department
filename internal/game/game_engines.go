@@ -77,7 +77,7 @@ func (e *Engines) Layout(outsideWidth, outsideHeight int) (int, int) {
 		}
 	}
 
-	e.screenWidth = float64(outsideHeight)
+	e.screenWidth = float64(outsideWidth)
 
 	e.Conveyor.Layout(outsideWidth, outsideHeight)
 

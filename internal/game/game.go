@@ -22,9 +22,8 @@ type Game struct {
 	Background GameComponent[BackgroundConfig]
 	Engines    GameComponent[EnginesConfig]
 
-	screenWidth  int
-	screenHeight int
-	scale        float64
+	screenWidth, screenHeight int
+	scale                     float64
 }
 
 func NewGame(scale float64) *Game {
@@ -54,11 +53,11 @@ func (g *Game) Layout(outsideWidth int, outsideHeight int) (int, int) {
 	g.screenWidth = outsideWidth
 	g.screenHeight = outsideHeight
 
-	g.Input.Layout(g.screenWidth, g.screenHeight)
-	g.Background.Layout(g.screenWidth, g.screenHeight)
-	g.Engines.Layout(g.screenWidth, g.screenHeight)
+	g.Background.Layout(outsideWidth, outsideHeight)
+	g.Engines.Layout(outsideWidth, outsideHeight)
+	g.Input.Layout(outsideWidth, outsideHeight)
 
-	return g.screenWidth, g.screenHeight
+	return outsideWidth, outsideHeight
 }
 
 // Update implements ebiten.Game

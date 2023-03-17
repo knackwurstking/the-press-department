@@ -45,7 +45,7 @@ func NewBackground(config *BackgroundConfig) *Background {
 }
 
 func (b *Background) Layout(outsideWidth, outsideHeight int) (int, int) {
-	b.screenWidth = float64(outsideHeight)
+	b.screenWidth = float64(outsideWidth)
 	b.screenHeight = float64(outsideHeight)
 
 	return outsideWidth, outsideHeight
