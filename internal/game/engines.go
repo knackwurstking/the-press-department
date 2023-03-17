@@ -215,14 +215,11 @@ func (e *Engines) updateTiles(next time.Time) {
 			if !t.IsThrownAway() {
 				switch t.Data().State {
 				case StateOK:
-					log.Println("Add a good tile", t)
 					e.data.Stats.AddGoodTile()
 				default:
-					log.Println("Add a bad tile", t)
 					e.data.Stats.AddBadTile()
 				}
 			} else {
-				log.Println("Add tile throw away", t)
 				e.data.Stats.AddThrownAwayTile(t)
 			}
 
