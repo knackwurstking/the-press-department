@@ -13,10 +13,10 @@ type EnginesData struct {
 
 	Scale float64
 
-	tiles []Tiles[TileData]
+	tiles []Tiles
 }
 
-func (c *EnginesData) GetTiles() []Tiles[TileData] {
+func (c *EnginesData) GetTiles() []Tiles {
 	return c.tiles
 }
 
@@ -170,7 +170,7 @@ func (e *Engines) updatePress(next time.Time) {
 	// check time and get a tile based on BPM
 	if e.lastTile.Add(time.Microsecond*time.Duration(60/e.data.GetBPM()*1000000)).UnixMicro() <= next.UnixMicro() {
 		// get a new tile here
-		var tile = NewTile(&TileData{
+		var tile = NewTile(&TilesData{
 			State: e.getRandomState(),
 			Scale: &e.data.Scale,
 		})
@@ -186,7 +186,7 @@ func (e *Engines) updatePress(next time.Time) {
 }
 
 func (e *Engines) updateTiles(next time.Time) {
-	toRemove := make([]Tiles[TileData], 0)
+	toRemove := make([]Tiles, 0)
 
 	// Update new tiles position
 	for i, t := range e.data.tiles {
@@ -195,7 +195,8 @@ func (e *Engines) updateTiles(next time.Time) {
 
 		// Check if tile has thrownAway state
 		if t.IsThrownAway() {
-			// TODO: Handle game stats counter for "Money"
+			// Handle game stats counter for "Money" (check the tile state first)
+			e.data.Stats.AddThrownAwayTile(t)
 
 			// Animation
 			pressY := (e.screenHeight / 2) - (h / 2)

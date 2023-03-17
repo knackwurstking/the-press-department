@@ -8,7 +8,7 @@ import (
 type EnginesInputData struct {
 	ThrowAwayPaddingTop    float64
 	ThrowAwayPaddingBottom float64
-	Tiles                  []Tiles[TileData]
+	Tiles                  []Tiles
 }
 
 // Input reads for example drag input like up/down (touch support for mobile)
@@ -20,7 +20,7 @@ type EnginesInput struct {
 	startY float64
 	lastY  float64
 
-	tile  Tiles[TileData]
+	tile  Tiles
 	touch map[ebiten.TouchID]struct{}
 }
 
@@ -105,7 +105,7 @@ func (i *EnginesInput) Update() error {
 	return nil
 }
 
-func (i *EnginesInput) checkForTile(x, y float64, tiles []Tiles[TileData]) Tiles[TileData] {
+func (i *EnginesInput) checkForTile(x, y float64, tiles []Tiles) Tiles {
 	for _, tile := range tiles {
 		w, _ := tile.Size()
 		if x >= tile.Data().X && x <= tile.Data().X+w {

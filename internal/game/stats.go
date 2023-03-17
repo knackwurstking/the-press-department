@@ -34,8 +34,8 @@ func (s *Stats) AddBadTile() {
 	s.Money -= 250
 }
 
-// TODO: "add thrown away good tile", "add thrown away bad tile"
-func (s *Stats) AddThrownAwayTile(tile *Tile) {
+// "add thrown away good tile", "add thrown away bad tile"
+func (s *Stats) AddThrownAwayTile(tile Tiles) {
 	if !tile.IsThrownAway() {
 		return
 	}
