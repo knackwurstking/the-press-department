@@ -1,5 +1,7 @@
 package game
 
+import "log"
+
 // Stats for saving the game state
 type Stats struct {
 	// Money holds the number of your money
@@ -27,24 +29,29 @@ type Stats struct {
 func (s *Stats) AddGoodTile() {
 	s.GoodTiles++
 	s.Money += 100
+	log.Println("-100$")
 }
 
 func (s *Stats) AddBadTile() {
 	s.BadTiles++
 	s.Money -= 500
+	log.Println("-500$")
 }
 
 // "add thrown away good tile", "add thrown away bad tile"
 func (s *Stats) AddThrownAwayTile(tile Tiles) {
 	if !tile.IsThrownAway() {
+		log.Println("no, tile not thrown away")
 		return
 	}
 
 	// check if tile was ok (if ok then add a penalty "-1000$")...
 	switch tile.Data().State {
 	case StateCrack:
+		log.Println("-50$")
 		s.Money -= 50
 	case StateOK:
+		log.Println("-1000$")
 		s.Money -= 1000
 	}
 }

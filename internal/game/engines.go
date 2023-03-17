@@ -1,6 +1,7 @@
 package game
 
 import (
+	"log"
 	"math/rand"
 	"time"
 
@@ -189,7 +190,7 @@ func (e *Engines) updateTiles(next time.Time) {
 	toRemove := make([]Tiles, 0)
 
 	// Update new tiles position
-	for i, t := range e.data.tiles {
+	for _, t := range e.data.tiles {
 		d := t.Data()
 		w, h := t.Size()
 
@@ -209,37 +210,35 @@ func (e *Engines) updateTiles(next time.Time) {
 		d.X -= e.calcR(next)
 
 		// Set tiles which are out of screen to remove
-		if d.X <= 0-w { // x-axis
-			// Handle game stats for "Money", "GoodTiles" and "BadTiles"
-			for _, t := range e.data.tiles[i+1:] {
-				// Money management
-				if !t.IsThrownAway() {
-					switch t.Data().State {
-					case StateOK:
-						e.data.Stats.AddGoodTile()
-					default:
-						e.data.Stats.AddBadTile()
-					}
-				} else {
-					e.data.Stats.AddThrownAwayTile(t)
-				}
-			}
-
-			e.data.tiles = e.data.tiles[i+1:]
-			break
-		} else if d.Y <= 0-h || d.Y >= e.screenHeight {
-			toRemove = append(toRemove, t)
-
+		if d.X <= 0-w || d.Y <= 0-h || d.Y >= e.screenHeight { // x-axis
 			// Money management
-			if t.IsThrownAway() {
-				// Handle game stats counter for "Money" (check the tile state first)
+			if !t.IsThrownAway() {
+				switch t.Data().State {
+				case StateOK:
+					log.Println("Add a good tile", t)
+					e.data.Stats.AddGoodTile()
+				default:
+					log.Println("Add a bad tile", t)
+					e.data.Stats.AddBadTile()
+				}
+			} else {
+				log.Println("Add tile throw away", t)
 				e.data.Stats.AddThrownAwayTile(t)
 			}
+
+			toRemove = append(toRemove, t)
 		}
 	}
 
 	// Remove it
 	for _, t := range toRemove {
+		// Money management
+		if t.IsThrownAway() {
+			// Handle game stats counter for "Money" (check the tile state first)
+			log.Println("Add tile throw away", t)
+			e.data.Stats.AddThrownAwayTile(t)
+		}
+
 		for i, t2 := range e.data.tiles {
 			if t == t2 {
 				e.data.tiles = append(e.data.tiles[:i], e.data.tiles[i+1:]...)
