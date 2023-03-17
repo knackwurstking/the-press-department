@@ -70,37 +70,13 @@ func init() {
 
 type Mode int
 
-// Stats for saving the game state
-type Stats struct {
-	// Money holds the number of your money
-	Money int `json:"money"`
-
-	// GoodTiles shows the number of good tiles passed
-	GoodTiles int `json:"good-tiles"`
-
-	// BadTiles shows the number of bad tiles passed
-	BadTiles int `json:"bad-tiles"`
-
-	// TilesProduced is the number of tiles produced from press
-	TilesProduced int `json:"tiles-produced"`
-
-	// PressBPM (setup value)
-	PressBPM float64 `json:"press-BPM"`
-
-	// ConveyorHz (setup value)
-	ConveyorHz float64 `json:"conveyor-hz"`
-
-	// ConveyorHzMultiply (setup value)
-	ConveyorHzMultiply float64 `json:"conveyor-hz-multiply"`
-}
-
 // Game controls all the game logic
 type Game struct {
 	Mode       Mode
-	Background GameComponent[BackgroundConfig]
-	Engines    GameComponent[EnginesConfig]
+	Background Component[BackgroundData]
+	Engines    Component[EnginesData]
 
-	Stats Stats
+	Stats *Stats
 
 	screenWidth, screenHeight int
 	scale                     float64
@@ -109,29 +85,27 @@ type Game struct {
 }
 
 func NewGame(scale float64) *Game {
+	stats := &Stats{
+		TilesProduced:      0, // Engines tilesProduced config field
+		PressBPM:           6.5,
+		ConveyorHz:         8.0,
+		ConveyorHzMultiply: 2.5,
+	}
+
 	game := &Game{
-		Mode: ModePause,
-		Stats: Stats{
-			TilesProduced:      0, // Engines tilesProduced config field
-			PressBPM:           6.5,
-			ConveyorHz:         8.0,
-			ConveyorHzMultiply: 2.5,
-		},
-		Background: NewBackground(&BackgroundConfig{
+		Mode:  ModePause,
+		Stats: stats,
+		Background: NewBackground(&BackgroundData{
 			Scale: scale,
 			Image: ebiten.NewImageFromImage(ImageGround),
 		}),
-		Engines: NewEngines(&EnginesConfig{
-			Input: NewEnginesInput(&EnginesInputConfig{}),
+		Engines: NewEngines(&EnginesData{
+			Stats: stats,
+			Input: NewEnginesInput(&EnginesInputData{}),
 			Scale: scale,
 		}),
 		scale: scale,
 	}
-
-	game.Engines.GetConfig().SetBPM(&game.Stats.PressBPM)
-	game.Engines.GetConfig().SetHz(&game.Stats.ConveyorHz)
-	game.Engines.GetConfig().SetHzMultiply(&game.Stats.ConveyorHzMultiply)
-	game.Engines.GetConfig().SetTilesCount(&game.Stats.TilesProduced)
 
 	return game
 }
@@ -154,16 +128,16 @@ func (g *Game) Update() error {
 		g.Mode = ModePause
 	}
 
-	g.Background.GetConfig().Scale = g.scale
-	g.Engines.GetConfig().Scale = g.scale
+	g.Background.GetData().Scale = g.scale
+	g.Engines.GetData().Scale = g.scale
 
 	switch g.Mode {
 	case ModePause:
-		g.Engines.GetConfig().Pause = true
+		g.Engines.GetData().Pause = true
 		// Listen for keys to continue (or start the game)
 		if g.isKeyPressed() {
 			// Continue or start the game
-			g.Engines.GetConfig().Pause = false
+			g.Engines.GetData().Pause = false
 			g.Mode = ModeGame
 		}
 	case ModeGame:
@@ -250,16 +224,15 @@ func (g *Game) drawDebug(screen *ebiten.Image) {
 
 	// debug overlay: "Engines Info"
 	// 1. Row
-	counter := fmt.Sprintf("Press Speed: %.1fh", g.Engines.GetConfig().GetBPM())
+	counter := fmt.Sprintf("Press Speed: %.1fh", g.Engines.GetData().GetBPM())
 	ebitenutil.DebugPrintAt(screen, counter, g.screenWidth-(len(counter)*6+2), 0)
 
 	// 2. Row
-	counter = fmt.Sprintf("Tiles Produced: %d",
-		g.Engines.GetConfig().GetTilesCount())
+	counter = fmt.Sprintf("Tiles Produced: %d", g.Stats.TilesProduced)
 	ebitenutil.DebugPrintAt(screen, counter, g.screenWidth-(len(counter)*6+2), 16)
 
 	// 3. Row
-	counter = fmt.Sprintf("RB: %d [%.1f hz]", len(g.Engines.GetConfig().GetTiles()),
-		g.Engines.GetConfig().GetHz())
+	counter = fmt.Sprintf("RB: %d [%.1f hz]", len(g.Engines.GetData().GetTiles()),
+		g.Engines.GetData().GetHz())
 	ebitenutil.DebugPrintAt(screen, counter, g.screenWidth-(len(counter)*6+2), 32)
 }

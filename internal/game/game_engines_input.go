@@ -5,7 +5,7 @@ import (
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
 )
 
-type EnginesInputConfig struct {
+type EnginesInputData struct {
 	ThrowAwayPaddingTop    float64
 	ThrowAwayPaddingBottom float64
 	Tiles                  []*Tile
@@ -13,7 +13,7 @@ type EnginesInputConfig struct {
 
 // Input reads for example drag input like up/down (touch support for mobile)
 type EnginesInput struct {
-	config *EnginesInputConfig
+	data *EnginesInputData
 
 	touchIDs []ebiten.TouchID
 
@@ -24,10 +24,10 @@ type EnginesInput struct {
 	touch map[ebiten.TouchID]struct{}
 }
 
-func NewEnginesInput(config *EnginesInputConfig) *EnginesInput {
+func NewEnginesInput(data *EnginesInputData) *EnginesInput {
 	return &EnginesInput{
-		config: config,
-		touch:  make(map[ebiten.TouchID]struct{}),
+		data:  data,
+		touch: make(map[ebiten.TouchID]struct{}),
 	}
 }
 
@@ -42,7 +42,7 @@ func (i *EnginesInput) Update() error {
 	// handle mouse input
 	if inpututil.IsMouseButtonJustPressed(ebiten.MouseButtonLeft) {
 		x, y := ebiten.CursorPosition()
-		i.tile = i.checkForTile(float64(x), float64(y), i.config.Tiles)
+		i.tile = i.checkForTile(float64(x), float64(y), i.data.Tiles)
 		if i.tile != nil {
 			i.startY = float64(y)
 			i.lastY = i.startY
@@ -57,8 +57,8 @@ func (i *EnginesInput) Update() error {
 		if i.tile != nil {
 			i.tile.SetDragged(nil)
 
-			if i.tile.Y+i.tile.GetHeight() > i.config.ThrowAwayPaddingBottom ||
-				i.tile.Y < i.config.ThrowAwayPaddingTop {
+			if i.tile.Y+i.tile.GetHeight() > i.data.ThrowAwayPaddingBottom ||
+				i.tile.Y < i.data.ThrowAwayPaddingTop {
 				i.tile.SetThrownAway()
 			}
 
@@ -72,7 +72,7 @@ func (i *EnginesInput) Update() error {
 		// single finger touch
 		touchID := i.touchIDs[0]
 		x, y := ebiten.TouchPosition(touchID)
-		i.tile = i.checkForTile(float64(x), float64(y), i.config.Tiles)
+		i.tile = i.checkForTile(float64(x), float64(y), i.data.Tiles)
 		if i.tile != nil {
 			i.startY = float64(y)
 			i.lastY = i.startY
@@ -82,8 +82,8 @@ func (i *EnginesInput) Update() error {
 				if _x == 0 && _y == 0 {
 					i.tile.SetDragged(nil)
 
-					if i.tile.Y+i.tile.GetHeight() > i.config.ThrowAwayPaddingBottom ||
-						i.tile.Y < i.config.ThrowAwayPaddingTop {
+					if i.tile.Y+i.tile.GetHeight() > i.data.ThrowAwayPaddingBottom ||
+						i.tile.Y < i.data.ThrowAwayPaddingTop {
 						i.tile.SetThrownAway()
 					}
 
@@ -111,10 +111,10 @@ func (i *EnginesInput) checkForTile(x, y float64, tiles []*Tile) *Tile {
 	return nil
 }
 
-func (i *EnginesInput) SetConfig(config *EnginesInputConfig) {
-	i.config = config
+func (i *EnginesInput) SetData(data *EnginesInputData) {
+	i.data = data
 }
 
-func (i *EnginesInput) GetConfig() *EnginesInputConfig {
-	return i.config
+func (i *EnginesInput) GetData() *EnginesInputData {
+	return i.data
 }

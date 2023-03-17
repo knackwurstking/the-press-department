@@ -4,7 +4,7 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
-type ConveyorConfig struct {
+type ConveyorData struct {
 	Sprite     *RollSprite
 	Scale      *float64
 	Hz         float64
@@ -16,14 +16,14 @@ type ConveyorConfig struct {
 	rSum, r, x, y, size float64
 }
 
-func (c *ConveyorConfig) SetUpdateData(r, x, y, size float64) {
+func (c *ConveyorData) SetUpdateData(r, x, y, size float64) {
 	c.r = r
 	c.x = x
 	c.y = y
 	c.size = size
 }
 
-func (c *ConveyorConfig) SetSprite() {
+func (c *ConveyorData) SetSprite() {
 	c.rSum += c.r
 	w, _ := c.Sprite.GetAssetSize()
 	if c.rSum >= w {
@@ -32,21 +32,21 @@ func (c *ConveyorConfig) SetSprite() {
 	}
 }
 
-func (c *ConveyorConfig) GetHeight() float64 {
+func (c *ConveyorData) GetHeight() float64 {
 	_, h := c.Sprite.GetAssetSize()
 	return h
 }
 
 type Conveyor struct {
-	config                    *ConveyorConfig
+	data                      *ConveyorData
 	rolls                     []Coord
 	screenWidth, screenHeight float64
 }
 
-func NewConveyor(config *ConveyorConfig) *Conveyor {
+func NewConveyor(data *ConveyorData) *Conveyor {
 	c := &Conveyor{
-		config: config,
-		rolls:  make([]Coord, 0),
+		data:  data,
+		rolls: make([]Coord, 0),
 	}
 
 	return c
@@ -60,16 +60,16 @@ func (c *Conveyor) Layout(outsideWidth, outsideHeight int) (int, int) {
 }
 
 func (c *Conveyor) Update() error {
-	c.config.X = c.config.x
-	c.config.Y = c.config.y
+	c.data.X = c.data.x
+	c.data.Y = c.data.y
 
-	c.config.SetSprite()
-	w, _ := c.config.Sprite.GetAssetSize()
+	c.data.SetSprite()
+	w, _ := c.data.Sprite.GetAssetSize()
 	padding := w * 3
 
 	c.rolls = make([]Coord, 0)
-	for p := c.config.X; p <= c.config.size; p += (w + padding) {
-		c.rolls = append(c.rolls, Coord{X: float64(p), Y: c.config.Y})
+	for p := c.data.X; p <= c.data.size; p += (w + padding) {
+		c.rolls = append(c.rolls, Coord{X: float64(p), Y: c.data.Y})
 	}
 
 	return nil
@@ -77,14 +77,14 @@ func (c *Conveyor) Update() error {
 
 func (c *Conveyor) Draw(screen *ebiten.Image) {
 	for i := 0; i < len(c.rolls); i++ {
-		c.config.Sprite.Draw(screen, c.rolls[i].X, c.rolls[i].Y)
+		c.data.Sprite.Draw(screen, c.rolls[i].X, c.rolls[i].Y)
 	}
 }
 
-func (c *Conveyor) SetConfig(config *ConveyorConfig) {
-	c.config = config
+func (c *Conveyor) SetData(data *ConveyorData) {
+	c.data = data
 }
 
-func (c *Conveyor) GetConfig() *ConveyorConfig {
-	return c.config
+func (c *Conveyor) GetData() *ConveyorData {
+	return c.data
 }

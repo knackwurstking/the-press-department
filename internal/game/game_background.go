@@ -23,21 +23,21 @@ func init() {
 	}
 }
 
-type BackgroundConfig struct {
+type BackgroundData struct {
 	Scale float64
 	Image *ebiten.Image
 }
 
 // Background for the game (just some shit with grey)
 type Background struct {
-	config                    *BackgroundConfig
+	data                      *BackgroundData
 	imageOptions              *ebiten.DrawImageOptions
 	screenWidth, screenHeight float64
 }
 
-func NewBackground(config *BackgroundConfig) *Background {
+func NewBackground(data *BackgroundData) *Background {
 	return &Background{
-		config: config,
+		data: data,
 		imageOptions: &ebiten.DrawImageOptions{
 			GeoM: ebiten.GeoM{},
 		},
@@ -56,29 +56,29 @@ func (b *Background) Update() error {
 }
 
 func (b *Background) Draw(screen *ebiten.Image) {
-	w, h := b.config.Image.Size()
-	imageWidth := float64(w) * b.config.Scale
-	imageHeight := float64(h) * b.config.Scale
+	w, h := b.data.Image.Size()
+	imageWidth := float64(w) * b.data.Scale
+	imageHeight := float64(h) * b.data.Scale
 	col := int(math.Ceil(b.screenWidth / imageWidth))
 	row := int(math.Ceil(b.screenHeight / imageHeight))
 
 	for r := 0; r < row; r++ {
 		for c := 0; c < col; c++ {
 			b.imageOptions.GeoM.Reset()
-			b.imageOptions.GeoM.Scale(b.config.Scale, b.config.Scale)
+			b.imageOptions.GeoM.Scale(b.data.Scale, b.data.Scale)
 			b.imageOptions.GeoM.Translate(
 				imageWidth*float64(c),
 				imageHeight*float64(r),
 			)
-			screen.DrawImage(b.config.Image, b.imageOptions)
+			screen.DrawImage(b.data.Image, b.imageOptions)
 		}
 	}
 }
 
-func (b *Background) SetConfig(config *BackgroundConfig) {
-	b.config = config
+func (b *Background) SetData(data *BackgroundData) {
+	b.data = data
 }
 
-func (b *Background) GetConfig() *BackgroundConfig {
-	return b.config
+func (b *Background) GetData() *BackgroundData {
+	return b.data
 }

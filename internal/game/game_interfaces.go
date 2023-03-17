@@ -2,13 +2,13 @@ package game
 
 import "github.com/hajimehoshi/ebiten/v2"
 
-type GameComponentConfig interface {
-	BackgroundConfig | EnginesConfig | EnginesInputConfig | ConveyorConfig
+type ComponentData interface {
+	BackgroundData | EnginesData | EnginesInputData | ConveyorData
 }
 
-type GameComponent[T GameComponentConfig] interface {
-	SetConfig(config *T)
-	GetConfig() *T
+type Component[T ComponentData] interface {
+	SetData(config *T)
+	GetData() *T
 	Layout(outsideWidth, outsideHeight int) (int, int)
 	Draw(screen *ebiten.Image)
 	Update() error
