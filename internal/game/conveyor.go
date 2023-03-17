@@ -85,10 +85,6 @@ func (c *Conveyor) Draw(screen *ebiten.Image) {
 	}
 }
 
-func (c *Conveyor) SetData(data *ConveyorData) {
-	c.data = data
-}
-
-func (c *Conveyor) GetData() *ConveyorData {
+func (c *Conveyor) Data() *ConveyorData {
 	return c.data
 }

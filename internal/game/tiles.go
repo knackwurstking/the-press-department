@@ -11,9 +11,13 @@ import (
 	"the-press-department/internal/images"
 )
 
+const (
+	StateOK    = State(0)
+	StateCrack = State(1)
+)
+
 var (
-	ImageTile          *ebiten.Image
-	ImageTileWithCrack *ebiten.Image
+	ImageTileAssets map[State]*ebiten.Image = make(map[State]*ebiten.Image)
 )
 
 func init() {
@@ -22,75 +26,85 @@ func init() {
 	if err != nil {
 		panic(err)
 	}
-	ImageTile = ebiten.NewImageFromImage(img)
+	ImageTileAssets[StateOK] = ebiten.NewImageFromImage(img)
 
 	// TileWithCrack
 	img, _, err = image.Decode(bytes.NewReader(images.TileWithCrack))
 	if err != nil {
 		panic(err)
 	}
-	ImageTileWithCrack = ebiten.NewImageFromImage(img)
+	ImageTileAssets[StateCrack] = ebiten.NewImageFromImage(img)
+}
+
+type State int
+
+type TilesData interface {
+	TileData
+}
+
+type Tiles[T TilesData] interface {
+	Data() *T
+	Draw(screen *ebiten.Image)
+	Size() (w, h float64)
+	ThrowAway()
+	IsThrownAway() bool
+	SetDraggedFn(func(tX float64, tY float64) (x float64, y float64))
+}
+
+type TileData struct {
+	State State
+	Scale *float64
+	X, Y  float64
 }
 
 type Tile struct {
-	Image   *ebiten.Image
-	Options *ebiten.DrawImageOptions
+	ImageOptions *ebiten.DrawImageOptions
 
-	X float64
-	Y float64
-
-	scale float64
-
+	data       *TileData
 	dragFn     func(tileX float64, tileY float64) (x float64, y float64)
 	thrownAway bool
 }
 
-func NewTile(scale float64, tile *ebiten.Image) *Tile {
+func NewTile(d *TileData) *Tile {
 	return &Tile{
-		Image: tile,
-		Options: &ebiten.DrawImageOptions{
+		data: d,
+		ImageOptions: &ebiten.DrawImageOptions{
 			GeoM: ebiten.GeoM{},
 		},
-		X:      0,
-		scale:  scale,
 		dragFn: nil,
 	}
 }
 
 func (t *Tile) Draw(screen *ebiten.Image) {
-	t.Options.GeoM.Reset()
-	t.Options.GeoM.Scale(t.scale, t.scale)
+	t.ImageOptions.GeoM.Reset()
+	t.ImageOptions.GeoM.Scale(*t.data.Scale, *t.data.Scale)
 
 	if t.dragFn != nil {
-		t.X, t.Y = t.dragFn(t.X, t.Y)
+		t.data.X, t.data.Y = t.dragFn(t.data.X, t.data.Y)
 	}
 
-	t.Options.GeoM.Translate(t.X, t.Y)
+	t.ImageOptions.GeoM.Translate(t.data.X, t.data.Y)
 
-	screen.DrawImage(t.Image, t.Options)
+	screen.DrawImage(ImageTileAssets[t.data.State], t.ImageOptions)
 }
 
-func (t *Tile) GetHeight() float64 {
-	_, h := t.Image.Size()
-	return float64(h) * t.scale
+func (t *Tile) Size() (w, h float64) {
+	_w, _h := ImageTileAssets[t.data.State].Size()
+	return float64(_w) * *t.data.Scale, float64(_h) * *t.data.Scale
 }
 
-func (t *Tile) GetWidth() float64 {
-	w, _ := t.Image.Size()
-	return float64(w) * t.scale
+func (t *Tile) Data() *TileData {
+	return t.data
 }
 
-func (t *Tile) SetDragged(fn func(tileX float64, tileY float64) (x float64, y float64)) {
+func (t *Tile) SetDraggedFn(fn func(tileX float64, tileY float64) (x float64, y float64)) {
 	t.dragFn = fn
 }
 
-func (t *Tile) SetThrownAway() {
+func (t *Tile) ThrowAway() {
 	t.thrownAway = true
 }
 
 func (t *Tile) IsThrownAway() bool {
 	return t.thrownAway
 }
-
-// TODO: add type State (StateCrack, StateOK)
-// TODO: add public Tile field "State"

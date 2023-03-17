@@ -8,7 +8,7 @@ import (
 type EnginesInputData struct {
 	ThrowAwayPaddingTop    float64
 	ThrowAwayPaddingBottom float64
-	Tiles                  []*Tile
+	Tiles                  []Tiles[TileData]
 }
 
 // Input reads for example drag input like up/down (touch support for mobile)
@@ -20,7 +20,7 @@ type EnginesInput struct {
 	startY float64
 	lastY  float64
 
-	tile  *Tile
+	tile  Tiles[TileData]
 	touch map[ebiten.TouchID]struct{}
 }
 
@@ -42,24 +42,27 @@ func (i *EnginesInput) Update() error {
 	// handle mouse input
 	if inpututil.IsMouseButtonJustPressed(ebiten.MouseButtonLeft) {
 		x, y := ebiten.CursorPosition()
+
 		i.tile = i.checkForTile(float64(x), float64(y), i.data.Tiles)
 		if i.tile != nil {
 			i.startY = float64(y)
 			i.lastY = i.startY
-			i.tile.SetDragged(func(tileX, tileY float64) (float64, float64) {
+
+			i.tile.SetDraggedFn(func(tX, tY float64) (x float64, y float64) {
 				_, _y := ebiten.CursorPosition()
-				tileY -= i.lastY - float64(_y)
+				tY -= i.lastY - float64(_y)
 				i.lastY = float64(_y)
-				return tileX, tileY
+				return tX, tY
 			})
 		}
 	} else if inpututil.IsMouseButtonJustReleased(ebiten.MouseButtonLeft) {
 		if i.tile != nil {
-			i.tile.SetDragged(nil)
+			i.tile.SetDraggedFn(nil)
 
-			if i.tile.Y+i.tile.GetHeight() > i.data.ThrowAwayPaddingBottom ||
-				i.tile.Y < i.data.ThrowAwayPaddingTop {
-				i.tile.SetThrownAway()
+			_, h := i.tile.Size()
+			if i.tile.Data().Y+h > i.data.ThrowAwayPaddingBottom ||
+				i.tile.Data().Y < i.data.ThrowAwayPaddingTop {
+				i.tile.ThrowAway()
 			}
 
 			i.tile = nil
@@ -77,23 +80,24 @@ func (i *EnginesInput) Update() error {
 			i.startY = float64(y)
 			i.lastY = i.startY
 
-			i.tile.SetDragged(func(tileX, tileY float64) (float64, float64) {
+			i.tile.SetDraggedFn(func(tX, tY float64) (x float64, y float64) {
 				_x, _y := ebiten.TouchPosition(touchID)
 				if _x == 0 && _y == 0 {
-					i.tile.SetDragged(nil)
+					i.tile.SetDraggedFn(nil)
 
-					if i.tile.Y+i.tile.GetHeight() > i.data.ThrowAwayPaddingBottom ||
-						i.tile.Y < i.data.ThrowAwayPaddingTop {
-						i.tile.SetThrownAway()
+					_, h := i.tile.Size()
+					if i.tile.Data().Y+h > i.data.ThrowAwayPaddingBottom ||
+						i.tile.Data().Y < i.data.ThrowAwayPaddingTop {
+						i.tile.ThrowAway()
 					}
 
 					i.tile = nil
-					return tileX, tileY
+					return tX, tY
 				}
 
-				tileY -= i.lastY - float64(_y)
+				tY -= i.lastY - float64(_y)
 				i.lastY = float64(_y)
-				return tileX, tileY
+				return tX, tY
 			})
 		}
 	}
@@ -101,9 +105,10 @@ func (i *EnginesInput) Update() error {
 	return nil
 }
 
-func (i *EnginesInput) checkForTile(x, y float64, tiles []*Tile) *Tile {
+func (i *EnginesInput) checkForTile(x, y float64, tiles []Tiles[TileData]) Tiles[TileData] {
 	for _, tile := range tiles {
-		if x >= tile.X && x <= tile.X+tile.GetWidth() {
+		w, _ := tile.Size()
+		if x >= tile.Data().X && x <= tile.Data().X+w {
 			return tile
 		}
 	}
@@ -111,10 +116,6 @@ func (i *EnginesInput) checkForTile(x, y float64, tiles []*Tile) *Tile {
 	return nil
 }
 
-func (i *EnginesInput) SetData(data *EnginesInputData) {
-	i.data = data
-}
-
-func (i *EnginesInput) GetData() *EnginesInputData {
+func (i *EnginesInput) Data() *EnginesInputData {
 	return i.data
 }

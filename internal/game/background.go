@@ -75,10 +75,6 @@ func (b *Background) Draw(screen *ebiten.Image) {
 	}
 }
 
-func (b *Background) SetData(data *BackgroundData) {
-	b.data = data
-}
-
-func (b *Background) GetData() *BackgroundData {
+func (b *Background) Data() *BackgroundData {
 	return b.data
 }

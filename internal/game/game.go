@@ -127,16 +127,16 @@ func (g *Game) Update() error {
 		g.Mode = ModePause
 	}
 
-	g.Background.GetData().Scale = g.scale
-	g.Engines.GetData().Scale = g.scale
+	g.Background.Data().Scale = g.scale
+	g.Engines.Data().Scale = g.scale
 
 	switch g.Mode {
 	case ModePause:
-		g.Engines.GetData().Pause = true
+		g.Engines.Data().Pause = true
 		// Listen for keys to continue (or start the game)
 		if g.isKeyPressed() {
 			// Continue or start the game
-			g.Engines.GetData().Pause = false
+			g.Engines.Data().Pause = false
 			g.Mode = ModeGame
 		}
 	case ModeGame:
@@ -218,7 +218,7 @@ func (g *Game) drawDebug(screen *ebiten.Image) {
 
 	// debug overlay: "Engines Info"
 	// 1. Row
-	counter := fmt.Sprintf("Press Speed: %.1fh", g.Engines.GetData().GetBPM())
+	counter := fmt.Sprintf("Press Speed: %.1fh", g.Engines.Data().GetBPM())
 	ebitenutil.DebugPrintAt(screen, counter, g.screenWidth-(len(counter)*6+2), 0)
 
 	// 2. Row
@@ -226,7 +226,7 @@ func (g *Game) drawDebug(screen *ebiten.Image) {
 	ebitenutil.DebugPrintAt(screen, counter, g.screenWidth-(len(counter)*6+2), 16)
 
 	// 3. Row
-	counter = fmt.Sprintf("RB: %d [%.1f hz]", len(g.Engines.GetData().GetTiles()),
-		g.Engines.GetData().GetHz())
+	counter = fmt.Sprintf("RB: %d [%.1f hz]", len(g.Engines.Data().GetTiles()),
+		g.Engines.Data().GetHz())
 	ebitenutil.DebugPrintAt(screen, counter, g.screenWidth-(len(counter)*6+2), 32)
 }

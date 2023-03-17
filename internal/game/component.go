@@ -7,8 +7,7 @@ type ComponentData interface {
 }
 
 type Component[T ComponentData] interface {
-	SetData(config *T)
-	GetData() *T
+	Data() *T
 	Layout(outsideWidth, outsideHeight int) (int, int)
 	Draw(screen *ebiten.Image)
 	Update() error

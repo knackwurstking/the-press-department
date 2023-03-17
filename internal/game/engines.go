@@ -13,10 +13,10 @@ type EnginesData struct {
 
 	Scale float64
 
-	tiles []*Tile
+	tiles []Tiles[TileData]
 }
 
-func (c *EnginesData) GetTiles() []*Tile {
+func (c *EnginesData) GetTiles() []Tiles[TileData] {
 	return c.tiles
 }
 
@@ -58,26 +58,25 @@ type Engines struct {
 	data                      *EnginesData
 	screenWidth, screenHeight float64
 
-	tilesToUse []*ebiten.Image
 	lastTile   time.Time
 	lastUpdate time.Time
 
-	rand *rand.Rand
+	rand       *rand.Rand
+	tileStates []State
 }
 
 func NewEngines(data *EnginesData) *Engines {
 	e := &Engines{
-		input: NewEnginesInput(&EnginesInputData{}),
-		data:  data,
-		tilesToUse: []*ebiten.Image{
-			ImageTile,
-			ImageTile,
-			ImageTile,
-			ImageTileWithCrack,
-		},
+		input:      NewEnginesInput(&EnginesInputData{}),
+		data:       data,
 		lastTile:   time.Now(),
 		lastUpdate: time.Now(),
 		rand:       rand.New(rand.NewSource(time.Now().Unix())),
+		tileStates: []State{
+			StateOK,
+			StateOK,
+			StateCrack,
+		},
 	}
 
 	e.conveyor = NewConveyor(&ConveyorData{
@@ -96,7 +95,8 @@ func (e *Engines) Layout(outsideWidth, outsideHeight int) (int, int) {
 		// update tiles
 		for _, t := range e.data.tiles {
 			if !t.IsThrownAway() {
-				t.Y = (e.screenHeight / 2) - (t.GetHeight() / 2)
+				_, h := t.Size()
+				t.Data().Y = (e.screenHeight / 2) - (h / 2)
 			}
 		}
 	}
@@ -119,9 +119,9 @@ func (e *Engines) Update() error {
 	// Only handle user input if not on Pause
 	if !e.data.Pause {
 		// Handle user input
-		e.input.GetData().ThrowAwayPaddingTop = e.conveyor.GetData().Y - 10
-		e.input.GetData().ThrowAwayPaddingBottom = e.conveyor.GetData().Y + e.conveyor.GetData().GetHeight() + 10
-		e.input.GetData().Tiles = e.data.tiles
+		e.input.Data().ThrowAwayPaddingTop = e.conveyor.Data().Y - 10
+		e.input.Data().ThrowAwayPaddingBottom = e.conveyor.Data().Y + e.conveyor.Data().GetHeight() + 10
+		e.input.Data().Tiles = e.data.tiles
 		_ = e.input.Update()
 	}
 
@@ -144,21 +144,17 @@ func (e *Engines) Draw(screen *ebiten.Image) {
 	}
 }
 
-func (e *Engines) SetData(data *EnginesData) {
-	e.data = data
-}
-
-func (e *Engines) GetData() *EnginesData {
+func (e *Engines) Data() *EnginesData {
 	return e.data
 }
 
 func (e *Engines) updateConveyor(next time.Time) {
-	e.conveyor.GetData().Hz = e.data.GetHz()
-	e.conveyor.GetData().HzMultiply = e.data.GetHzMultiply()
-	e.conveyor.GetData().SetUpdateData(
+	e.conveyor.Data().Hz = e.data.GetHz()
+	e.conveyor.Data().HzMultiply = e.data.GetHzMultiply()
+	e.conveyor.Data().SetUpdateData(
 		e.calcR(next), // r
 		0,             // x
-		e.screenHeight/2-(e.conveyor.GetData().GetHeight()/2), // y
+		e.screenHeight/2-(e.conveyor.Data().GetHeight()/2), // y
 		e.screenWidth, // width
 	)
 	_ = e.conveyor.Update()
@@ -174,9 +170,14 @@ func (e *Engines) updatePress(next time.Time) {
 	// check time and get a tile based on BPM
 	if e.lastTile.Add(time.Microsecond*time.Duration(60/e.data.GetBPM()*1000000)).UnixMicro() <= next.UnixMicro() {
 		// get a new tile here
-		tile := NewTile(e.data.Scale, e.randomTile())
-		tile.X = e.screenWidth
-		tile.Y = (e.screenHeight / 2) - (tile.GetHeight() / 2)
+		var tile = NewTile(&TileData{
+			State: e.getRandomState(),
+			Scale: &e.data.Scale,
+		})
+
+		_, h := tile.Size()
+		tile.Data().X = e.screenWidth
+		tile.Data().Y = (e.screenHeight / 2) - (h / 2)
 
 		e.data.tiles = append(e.data.tiles, tile)
 		e.data.Stats.TilesProduced++
@@ -185,37 +186,42 @@ func (e *Engines) updatePress(next time.Time) {
 }
 
 func (e *Engines) updateTiles(next time.Time) {
-	toRemove := make([]*Tile, 0)
+	toRemove := make([]Tiles[TileData], 0)
 
 	// Update new tiles position
-	for i := 0; i < len(e.data.tiles); i++ {
+	for i, t := range e.data.tiles {
+		d := t.Data()
+		w, h := t.Size()
+
 		// Check if tile has thrownAway state
-		if e.data.tiles[i].IsThrownAway() {
+		if t.IsThrownAway() {
 			// TODO: Handle game stats counter for "Money"
 
 			// Animation
-			pressY := (e.screenHeight / 2) - (e.data.tiles[i].GetHeight() / 2)
+			pressY := (e.screenHeight / 2) - (h / 2)
 			r := float64(next.Sub(e.lastUpdate).Seconds()) * (250) * (e.data.Scale * 10)
-			if e.data.tiles[i].Y <= pressY {
-				e.data.tiles[i].Y -= r
+			if d.Y <= pressY {
+				d.Y -= r
 			} else {
-				e.data.tiles[i].Y += r
+				d.Y += r
 			}
 		}
 
 		// Update x position (based on time since last update)
-		e.data.tiles[i].X -= e.calcR(next)
+		d.X -= e.calcR(next)
 
-		// Remove tiles which are out of screen
-		if e.data.tiles[i].X <= 0-e.data.tiles[i].GetWidth() { // x-axis
+		// Set tiles which are out of screen to remove
+		if d.X <= 0-w { // x-axis
 			// TODO: Handle game stats for "Money", "GoodTiles" and "BadTiles"
+
 			e.data.tiles = e.data.tiles[i+1:]
 			break
-		} else if e.data.tiles[i].Y <= 0-e.data.tiles[i].GetHeight() || e.data.tiles[i].Y >= e.screenHeight {
-			toRemove = append(toRemove, e.data.tiles[i])
+		} else if d.Y <= 0-h || d.Y >= e.screenHeight {
+			toRemove = append(toRemove, t)
 		}
 	}
 
+	// Remove it
 	for _, t := range toRemove {
 		for i, t2 := range e.data.tiles {
 			if t == t2 {
@@ -230,6 +236,6 @@ func (e *Engines) calcR(next time.Time) float64 {
 	return (float64(next.Sub(e.lastUpdate).Seconds()) * (e.data.GetHzMultiply() * e.data.GetHz())) * (e.data.Scale * 10)
 }
 
-func (e *Engines) randomTile() *ebiten.Image {
-	return e.tilesToUse[e.rand.Intn(len(e.tilesToUse))]
+func (e *Engines) getRandomState() State {
+	return e.tileStates[e.rand.Intn(len(e.tileStates))]
 }
