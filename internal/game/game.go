@@ -112,7 +112,7 @@ func NewGame(scale float64) *Game {
 	game := &Game{
 		Mode: ModePause,
 		Stats: Stats{
-			TilesProduced:      0,
+			TilesProduced:      0, // Engines tilesProduced config field
 			PressBPM:           6.5,
 			ConveyorHz:         8.0,
 			ConveyorHzMultiply: 2.5,
