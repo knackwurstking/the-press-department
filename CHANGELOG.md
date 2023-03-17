@@ -10,14 +10,15 @@
 
 ## v0.0.4 [unreleased]
 
-- [ ] Add some overlay (Pause and continue button)
-- [ ] Add Money system (overlay), get 100$ for a good tile and loose 200$ for a
-      bad tile, loose 10$ for a thrown away (bad) tile and loose 1000$ for a
-      thrown away good tile
-- [ ] Find a way to save the game (stats only)
+- [ ] Display debug stats for good tiles and bad tiles
 
 - Doing some code clean up
 - Adding `Components` interface (`Input`, `BackGround`, `Engines`, `Conveyor`)
 - Handle `screenHeight` and `screenWidth` change (`Layout`)
 - Adding a pause menu
 - Adding `Tiles` interface
+- Adding money management and display on the bottom left
+
+## v0.0.5 [unreleased]
+
+- [ ] Find a way to save the game (stats only)

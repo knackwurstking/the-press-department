@@ -19,8 +19,9 @@ var (
 	DefaultScale float64 = 0.1
 
 	// modes
-	ModePause = Mode(1)
-	ModeGame  = Mode(2)
+	ModePause   = Mode(1)
+	ModeGame    = Mode(2)
+	ModeSuspend = Mode(3)
 
 	FontDPI = float64(71)
 
@@ -123,15 +124,15 @@ func (g *Game) Layout(outsideWidth int, outsideHeight int) (int, int) {
 // Update implements ebiten.Game
 func (g *Game) Update() error {
 	// catch standby and pause the game (check for standby via time package)
-	if time.Since(g.lastUpdate) >= time.Second {
-		g.Mode = ModePause
+	if time.Since(g.lastUpdate) >= time.Second && g.Mode != ModePause {
+		g.Mode = ModeSuspend
 	}
 
 	g.Background.Data().Scale = g.scale
 	g.Engines.Data().Scale = g.scale
 
 	switch g.Mode {
-	case ModePause:
+	case ModePause, ModeSuspend:
 		g.Engines.Data().Pause = true
 		// Listen for keys to continue (or start the game)
 		if g.isKeyPressed() {
@@ -153,8 +154,9 @@ func (g *Game) Update() error {
 // Draw implements ebiten.Game
 func (g *Game) Draw(screen *ebiten.Image) {
 	switch g.Mode {
-	case ModePause:
+	case ModePause, ModeSuspend:
 		g.drawPause(screen)
+	case ModeSuspend:
 	case ModeGame:
 		g.drawGame(screen)
 	}
@@ -174,12 +176,18 @@ func (g *Game) drawPause(screen *ebiten.Image) {
 	g.Background.Draw(screen)
 	g.Engines.Draw(screen)
 
+	g.drawStats(screen)
+
 	titleTexts := []string{
 		"PAUSE",
 	}
 
-	texts := []string{
-		"Click (or Touch) to start.",
+	var texts []string
+	switch g.Mode {
+	case ModePause:
+		texts = append(texts, "Click (or Touch) to start.")
+	case ModeSuspend:
+		texts = append(texts, "Click (or Touch) to continue.")
 	}
 
 	for i, l := range titleTexts {
@@ -201,13 +209,14 @@ func (g *Game) drawGame(screen *ebiten.Image) {
 	// run the game
 	g.Background.Draw(screen)
 	g.Engines.Draw(screen)
+
 	g.drawStats(screen)
 	g.drawDebug(screen)
 }
 
 func (g *Game) drawStats(screen *ebiten.Image) {
 	// Draw "$: <n>"
-	textMoney := fmt.Sprintf("%d", g.Stats.Money)
+	textMoney := fmt.Sprintf("%d$", g.Stats.Money)
 	c := color.RGBA{255, 0, 0, 255}
 	if g.Stats.Money >= 0 {
 		c = color.RGBA{0, 255, 0, 255}
