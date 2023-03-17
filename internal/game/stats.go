@@ -40,11 +40,11 @@ func (s *Stats) AddThrownAwayTile(tile Tiles) {
 		return
 	}
 
-	// TODO: check if tile was ok (if ok then add a penalty "-1000$")...
-	//switch tile.State {
-	//case StateCrack:
-	//	s.Money -= 50
-	//case StateOK:
-	//	s.Money -= 1000
-	//}
+	// check if tile was ok (if ok then add a penalty "-1000$")...
+	switch tile.Data().State {
+	case StateCrack:
+		s.Money -= 50
+	case StateOK:
+		s.Money -= 1000
+	}
 }

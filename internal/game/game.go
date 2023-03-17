@@ -206,10 +206,13 @@ func (g *Game) drawGame(screen *ebiten.Image) {
 }
 
 func (g *Game) drawStats(screen *ebiten.Image) {
-	// TODO: Drawing stats like +/- money for each tile... (Need a State object with json support for saving)
-	//  - bottom/left corner: money in the bank
-	//  - +<dollar>, green
-	//  - -<dollar>, red
+	// Draw "$: <n>"
+	textMoney := fmt.Sprintf("%d", g.Stats.Money)
+	c := color.RGBA{255, 0, 0, 255}
+	if g.Stats.Money >= 0 {
+		c = color.RGBA{0, 255, 0, 255}
+	}
+	text.Draw(screen, textMoney, FontFace, 1, g.screenHeight, c)
 }
 
 func (g *Game) drawDebug(screen *ebiten.Image) {

@@ -195,9 +195,6 @@ func (e *Engines) updateTiles(next time.Time) {
 
 		// Check if tile has thrownAway state
 		if t.IsThrownAway() {
-			// Handle game stats counter for "Money" (check the tile state first)
-			e.data.Stats.AddThrownAwayTile(t)
-
 			// Animation
 			pressY := (e.screenHeight / 2) - (h / 2)
 			r := float64(next.Sub(e.lastUpdate).Seconds()) * (250) * (e.data.Scale * 10)
@@ -213,12 +210,31 @@ func (e *Engines) updateTiles(next time.Time) {
 
 		// Set tiles which are out of screen to remove
 		if d.X <= 0-w { // x-axis
-			// TODO: Handle game stats for "Money", "GoodTiles" and "BadTiles"
+			// Handle game stats for "Money", "GoodTiles" and "BadTiles"
+			for _, t := range e.data.tiles[i+1:] {
+				// Money management
+				if !t.IsThrownAway() {
+					switch t.Data().State {
+					case StateOK:
+						e.data.Stats.AddGoodTile()
+					default:
+						e.data.Stats.AddBadTile()
+					}
+				} else {
+					e.data.Stats.AddThrownAwayTile(t)
+				}
+			}
 
 			e.data.tiles = e.data.tiles[i+1:]
 			break
 		} else if d.Y <= 0-h || d.Y >= e.screenHeight {
 			toRemove = append(toRemove, t)
+
+			// Money management
+			if t.IsThrownAway() {
+				// Handle game stats counter for "Money" (check the tile state first)
+				e.data.Stats.AddThrownAwayTile(t)
+			}
 		}
 	}
 
