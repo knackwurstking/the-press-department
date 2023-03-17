@@ -145,7 +145,6 @@ func (g *Game) Update() error {
 	_ = g.Background.Update()
 	_ = g.Engines.Update()
 
-	g.updateStats()
 	g.lastUpdate = time.Now()
 
 	return nil
@@ -159,10 +158,6 @@ func (g *Game) Draw(screen *ebiten.Image) {
 	case ModeGame:
 		g.drawGame(screen)
 	}
-}
-
-func (g *Game) updateStats() {
-	// TODO: update game status (put everything in g.Stats)
 }
 
 func (g *Game) isKeyPressed() bool {
