@@ -70,6 +70,30 @@ func init() {
 
 type Mode int
 
+// Stats for saving the game state
+type Stats struct {
+	// Money holds the number of your money
+	Money int `json:"money"`
+
+	// GoodTiles shows the number of good tiles passed
+	GoodTiles int `json:"good-tiles"`
+
+	// BadTiles shows the number of bad tiles passed
+	BadTiles int `json:"bad-tiles"`
+
+	// TilesProduced is the number of tiles produced from press
+	TilesProduced int `json:"tiles-produced"`
+
+	// PressBPM (setup value)
+	PressBPM float64 `json:"press-BPM"`
+
+	// ConveyorHz (setup value)
+	ConveyorHz float64 `json:"conveyor-hz"`
+
+	// ConveyorHzMultiply (setup value)
+	ConveyorHzMultiply float64 `json:"conveyor-hz-multiply"`
+}
+
 // Game controls all the game logic
 type Game struct {
 	Mode       Mode
@@ -200,7 +224,10 @@ func (g *Game) drawGame(screen *ebiten.Image) {
 }
 
 func (g *Game) drawStatsOverlay(screen *ebiten.Image) {
-	// TODO: Drawing stats like +/- money for each tile...
+	// TODO: Drawing stats like +/- money for each tile... (Need a State object with json support for saving)
+	//  - bottom/left corner: money in the bank
+	//  - +<dollar>, green
+	//  - -<dollar>, red
 }
 
 func (g *Game) drawDebug(screen *ebiten.Image) {
