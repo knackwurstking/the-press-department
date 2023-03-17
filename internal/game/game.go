@@ -9,7 +9,13 @@ import (
 
 var (
 	DefaultScale float64 = 0.1
+
+	// modes
+	ModePause = Mode(1)
+	ModeGame  = Mode(2)
 )
+
+type Mode int
 
 // Game controls all the game logic
 //
@@ -18,6 +24,7 @@ var (
 // Press 			- produces tiles and outputs each tile to the Engines
 // Engines 		- transports the tiles (from the Press) from A to B
 type Game struct {
+	Mode       Mode
 	Input      GameComponent[InputConfig]
 	Background GameComponent[BackgroundConfig]
 	Engines    GameComponent[EnginesConfig]
@@ -28,6 +35,7 @@ type Game struct {
 
 func NewGame(scale float64) *Game {
 	game := &Game{
+		Mode:  ModeGame,
 		Input: NewInput(&InputConfig{}),
 		Background: NewBackground(&BackgroundConfig{
 			Scale: scale,
@@ -72,11 +80,12 @@ func (g *Game) Update() error {
 
 // Draw implements ebiten.Game
 func (g *Game) Draw(screen *ebiten.Image) {
-	g.Background.Draw(screen)
-	g.Engines.Draw(screen)
-
-	g.debugFPS(screen)
-	g.debugEngines(screen)
+	switch g.Mode {
+	case ModePause:
+		// TODO: print pause menu and catch key for switch to game mode
+	case ModeGame:
+		g.drawGame(screen)
+	}
 }
 
 func (g *Game) GetScale() float64 {
@@ -87,48 +96,26 @@ func (g *Game) SetScale(f float64) {
 	g.scale = f
 }
 
-func (g *Game) debugEngines(screen *ebiten.Image) {
-	// 1. Row
-	counter := fmt.Sprintf(
-		"Press Speed: %.1fh",
-		g.Engines.GetConfig().BPM,
-	)
+func (g *Game) drawGame(screen *ebiten.Image) {
+	// run the game
+	g.Background.Draw(screen)
+	g.Engines.Draw(screen)
 
-	ebitenutil.DebugPrintAt(
-		screen,
-		counter,
-		g.screenWidth-(len(counter)*6+2),
-		0,
-	)
+	// debug overlay: "FPS"
+	ebitenutil.DebugPrintAt(screen, fmt.Sprintf("%.0f", ebiten.ActualFPS()), 0, 0)
+
+	// debug overlay: "Engines Info"
+	// 1. Row
+	counter := fmt.Sprintf("Press Speed: %.1fh", g.Engines.GetConfig().BPM)
+	ebitenutil.DebugPrintAt(screen, counter, g.screenWidth-(len(counter)*6+2), 0)
 
 	// 2. Row
-	counter = fmt.Sprintf(
-		"Tiles Produced: %d",
-		g.Engines.GetConfig().GetTilesCount(),
-	)
-
-	ebitenutil.DebugPrintAt(
-		screen,
-		counter,
-		g.screenWidth-(len(counter)*6+2),
-		16,
-	)
+	counter = fmt.Sprintf("Tiles Produced: %d",
+		g.Engines.GetConfig().GetTilesCount())
+	ebitenutil.DebugPrintAt(screen, counter, g.screenWidth-(len(counter)*6+2), 16)
 
 	// 3. Row
-	counter = fmt.Sprintf(
-		"RB: %d [%.1f hz]",
-		len(g.Engines.GetConfig().GetTiles()),
-		g.Engines.GetConfig().Hz,
-	)
-
-	ebitenutil.DebugPrintAt(
-		screen,
-		counter,
-		g.screenWidth-(len(counter)*6+2),
-		32,
-	)
-}
-
-func (g *Game) debugFPS(screen *ebiten.Image) {
-	ebitenutil.DebugPrintAt(screen, fmt.Sprintf("%.0f", ebiten.ActualFPS()), 0, 0)
+	counter = fmt.Sprintf("RB: %d [%.1f hz]", len(g.Engines.GetConfig().GetTiles()),
+		g.Engines.GetConfig().Hz)
+	ebitenutil.DebugPrintAt(screen, counter, g.screenWidth-(len(counter)*6+2), 32)
 }
