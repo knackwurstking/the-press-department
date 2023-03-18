@@ -8,7 +8,7 @@
 
 - Handle user swipe (up or down) for throwing away a tile
 
-## v0.0.4 [unreleased]
+## v0.0.4
 
 - Doing some code clean up
 - Adding `Components` interface (`Input`, `BackGround`, `Engines`, `Conveyor`)
