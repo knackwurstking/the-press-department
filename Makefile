@@ -2,6 +2,5 @@ run:
 	@go run -v ./cmd/the-press-department
 
 build_wasm:
-	@env GOOS=js GOARCH=wasm go build -o wasm/the-press-department.wasm ./cmd/the-press-department
-	@cp ./wasm/the-press-department.wasm ./svelte/public/the-press-department.wasm
-	@cd svelte && npm run build && npx cap sync
+	@env GOOS=js GOARCH=wasm go build -o www/public/the-press-department.wasm ./cmd/the-press-department
+	@cd www && npm run build && npx cap sync android
