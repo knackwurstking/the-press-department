@@ -26,8 +26,16 @@ func init() {
 		panic(err)
 	}
 	ImageTileAssets[StateCrack] = ebiten.NewImageFromImage(img)
+
+	// Stamp Adhesive
+	img, _, err = image.Decode(bytes.NewReader(images.TileWithStampAdhesive))
+	if err != nil {
+		panic(err)
+	}
+	ImageTileAssets[StateStampAdhesive] = ebiten.NewImageFromImage(img)
 }
 
+// Tile implements the `Tiles` interface
 type Tile struct {
 	ImageOptions *ebiten.DrawImageOptions
 

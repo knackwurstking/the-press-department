@@ -14,6 +14,9 @@ var (
 	//go:embed tile-1.png
 	TileWithCrack []byte
 
+	//go:embed tile-2.png
+	TileWithStampAdhesive []byte
+
 	//go:embed roll-0_0.png
 	Roll0 []byte
 
