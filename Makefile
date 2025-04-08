@@ -1,6 +1,9 @@
 clean:
 	git clean -fxd
 
+init:
+	@cd www && npm install
+
 run:
 	@go run -v ./cmd/the-press-department
 
