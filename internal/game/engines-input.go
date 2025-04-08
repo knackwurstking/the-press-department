@@ -43,7 +43,7 @@ func (i *EnginesInput) Update() error {
 	if inpututil.IsMouseButtonJustPressed(ebiten.MouseButtonLeft) {
 		x, y := ebiten.CursorPosition()
 
-		i.tile = i.checkForTile(float64(x), float64(y), i.data.Tiles)
+		i.tile = i.getTile(float64(x), float64(y), i.data.Tiles)
 		if i.tile != nil {
 			i.startY = float64(y)
 			i.lastY = i.startY
@@ -75,7 +75,7 @@ func (i *EnginesInput) Update() error {
 		// single finger touch
 		touchID := i.touchIDs[0]
 		x, y := ebiten.TouchPosition(touchID)
-		i.tile = i.checkForTile(float64(x), float64(y), i.data.Tiles)
+		i.tile = i.getTile(float64(x), float64(y), i.data.Tiles)
 		if i.tile != nil {
 			i.startY = float64(y)
 			i.lastY = i.startY
@@ -105,7 +105,7 @@ func (i *EnginesInput) Update() error {
 	return nil
 }
 
-func (i *EnginesInput) checkForTile(x, y float64, tiles []Tiles) Tiles {
+func (i *EnginesInput) getTile(x, y float64, tiles []Tiles) Tiles {
 	for _, tile := range tiles {
 		w, _ := tile.Size()
 		if x >= tile.Data().X && x <= tile.Data().X+w {

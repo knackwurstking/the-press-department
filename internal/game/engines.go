@@ -152,8 +152,8 @@ func (e *Engines) updateConveyor(next time.Time) {
 	e.conveyor.Data().Hz = e.data.GetHz()
 	e.conveyor.Data().HzMultiply = e.data.GetHzMultiply()
 	e.conveyor.Data().SetUpdateData(
-		e.calcR(next), // r
-		0,             // x
+		e.calcRange(next), // r
+		0,                 // x
 		e.screenHeight/2-(e.conveyor.Data().GetHeight()/2), // y
 		e.screenWidth, // width
 	)
@@ -209,7 +209,7 @@ func (e *Engines) updateTiles(next time.Time) {
 		}
 
 		// Update x position (based on time since last update)
-		d.X -= e.calcR(next)
+		d.X -= e.calcRange(next)
 
 		// Set tiles which are out of screen to remove
 		if d.X <= 0-w || d.Y <= 0-h || d.Y >= e.screenHeight { // x-axis
@@ -240,8 +240,8 @@ func (e *Engines) updateTiles(next time.Time) {
 	}
 }
 
-// FIXME: What the fuck is calcR
-func (e *Engines) calcR(next time.Time) float64 {
+// FIXME: What the fuck is calcR, could that be "calcRange"?
+func (e *Engines) calcRange(next time.Time) float64 {
 	return (float64(next.Sub(e.lastUpdate).Seconds()) * (e.data.GetHzMultiply() * e.data.GetHz())) * (e.data.Scale * 10)
 }
 
