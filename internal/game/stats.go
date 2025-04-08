@@ -1,5 +1,7 @@
 package game
 
+import "the-press-department/internal/tiles"
+
 // Stats for saving the game state
 type Stats struct {
 	// Money holds the number of your money
@@ -35,16 +37,16 @@ func (s *Stats) AddBadTile() {
 }
 
 // "add thrown away good tile", "add thrown away bad tile"
-func (s *Stats) AddThrownAwayTile(tile Tiles) {
+func (s *Stats) AddThrownAwayTile(tile tiles.Tiles) {
 	if !tile.IsThrownAway() {
 		return
 	}
 
 	// check if tile was ok (if ok then add a penalty "-1000$")...
 	switch tile.Data().State {
-	case StateCrack:
+	case tiles.StateCrack:
 		s.Money -= 50
-	case StateOK:
+	case tiles.StateOK:
 		s.Money -= 850
 	}
 }

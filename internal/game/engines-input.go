@@ -1,6 +1,8 @@
 package game
 
 import (
+	"the-press-department/internal/tiles"
+
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
 )
@@ -8,7 +10,7 @@ import (
 type EnginesInputData struct {
 	ThrowAwayPaddingTop    float64
 	ThrowAwayPaddingBottom float64
-	Tiles                  []Tiles
+	Tiles                  []tiles.Tiles
 }
 
 // Input reads for example drag input like up/down (touch support for mobile)
@@ -20,7 +22,7 @@ type EnginesInput struct {
 	startY float64
 	lastY  float64
 
-	tile  Tiles
+	tile  tiles.Tiles
 	touch map[ebiten.TouchID]struct{}
 }
 
@@ -105,7 +107,7 @@ func (i *EnginesInput) Update() error {
 	return nil
 }
 
-func (i *EnginesInput) getTile(x, y float64, tiles []Tiles) Tiles {
+func (i *EnginesInput) getTile(x, y float64, tiles []tiles.Tiles) tiles.Tiles {
 	for _, tile := range tiles {
 		w, _ := tile.Size()
 		if x >= tile.Data().X && x <= tile.Data().X+w {

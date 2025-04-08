@@ -2,6 +2,7 @@ package game
 
 import (
 	"math/rand"
+	"the-press-department/internal/tiles"
 	"time"
 
 	"github.com/hajimehoshi/ebiten/v2"
@@ -13,10 +14,10 @@ type EnginesData struct {
 
 	Scale float64
 
-	tiles []Tiles
+	tiles []tiles.Tiles
 }
 
-func (c *EnginesData) GetTiles() []Tiles {
+func (c *EnginesData) GetTiles() []tiles.Tiles {
 	return c.tiles
 }
 
@@ -62,7 +63,7 @@ type Engines struct {
 	lastUpdate time.Time
 
 	rand       *rand.Rand
-	tileStates []State
+	tileStates []tiles.State
 }
 
 func NewEngines(data *EnginesData) *Engines {
@@ -72,10 +73,10 @@ func NewEngines(data *EnginesData) *Engines {
 		lastTile:   time.Now(),
 		lastUpdate: time.Now(),
 		rand:       rand.New(rand.NewSource(time.Now().Unix())),
-		tileStates: []State{
-			StateOK,
-			StateOK,
-			StateCrack,
+		tileStates: []tiles.State{
+			tiles.StateOK,
+			tiles.StateOK,
+			tiles.StateCrack,
 		},
 	}
 
@@ -173,7 +174,7 @@ func (e *Engines) updatePress(next time.Time) {
 	)
 	if e.lastTile.Add(ms).UnixMicro() <= next.UnixMicro() {
 		// get a new tile here
-		var tile = NewTile(&TilesData{
+		var tile = tiles.NewTile(&tiles.TilesData{
 			State: e.getRandomState(),
 			Scale: &e.data.Scale,
 		})
@@ -189,7 +190,7 @@ func (e *Engines) updatePress(next time.Time) {
 }
 
 func (e *Engines) updateTiles(next time.Time) {
-	toRemove := make([]Tiles, 0)
+	toRemove := make([]tiles.Tiles, 0)
 
 	// Update new tiles position
 	for _, t := range e.data.tiles {
@@ -216,7 +217,7 @@ func (e *Engines) updateTiles(next time.Time) {
 			// Money management
 			if !t.IsThrownAway() {
 				switch t.Data().State {
-				case StateOK:
+				case tiles.StateOK:
 					e.data.Stats.AddGoodTile()
 				default:
 					e.data.Stats.AddBadTile()
@@ -245,6 +246,6 @@ func (e *Engines) calcRange(next time.Time) float64 {
 	return (float64(next.Sub(e.lastUpdate).Seconds()) * (e.data.GetHzMultiply() * e.data.GetHz())) * (e.data.Scale * 10)
 }
 
-func (e *Engines) getRandomState() State {
+func (e *Engines) getRandomState() tiles.State {
 	return e.tileStates[e.rand.Intn(len(e.tileStates))]
 }
