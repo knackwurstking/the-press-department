@@ -168,7 +168,10 @@ func (e *Engines) updatePress(next time.Time) {
 	}
 
 	// check time and get a tile based on BPM
-	if e.lastTile.Add(time.Microsecond*time.Duration(60/e.data.GetBPM()*1000000)).UnixMicro() <= next.UnixMicro() {
+	ms := time.Microsecond * time.Duration(
+		60/e.data.GetBPM()*1000000,
+	)
+	if e.lastTile.Add(ms).UnixMicro() <= next.UnixMicro() {
 		// get a new tile here
 		var tile = NewTile(&TilesData{
 			State: e.getRandomState(),
@@ -237,6 +240,7 @@ func (e *Engines) updateTiles(next time.Time) {
 	}
 }
 
+// FIXME: What the fuck is calcR
 func (e *Engines) calcR(next time.Time) float64 {
 	return (float64(next.Sub(e.lastUpdate).Seconds()) * (e.data.GetHzMultiply() * e.data.GetHz())) * (e.data.Scale * 10)
 }
