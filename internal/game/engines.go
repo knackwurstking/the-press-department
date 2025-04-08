@@ -9,7 +9,7 @@ import (
 )
 
 type EnginesData struct {
-	Stats *Stats
+	Stats *GameStats
 	Pause bool // Pause will stop the machines :)
 
 	Scale float64

@@ -77,7 +77,7 @@ type Game struct {
 	Background Component[BackgroundData]
 	Engines    Component[EnginesData]
 
-	Stats *Stats
+	Stats *GameStats
 
 	screenWidth, screenHeight int
 	scale                     float64
@@ -86,7 +86,7 @@ type Game struct {
 }
 
 func NewGame(scale float64) *Game {
-	stats := &Stats{
+	stats := &GameStats{
 		TilesProduced:      0, // Engines tilesProduced config field
 		PressBPM:           6.5,
 		ConveyorHz:         8.0,

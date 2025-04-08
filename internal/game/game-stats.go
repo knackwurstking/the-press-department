@@ -3,7 +3,7 @@ package game
 import "the-press-department/internal/tiles"
 
 // Stats for saving the game state
-type Stats struct {
+type GameStats struct {
 	// Money holds the number of your money
 	Money int `json:"money"`
 
@@ -26,18 +26,18 @@ type Stats struct {
 	ConveyorHzMultiply float64 `json:"conveyor-hz-multiply"`
 }
 
-func (s *Stats) AddGoodTile() {
+func (s *GameStats) AddGoodTile() {
 	s.GoodTiles++
 	s.Money += 150
 }
 
-func (s *Stats) AddBadTile() {
+func (s *GameStats) AddBadTile() {
 	s.BadTiles++
 	s.Money -= 450
 }
 
 // "add thrown away good tile", "add thrown away bad tile"
-func (s *Stats) AddThrownAwayTile(tile tiles.Tiles) {
+func (s *GameStats) AddThrownAwayTile(tile tiles.Tiles) {
 	if !tile.IsThrownAway() {
 		return
 	}
