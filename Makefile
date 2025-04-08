@@ -1,3 +1,6 @@
+clean:
+	git clean -fxd
+
 run:
 	@go run -v ./cmd/the-press-department
 
