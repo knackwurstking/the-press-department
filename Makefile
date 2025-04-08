@@ -4,6 +4,6 @@ clean:
 run:
 	@go run -v ./cmd/the-press-department
 
-build_wasm:
+build-wasm:
 	@env GOOS=js GOARCH=wasm go build -o www/public/the-press-department.wasm ./cmd/the-press-department
 	@cd www && npm run build && npx cap sync android
