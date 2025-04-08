@@ -1,45 +1,8 @@
-package game
+package component
 
 import (
 	"github.com/hajimehoshi/ebiten/v2"
 )
-
-type Coord struct {
-	X, Y float64
-}
-
-type ConveyorData struct {
-	Sprite     *RollSprite
-	Scale      *float64
-	Hz         float64
-	HzMultiply float64
-
-	X, Y float64
-
-	// Update fields
-	rSum, r, x, y, size float64
-}
-
-func (c *ConveyorData) SetUpdateData(r, x, y, size float64) {
-	c.r = r
-	c.x = x
-	c.y = y
-	c.size = size
-}
-
-func (c *ConveyorData) SetSprite() {
-	c.rSum += c.r
-	w, _ := c.Sprite.GetAssetSize()
-	if c.rSum >= w {
-		c.Sprite.NextSprite()
-		c.rSum = 0
-	}
-}
-
-func (c *ConveyorData) GetHeight() float64 {
-	_, h := c.Sprite.GetAssetSize()
-	return h
-}
 
 type Conveyor struct {
 	data                      *ConveyorData
@@ -47,7 +10,7 @@ type Conveyor struct {
 	screenWidth, screenHeight float64
 }
 
-func NewConveyor(data *ConveyorData) *Conveyor {
+func NewConveyor(data *ConveyorData) Component[ConveyorData] {
 	c := &Conveyor{
 		data:  data,
 		rolls: make([]Coord, 0),
@@ -87,4 +50,37 @@ func (c *Conveyor) Draw(screen *ebiten.Image) {
 
 func (c *Conveyor) Data() *ConveyorData {
 	return c.data
+}
+
+type ConveyorData struct {
+	Sprite     *RollSprite
+	Scale      *float64
+	Hz         float64
+	HzMultiply float64
+
+	X, Y float64
+
+	// Update fields
+	rSum, r, x, y, size float64
+}
+
+func (c *ConveyorData) SetUpdateData(r, x, y, size float64) {
+	c.r = r
+	c.x = x
+	c.y = y
+	c.size = size
+}
+
+func (c *ConveyorData) SetSprite() {
+	c.rSum += c.r
+	w, _ := c.Sprite.GetAssetSize()
+	if c.rSum >= w {
+		c.Sprite.NextSprite()
+		c.rSum = 0
+	}
+}
+
+func (c *ConveyorData) GetHeight() float64 {
+	_, h := c.Sprite.GetAssetSize()
+	return h
 }

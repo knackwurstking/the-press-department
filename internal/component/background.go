@@ -1,4 +1,4 @@
-package game
+package component
 
 import (
 	"bytes"
@@ -23,19 +23,17 @@ func init() {
 	}
 }
 
-type BackgroundData struct {
-	Scale float64
-	Image *ebiten.Image
-}
-
-// Background for the game (just some shit with grey)
+// Background implements the `Component` interface.
+// Currently it is just as background for the game (some shit with grey)
 type Background struct {
+	Component[BackgroundData]
+
 	data                      *BackgroundData
 	imageOptions              *ebiten.DrawImageOptions
 	screenWidth, screenHeight float64
 }
 
-func NewBackground(data *BackgroundData) *Background {
+func NewBackground(data *BackgroundData) Component[BackgroundData] {
 	return &Background{
 		data: data,
 		imageOptions: &ebiten.DrawImageOptions{
@@ -77,4 +75,9 @@ func (b *Background) Draw(screen *ebiten.Image) {
 
 func (b *Background) Data() *BackgroundData {
 	return b.data
+}
+
+type BackgroundData struct {
+	Scale float64
+	Image *ebiten.Image
 }

@@ -1,4 +1,4 @@
-package game
+package component
 
 import (
 	"bytes"
@@ -96,7 +96,8 @@ func (r *RollSprite) Draw(screen *ebiten.Image, x, y float64) {
 }
 
 func (r *RollSprite) GetAssetSize() (width float64, height float64) {
-	w, h := ImageRollAsset[0].Size()
+	w := ImageRollAsset[0].Bounds().Dx()
+	h := ImageRollAsset[0].Bounds().Dy()
 	return float64(w) * *r.scale, float64(h) * *r.scale
 }
 

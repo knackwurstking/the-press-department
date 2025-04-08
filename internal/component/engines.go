@@ -1,60 +1,19 @@
-package game
+package component
 
 import (
 	"math/rand"
+	"the-press-department/internal/stats"
 	"the-press-department/internal/tiles"
 	"time"
 
 	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/hajimehoshi/ebiten/v2/inpututil"
 )
-
-type EnginesData struct {
-	Stats *GameStats
-	Pause bool // Pause will stop the machines :)
-
-	Scale float64
-
-	tiles []tiles.Tiles
-}
-
-func (c *EnginesData) GetTiles() []tiles.Tiles {
-	return c.tiles
-}
-
-func (c *EnginesData) GetBPM() float64 {
-	if c.Pause {
-		return 0
-	}
-	return c.Stats.PressBPM
-}
-
-func (c *EnginesData) SetBPM(bpm float64) {
-	c.Stats.PressBPM = bpm
-}
-
-func (c *EnginesData) GetHz() float64 {
-	if c.Pause {
-		return 0
-	}
-	return c.Stats.ConveyorHz
-}
-
-func (c *EnginesData) SetHz(n float64) {
-	c.Stats.ConveyorHz = n
-}
-
-func (c *EnginesData) GetHzMultiply() float64 {
-	return c.Stats.ConveyorHzMultiply
-}
-
-func (c *EnginesData) SetHzMultiply(n float64) {
-	c.Stats.ConveyorHzMultiply = n
-}
 
 // Board holds all the data and coordinates (like tiles positions and engine positions)
 type Engines struct {
 	conveyor Component[ConveyorData]
-	input    Component[EnginesInputData]
+	input    Component[EnginesUserInputData]
 
 	data                      *EnginesData
 	screenWidth, screenHeight float64
@@ -68,7 +27,7 @@ type Engines struct {
 
 func NewEngines(data *EnginesData) *Engines {
 	e := &Engines{
-		input:      NewEnginesInput(&EnginesInputData{}),
+		input:      NewEnginesUserInput(&EnginesUserInputData{}),
 		data:       data,
 		lastTile:   time.Now(),
 		lastUpdate: time.Now(),
@@ -248,4 +207,162 @@ func (e *Engines) calcRange(next time.Time) float64 {
 
 func (e *Engines) getRandomState() tiles.State {
 	return e.tileStates[e.rand.Intn(len(e.tileStates))]
+}
+
+type EnginesData struct {
+	Stats *stats.Game
+	Pause bool // Pause will stop the machines :)
+
+	Scale float64
+
+	tiles []tiles.Tiles
+}
+
+func (c *EnginesData) GetTiles() []tiles.Tiles {
+	return c.tiles
+}
+
+func (c *EnginesData) GetBPM() float64 {
+	if c.Pause {
+		return 0
+	}
+	return c.Stats.PressBPM
+}
+
+func (c *EnginesData) SetBPM(bpm float64) {
+	c.Stats.PressBPM = bpm
+}
+
+func (c *EnginesData) GetHz() float64 {
+	if c.Pause {
+		return 0
+	}
+	return c.Stats.ConveyorHz
+}
+
+func (c *EnginesData) SetHz(n float64) {
+	c.Stats.ConveyorHz = n
+}
+
+func (c *EnginesData) GetHzMultiply() float64 {
+	return c.Stats.ConveyorHzMultiply
+}
+
+func (c *EnginesData) SetHzMultiply(n float64) {
+	c.Stats.ConveyorHzMultiply = n
+}
+
+// EnginesInput reads for example drag input like up/down (touch support for mobile)
+type EnginesUserInput struct {
+	data *EnginesUserInputData
+
+	touchIDs []ebiten.TouchID
+
+	startY float64
+	lastY  float64
+
+	tile  tiles.Tiles
+	touch map[ebiten.TouchID]struct{}
+}
+
+func NewEnginesUserInput(data *EnginesUserInputData) Component[EnginesUserInputData] {
+	return &EnginesUserInput{
+		data:  data,
+		touch: make(map[ebiten.TouchID]struct{}),
+	}
+}
+
+func (i *EnginesUserInput) Layout(outsideWidth, outsideHeight int) (int, int) {
+	return outsideWidth, outsideHeight
+}
+
+func (i *EnginesUserInput) Draw(screen *ebiten.Image) {
+}
+
+func (i *EnginesUserInput) Update() error {
+	// handle mouse input
+	if inpututil.IsMouseButtonJustPressed(ebiten.MouseButtonLeft) {
+		x, y := ebiten.CursorPosition()
+
+		i.tile = i.getTile(float64(x), float64(y), i.data.Tiles)
+		if i.tile != nil {
+			i.startY = float64(y)
+			i.lastY = i.startY
+
+			i.tile.SetDraggedFn(func(tX, tY float64) (x float64, y float64) {
+				_, _y := ebiten.CursorPosition()
+				tY -= i.lastY - float64(_y)
+				i.lastY = float64(_y)
+				return tX, tY
+			})
+		}
+	} else if inpututil.IsMouseButtonJustReleased(ebiten.MouseButtonLeft) {
+		if i.tile != nil {
+			i.tile.SetDraggedFn(nil)
+
+			_, h := i.tile.Size()
+			if i.tile.Data().Y+h > i.data.ThrowAwayPaddingBottom ||
+				i.tile.Data().Y < i.data.ThrowAwayPaddingTop {
+				i.tile.ThrowAway()
+			}
+
+			i.tile = nil
+		}
+	}
+
+	// Handle touch input
+	i.touchIDs = inpututil.AppendJustPressedTouchIDs(i.touchIDs[:0])
+	if len(i.touchIDs) > 0 {
+		// single finger touch
+		touchID := i.touchIDs[0]
+		x, y := ebiten.TouchPosition(touchID)
+		i.tile = i.getTile(float64(x), float64(y), i.data.Tiles)
+		if i.tile != nil {
+			i.startY = float64(y)
+			i.lastY = i.startY
+
+			i.tile.SetDraggedFn(func(tX, tY float64) (x float64, y float64) {
+				_x, _y := ebiten.TouchPosition(touchID)
+				if _x == 0 && _y == 0 {
+					i.tile.SetDraggedFn(nil)
+
+					_, h := i.tile.Size()
+					if i.tile.Data().Y+h > i.data.ThrowAwayPaddingBottom ||
+						i.tile.Data().Y < i.data.ThrowAwayPaddingTop {
+						i.tile.ThrowAway()
+					}
+
+					i.tile = nil
+					return tX, tY
+				}
+
+				tY -= i.lastY - float64(_y)
+				i.lastY = float64(_y)
+				return tX, tY
+			})
+		}
+	}
+
+	return nil
+}
+
+func (i *EnginesUserInput) getTile(x, _ float64, tiles []tiles.Tiles) tiles.Tiles {
+	for _, tile := range tiles {
+		w, _ := tile.Size()
+		if x >= tile.Data().X && x <= tile.Data().X+w {
+			return tile
+		}
+	}
+
+	return nil
+}
+
+func (i *EnginesUserInput) Data() *EnginesUserInputData {
+	return i.data
+}
+
+type EnginesUserInputData struct {
+	ThrowAwayPaddingTop    float64
+	ThrowAwayPaddingBottom float64
+	Tiles                  []tiles.Tiles
 }

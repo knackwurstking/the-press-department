@@ -4,8 +4,6 @@ import (
 	"log"
 
 	"github.com/hajimehoshi/ebiten/v2"
-
-	"the-press-department/internal/game"
 )
 
 func main() {
@@ -13,7 +11,7 @@ func main() {
 	ebiten.SetWindowResizingMode(ebiten.WindowResizingModeEnabled)
 	ebiten.SetWindowTitle("The Press Department")
 
-	if err := ebiten.RunGame(game.NewGame(game.DefaultScale * 1.5)); err != nil {
+	if err := ebiten.RunGame(NewGame(DefaultScale * 1.5)); err != nil {
 		log.Fatalf("Run game failed: %s", err.Error())
 	}
 }

@@ -1,8 +1,10 @@
-package game
+package main
 
 import (
 	"fmt"
 	"image/color"
+	"the-press-department/internal/component"
+	"the-press-department/internal/stats"
 	"time"
 
 	"github.com/hajimehoshi/ebiten/v2"
@@ -74,10 +76,10 @@ type Mode int
 // Game controls all the game logic
 type Game struct {
 	Mode       Mode
-	Background Component[BackgroundData]
-	Engines    Component[EnginesData]
+	Background component.Component[component.BackgroundData]
+	Engines    component.Component[component.EnginesData]
 
-	Stats *GameStats
+	Stats *stats.Game
 
 	screenWidth, screenHeight int
 	scale                     float64
@@ -86,7 +88,7 @@ type Game struct {
 }
 
 func NewGame(scale float64) *Game {
-	stats := &GameStats{
+	stats := &stats.Game{
 		TilesProduced:      0, // Engines tilesProduced config field
 		PressBPM:           6.5,
 		ConveyorHz:         8.0,
@@ -96,11 +98,11 @@ func NewGame(scale float64) *Game {
 	game := &Game{
 		Mode:  ModePause,
 		Stats: stats,
-		Background: NewBackground(&BackgroundData{
+		Background: component.NewBackground(&component.BackgroundData{
 			Scale: scale,
-			Image: ebiten.NewImageFromImage(ImageGround),
+			Image: ebiten.NewImageFromImage(component.ImageGround),
 		}),
-		Engines: NewEngines(&EnginesData{
+		Engines: component.NewEngines(&component.EnginesData{
 			Stats: stats,
 			Scale: scale,
 		}),

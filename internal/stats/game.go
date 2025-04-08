@@ -1,9 +1,9 @@
-package game
+package stats
 
 import "the-press-department/internal/tiles"
 
 // Stats for saving the game state
-type GameStats struct {
+type Game struct {
 	// Money holds the number of your money
 	Money int `json:"money"`
 
@@ -26,18 +26,18 @@ type GameStats struct {
 	ConveyorHzMultiply float64 `json:"conveyor-hz-multiply"`
 }
 
-func (s *GameStats) AddGoodTile() {
-	s.GoodTiles++
-	s.Money += 150
+func (g *Game) AddGoodTile() {
+	g.GoodTiles++
+	g.Money += 150
 }
 
-func (s *GameStats) AddBadTile() {
-	s.BadTiles++
-	s.Money -= 450
+func (g *Game) AddBadTile() {
+	g.BadTiles++
+	g.Money -= 450
 }
 
 // "add thrown away good tile", "add thrown away bad tile"
-func (s *GameStats) AddThrownAwayTile(tile tiles.Tiles) {
+func (g *Game) AddThrownAwayTile(tile tiles.Tiles) {
 	if !tile.IsThrownAway() {
 		return
 	}
@@ -45,8 +45,8 @@ func (s *GameStats) AddThrownAwayTile(tile tiles.Tiles) {
 	// check if tile was ok (if ok then add a penalty "-1000$")...
 	switch tile.Data().State {
 	case tiles.StateCrack:
-		s.Money -= 50
+		g.Money -= 50
 	case tiles.StateOK:
-		s.Money -= 850
+		g.Money -= 850
 	}
 }
