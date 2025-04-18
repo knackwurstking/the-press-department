@@ -8,8 +8,7 @@ KeepAwake.isSupported().then((result) => {
 
 if ("serviceWorker" in navigator) {
     window.addEventListener("load", async () => {
-        const registration =
-            await navigator.serviceWorker.register("/service-worker.js");
+        const registration = await navigator.serviceWorker.register("/sw.js");
 
         try {
             console.log(
