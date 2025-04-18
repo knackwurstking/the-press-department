@@ -10,7 +10,6 @@ const urlsToCache = [
 ];
 
 self.addEventListener("install", (event: any) => {
-    console.warn(event);
     event.waitUntil(
         caches.open(CACHE_NAME).then((cache) => {
             console.log("Opened cache");
@@ -20,7 +19,6 @@ self.addEventListener("install", (event: any) => {
 });
 
 self.addEventListener("fetch", (event: any) => {
-    console.warn(event);
     event.respondWith(
         fetch(event.request)
             .then((response) => {
