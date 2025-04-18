@@ -214,9 +214,9 @@ func (g *Game) drawPause(screen *ebiten.Image) {
 	var texts []string
 	switch g.Mode {
 	case ModePause:
-		texts = append(texts, "Click (or Touch) to start.")
+		texts = append(texts, "Click to start.")
 	case ModeSuspend:
-		texts = append(texts, "Click (or Touch) to continue.")
+		texts = append(texts, "Click to continue.")
 	}
 
 	for i, l := range titleTexts {
