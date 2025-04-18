@@ -11,11 +11,12 @@ import (
 )
 
 // Board holds all the data and coordinates (like tiles positions and engine positions)
-type Engines struct {
-	conveyor Component[ConveyorData]
-	input    Component[EnginesUserInputData]
+type Engine struct {
+	// TODO: Kicked from the Engine
+	conveyor Component[RollingRailwayData]
+	input    Component[EngineUserInputData]
 
-	data                      *EnginesData
+	data                      *EngineData
 	screenWidth, screenHeight float64
 
 	lastTile   time.Time
@@ -25,9 +26,9 @@ type Engines struct {
 	tileStates []tiles.State
 }
 
-func NewEngines(data *EnginesData) *Engines {
-	e := &Engines{
-		input:      NewEnginesUserInput(&EnginesUserInputData{}),
+func NewEngine(data *EngineData) *Engine {
+	e := &Engine{
+		input:      NewEngineUserInput(&EngineUserInputData{}),
 		data:       data,
 		lastTile:   time.Now(),
 		lastUpdate: time.Now(),
@@ -39,7 +40,7 @@ func NewEngines(data *EnginesData) *Engines {
 		},
 	}
 
-	e.conveyor = NewConveyor(&ConveyorData{
+	e.conveyor = NewRollingRailway(&RollingRailwayData{
 		Scale:      &e.data.Scale,
 		HzMultiply: e.data.GetHzMultiply(),
 		Sprite:     NewRollSprite(&e.data.Scale),
@@ -48,7 +49,7 @@ func NewEngines(data *EnginesData) *Engines {
 	return e
 }
 
-func (e *Engines) Layout(outsideWidth, outsideHeight int) (int, int) {
+func (e *Engine) Layout(outsideWidth, outsideHeight int) (int, int) {
 	if e.screenHeight != float64(outsideHeight) {
 		e.screenHeight = float64(outsideHeight)
 
@@ -69,7 +70,7 @@ func (e *Engines) Layout(outsideWidth, outsideHeight int) (int, int) {
 	return outsideWidth, outsideWidth
 }
 
-func (e *Engines) Update() error {
+func (e *Engine) Update() error {
 	next := time.Now()
 	e.updateConveyor(next)
 
@@ -94,7 +95,7 @@ func (e *Engines) Update() error {
 	return nil
 }
 
-func (e *Engines) Draw(screen *ebiten.Image) {
+func (e *Engine) Draw(screen *ebiten.Image) {
 	// Draw the "Conveyor"
 	e.conveyor.Draw(screen)
 
@@ -104,11 +105,11 @@ func (e *Engines) Draw(screen *ebiten.Image) {
 	}
 }
 
-func (e *Engines) Data() *EnginesData {
+func (e *Engine) Data() *EngineData {
 	return e.data
 }
 
-func (e *Engines) updateConveyor(next time.Time) {
+func (e *Engine) updateConveyor(next time.Time) {
 	e.conveyor.Data().Hz = e.data.GetHz()
 	e.conveyor.Data().HzMultiply = e.data.GetHzMultiply()
 	e.conveyor.Data().SetUpdateData(
@@ -120,7 +121,7 @@ func (e *Engines) updateConveyor(next time.Time) {
 	_ = e.conveyor.Update()
 }
 
-func (e *Engines) updatePress(next time.Time) {
+func (e *Engine) updatePress(next time.Time) {
 	if e.data.Pause {
 		// on pause just add the diff between next and last and add it to last
 		e.lastTile = e.lastTile.Add(next.Sub(e.lastTile))
@@ -133,7 +134,7 @@ func (e *Engines) updatePress(next time.Time) {
 	)
 	if e.lastTile.Add(ms).UnixMicro() <= next.UnixMicro() {
 		// get a new tile here
-		var tile = tiles.NewTile(&tiles.TilesData{
+		tile := tiles.NewTile(&tiles.TilesData{
 			State: e.getRandomState(),
 			Scale: &e.data.Scale,
 		})
@@ -148,7 +149,7 @@ func (e *Engines) updatePress(next time.Time) {
 	}
 }
 
-func (e *Engines) updateTiles(next time.Time) {
+func (e *Engine) updateTiles(next time.Time) {
 	toRemove := make([]tiles.Tiles, 0)
 
 	// Update new tiles position
@@ -200,16 +201,15 @@ func (e *Engines) updateTiles(next time.Time) {
 	}
 }
 
-// FIXME: What the fuck is calcR, could that be "calcRange"?
-func (e *Engines) calcRange(next time.Time) float64 {
+func (e *Engine) calcRange(next time.Time) float64 {
 	return (float64(next.Sub(e.lastUpdate).Seconds()) * (e.data.GetHzMultiply() * e.data.GetHz())) * (e.data.Scale * 10)
 }
 
-func (e *Engines) getRandomState() tiles.State {
+func (e *Engine) getRandomState() tiles.State {
 	return e.tileStates[e.rand.Intn(len(e.tileStates))]
 }
 
-type EnginesData struct {
+type EngineData struct {
 	Stats *stats.Game
 	Pause bool // Pause will stop the machines :)
 
@@ -218,43 +218,43 @@ type EnginesData struct {
 	tiles []tiles.Tiles
 }
 
-func (c *EnginesData) GetTiles() []tiles.Tiles {
+func (c *EngineData) GetTiles() []tiles.Tiles {
 	return c.tiles
 }
 
-func (c *EnginesData) GetBPM() float64 {
+func (c *EngineData) GetBPM() float64 {
 	if c.Pause {
 		return 0
 	}
 	return c.Stats.PressBPM
 }
 
-func (c *EnginesData) SetBPM(bpm float64) {
+func (c *EngineData) SetBPM(bpm float64) {
 	c.Stats.PressBPM = bpm
 }
 
-func (c *EnginesData) GetHz() float64 {
+func (c *EngineData) GetHz() float64 {
 	if c.Pause {
 		return 0
 	}
 	return c.Stats.ConveyorHz
 }
 
-func (c *EnginesData) SetHz(n float64) {
+func (c *EngineData) SetHz(n float64) {
 	c.Stats.ConveyorHz = n
 }
 
-func (c *EnginesData) GetHzMultiply() float64 {
+func (c *EngineData) GetHzMultiply() float64 {
 	return c.Stats.ConveyorHzMultiply
 }
 
-func (c *EnginesData) SetHzMultiply(n float64) {
+func (c *EngineData) SetHzMultiply(n float64) {
 	c.Stats.ConveyorHzMultiply = n
 }
 
-// EnginesInput reads for example drag input like up/down (touch support for mobile)
-type EnginesUserInput struct {
-	data *EnginesUserInputData
+// EngineInput reads for example drag input like up/down (touch support for mobile)
+type EngineUserInput struct {
+	data *EngineUserInputData
 
 	touchIDs []ebiten.TouchID
 
@@ -265,21 +265,21 @@ type EnginesUserInput struct {
 	touch map[ebiten.TouchID]struct{}
 }
 
-func NewEnginesUserInput(data *EnginesUserInputData) Component[EnginesUserInputData] {
-	return &EnginesUserInput{
+func NewEngineUserInput(data *EngineUserInputData) Component[EngineUserInputData] {
+	return &EngineUserInput{
 		data:  data,
 		touch: make(map[ebiten.TouchID]struct{}),
 	}
 }
 
-func (i *EnginesUserInput) Layout(outsideWidth, outsideHeight int) (int, int) {
+func (i *EngineUserInput) Layout(outsideWidth, outsideHeight int) (int, int) {
 	return outsideWidth, outsideHeight
 }
 
-func (i *EnginesUserInput) Draw(screen *ebiten.Image) {
+func (i *EngineUserInput) Draw(screen *ebiten.Image) {
 }
 
-func (i *EnginesUserInput) Update() error {
+func (i *EngineUserInput) Update() error {
 	// handle mouse input
 	if inpututil.IsMouseButtonJustPressed(ebiten.MouseButtonLeft) {
 		x, y := ebiten.CursorPosition()
@@ -346,7 +346,7 @@ func (i *EnginesUserInput) Update() error {
 	return nil
 }
 
-func (i *EnginesUserInput) getTile(x, _ float64, tiles []tiles.Tiles) tiles.Tiles {
+func (i *EngineUserInput) getTile(x, _ float64, tiles []tiles.Tiles) tiles.Tiles {
 	for _, tile := range tiles {
 		w, _ := tile.Size()
 		if x >= tile.Data().X && x <= tile.Data().X+w {
@@ -357,11 +357,11 @@ func (i *EnginesUserInput) getTile(x, _ float64, tiles []tiles.Tiles) tiles.Tile
 	return nil
 }
 
-func (i *EnginesUserInput) Data() *EnginesUserInputData {
+func (i *EngineUserInput) Data() *EngineUserInputData {
 	return i.data
 }
 
-type EnginesUserInputData struct {
+type EngineUserInputData struct {
 	ThrowAwayPaddingTop    float64
 	ThrowAwayPaddingBottom float64
 	Tiles                  []tiles.Tiles

@@ -1,17 +1,18 @@
+// TODO: Rename to RollingRailway
 package component
 
 import (
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
-type Conveyor struct {
-	data                      *ConveyorData
+type RollingRailway struct {
+	data                      *RollingRailwayData
 	rolls                     []Coord
 	screenWidth, screenHeight float64
 }
 
-func NewConveyor(data *ConveyorData) Component[ConveyorData] {
-	c := &Conveyor{
+func NewRollingRailway(data *RollingRailwayData) Component[RollingRailwayData] {
+	c := &RollingRailway{
 		data:  data,
 		rolls: make([]Coord, 0),
 	}
@@ -19,14 +20,14 @@ func NewConveyor(data *ConveyorData) Component[ConveyorData] {
 	return c
 }
 
-func (c *Conveyor) Layout(outsideWidth, outsideHeight int) (int, int) {
+func (c *RollingRailway) Layout(outsideWidth, outsideHeight int) (int, int) {
 	c.screenWidth = float64(outsideWidth)
 	c.screenHeight = float64(outsideHeight)
 
 	return outsideWidth, outsideHeight
 }
 
-func (c *Conveyor) Update() error {
+func (c *RollingRailway) Update() error {
 	c.data.X = c.data.x
 	c.data.Y = c.data.y
 
@@ -42,17 +43,17 @@ func (c *Conveyor) Update() error {
 	return nil
 }
 
-func (c *Conveyor) Draw(screen *ebiten.Image) {
+func (c *RollingRailway) Draw(screen *ebiten.Image) {
 	for i := 0; i < len(c.rolls); i++ {
 		c.data.Sprite.Draw(screen, c.rolls[i].X, c.rolls[i].Y)
 	}
 }
 
-func (c *Conveyor) Data() *ConveyorData {
+func (c *RollingRailway) Data() *RollingRailwayData {
 	return c.data
 }
 
-type ConveyorData struct {
+type RollingRailwayData struct {
 	Sprite     *RollSprite
 	Scale      *float64
 	Hz         float64
@@ -64,14 +65,14 @@ type ConveyorData struct {
 	rSum, r, x, y, size float64
 }
 
-func (c *ConveyorData) SetUpdateData(r, x, y, size float64) {
+func (c *RollingRailwayData) SetUpdateData(r, x, y, size float64) {
 	c.r = r
 	c.x = x
 	c.y = y
 	c.size = size
 }
 
-func (c *ConveyorData) SetSprite() {
+func (c *RollingRailwayData) SetSprite() {
 	c.rSum += c.r
 	w, _ := c.Sprite.GetAssetSize()
 	if c.rSum >= w {
@@ -80,7 +81,7 @@ func (c *ConveyorData) SetSprite() {
 	}
 }
 
-func (c *ConveyorData) GetHeight() float64 {
+func (c *RollingRailwayData) GetHeight() float64 {
 	_, h := c.Sprite.GetAssetSize()
 	return h
 }

@@ -80,7 +80,8 @@ type Mode int
 type Game struct {
 	Mode       Mode
 	Background component.Component[component.BackgroundData]
-	Engines    component.Component[component.EnginesData]
+	// TODO: The RollingRailway should be here containing the engine and the roll sprites
+	Engine component.Component[component.EngineData]
 
 	Stats *stats.Game
 
@@ -92,7 +93,7 @@ type Game struct {
 
 func NewGame(scale float64) *Game {
 	stats := &stats.Game{
-		TilesProduced:      0, // Engines tilesProduced config field
+		TilesProduced:      0, // Engine tilesProduced config field
 		PressBPM:           6.5,
 		ConveyorHz:         8.0,
 		ConveyorHzMultiply: 2.5,
@@ -105,7 +106,7 @@ func NewGame(scale float64) *Game {
 			Scale: scale,
 			Image: ebiten.NewImageFromImage(component.ImageGround),
 		}),
-		Engines: component.NewEngines(&component.EnginesData{
+		Engine: component.NewEngine(&component.EngineData{
 			Stats: stats,
 			Scale: scale,
 		}),
@@ -121,7 +122,7 @@ func (g *Game) Layout(outsideWidth int, outsideHeight int) (int, int) {
 	g.screenHeight = outsideHeight
 
 	g.Background.Layout(outsideWidth, outsideHeight)
-	g.Engines.Layout(outsideWidth, outsideHeight)
+	g.Engine.Layout(outsideWidth, outsideHeight)
 
 	return outsideWidth, outsideHeight
 }
@@ -135,22 +136,22 @@ func (g *Game) Update() error {
 	//}
 
 	g.Background.Data().Scale = g.scale
-	g.Engines.Data().Scale = g.scale
+	g.Engine.Data().Scale = g.scale
 
 	switch g.Mode {
 	case ModePause, ModeSuspend:
-		g.Engines.Data().Pause = true
+		g.Engine.Data().Pause = true
 		// Listen for keys to continue (or start the game)
 		if g.isKeyPressed() {
 			// Continue or start the game
-			g.Engines.Data().Pause = false
+			g.Engine.Data().Pause = false
 			g.Mode = ModeGame
 		}
 	case ModeGame:
 	}
 
 	_ = g.Background.Update()
-	_ = g.Engines.Update()
+	_ = g.Engine.Update()
 
 	g.lastUpdate = time.Now()
 
@@ -180,7 +181,7 @@ func (g *Game) isKeyPressed() bool {
 
 func (g *Game) drawPause(screen *ebiten.Image) {
 	g.Background.Draw(screen)
-	g.Engines.Draw(screen)
+	g.Engine.Draw(screen)
 
 	g.drawStats(screen)
 
@@ -214,7 +215,7 @@ func (g *Game) drawPause(screen *ebiten.Image) {
 func (g *Game) drawGame(screen *ebiten.Image) {
 	// run the game
 	g.Background.Draw(screen)
-	g.Engines.Draw(screen)
+	g.Engine.Draw(screen)
 
 	g.drawStats(screen)
 	g.drawDebug(screen)
@@ -234,9 +235,9 @@ func (g *Game) drawDebug(screen *ebiten.Image) {
 	// debug overlay: "FPS"
 	ebitenutil.DebugPrintAt(screen, fmt.Sprintf("%.0f", ebiten.ActualFPS()), 0, 0)
 
-	// debug overlay: "Engines Info"
+	// debug overlay: "Engine Info"
 	// 1. Row
-	counter := fmt.Sprintf("Press Speed: %.1fh", g.Engines.Data().GetBPM())
+	counter := fmt.Sprintf("Press Speed: %.1fh", g.Engine.Data().GetBPM())
 	ebitenutil.DebugPrintAt(screen, counter, g.screenWidth-(len(counter)*6+2), 0)
 
 	// 2. Row
@@ -244,7 +245,7 @@ func (g *Game) drawDebug(screen *ebiten.Image) {
 	ebitenutil.DebugPrintAt(screen, counter, g.screenWidth-(len(counter)*6+2), 16)
 
 	// 3. Row
-	counter = fmt.Sprintf("RB: %d [%.1f hz]", len(g.Engines.Data().GetTiles()),
-		g.Engines.Data().GetHz())
+	counter = fmt.Sprintf("RB: %d [%.1f hz]", len(g.Engine.Data().GetTiles()),
+		g.Engine.Data().GetHz())
 	ebitenutil.DebugPrintAt(screen, counter, g.screenWidth-(len(counter)*6+2), 32)
 }
