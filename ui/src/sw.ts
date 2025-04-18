@@ -3,7 +3,6 @@ const urlsToCache = [
     process.env.SERVER_PATH + "/",
     process.env.SERVER_PATH + "/index.html",
     process.env.SERVER_PATH + "/main.umd.cjs",
-    process.env.SERVER_PATH + "/style.css",
     process.env.SERVER_PATH + "/sw.js",
     process.env.SERVER_PATH + "/the-press-department.wasm",
     process.env.SERVER_PATH + "/wasm_exec.js",

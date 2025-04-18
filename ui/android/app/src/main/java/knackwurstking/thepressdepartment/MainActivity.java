@@ -1,4 +1,4 @@
-package com.knackwurstking.ThePressDepartment;
+package knackwurstking.thepressdepartment;
 
 import com.getcapacitor.BridgeActivity;
 

@@ -2,6 +2,6 @@
 <resources>
     <string name="app_name">The Press Department</string>
     <string name="title_activity_main">The Press Department</string>
-    <string name="package_name">com.knackwurstking.ThePressDepartment</string>
-    <string name="custom_url_scheme">com.knackwurstking.ThePressDepartment</string>
+    <string name="package_name">knackwurstking.thepressdepartment</string>
+    <string name="custom_url_scheme">knackwurstking.thepressdepartment</string>
 </resources>
