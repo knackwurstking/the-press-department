@@ -38,8 +38,6 @@ var (
 
 	FontSizeBig = float64(31)
 	FontFaceBig font.Face
-
-	// orientation js.Value
 )
 
 func init() {
@@ -74,11 +72,6 @@ func init() {
 	if err != nil {
 		panic(err)
 	}
-
-	//// Orientation Change
-	//window := js.Global().Get("window")
-	//screen := window.Get("screen")
-	//orientation = screen.Get("orientation")
 }
 
 type Mode int
@@ -95,7 +88,6 @@ type Game struct {
 	scale                     float64
 
 	lastUpdate time.Time
-	// lastOrientationAngle int
 }
 
 func NewGame(scale float64) *Game {
@@ -125,22 +117,6 @@ func NewGame(scale float64) *Game {
 
 // Layout implements ebiten.Game
 func (g *Game) Layout(outsideWidth int, outsideHeight int) (int, int) {
-	//// Check screen orientation
-	//orientationAngle := orientation.Get("angle").Int()
-	//if g.lastOrientationAngle != orientationAngle {
-	//	g.lastOrientationAngle = orientationAngle
-	//}
-
-	//// TODO: Need to test this on my phones browser
-	//
-	//if g.lastOrientationAngle == 90 || g.lastOrientationAngle == 270 {
-	//	g.screenWidth = outsideHeight
-	//	g.screenHeight = outsideWidth
-	//} else {
-	//	g.screenWidth = outsideWidth
-	//	g.screenHeight = outsideHeight
-	//}
-
 	g.screenWidth = outsideWidth
 	g.screenHeight = outsideHeight
 
@@ -152,10 +128,11 @@ func (g *Game) Layout(outsideWidth int, outsideHeight int) (int, int) {
 
 // Update implements ebiten.Game
 func (g *Game) Update() error {
-	// catch standby and pause the game (check for standby via time package)
-	if time.Since(g.lastUpdate) >= time.Second && g.Mode != ModePause {
-		g.Mode = ModeSuspend
-	}
+	// NOTE: Disable ModeSuspend for now
+	//
+	//if time.Since(g.lastUpdate) >= time.Second && g.Mode != ModePause {
+	//	g.Mode = ModeSuspend
+	//}
 
 	g.Background.Data().Scale = g.scale
 	g.Engines.Data().Scale = g.scale
