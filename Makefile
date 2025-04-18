@@ -6,18 +6,18 @@ clean:
 	git clean -fxd
 
 init:
-	cd www && npm install
+	cd ui && npm install
 
 run:
 	go run -v ./cmd/${APP_NAME}
 
 build:
-	env GOOS=js GOARCH=wasm go build -o www/public/${APP_NAME}.wasm ./cmd/${APP_NAME}
-	cd www && make build
+	env GOOS=js GOARCH=wasm go build -o ui/public/${APP_NAME}.wasm ./cmd/${APP_NAME}
+	cd ui && make build
 	go build -o ./bin/${APP_NAME} ./cmd/${APP_NAME}
 
 build-android:
-	cd www && make build && make build-android
+	cd ui && make build && make build-android
 	
 # NOTE: Standard rpi-server-project part
 
