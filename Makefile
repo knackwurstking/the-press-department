@@ -28,6 +28,7 @@ Description=A interactive screensaver. No just for fun.
 After=network.target
 
 [Service]
+EnvironmentFile=%h/.config/rpi-server-project/.env
 ExecStart=${SERVER_APP_NAME}
 
 [Install]
