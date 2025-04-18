@@ -41,7 +41,7 @@ license that can be found in the LICENSE file.
 
             async function run(mod, inst) {
                 document.body.querySelector(".spinner").style.display = "none";
-                console.clear();
+                //console.clear();
                 await go.run(inst);
                 inst = await WebAssembly.instantiate(mod, go.importObject); // reset instance
             }
