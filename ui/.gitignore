@@ -3,9 +3,9 @@
 
 # npm 
 node_modules
-#package-lock.json
+package-lock.json
 
 # vite
-#/public/the-press-department.wasm
-#/public/sw.js
-#/public/main.umd.cjs
+/public/the-press-department.wasm
+/public/sw.js
+/public/main.umd.cjs
