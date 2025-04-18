@@ -1,5 +1,13 @@
 const CACHE_NAME = "the-press-department-v1";
-const urlsToCache = ["/", "/the-press-department.wasm", "/wasm_exec.js"];
+const urlsToCache = [
+    process.env.SERVER_PATH + "/",
+    process.env.SERVER_PATH + "/index.html",
+    process.env.SERVER_PATH + "/main.umd.cjs",
+    process.env.SERVER_PATH + "/style.css",
+    process.env.SERVER_PATH + "/sw.js",
+    process.env.SERVER_PATH + "/the-press-department.wasm",
+    process.env.SERVER_PATH + "/wasm_exec.js",
+];
 
 self.addEventListener("install", (event: any) => {
     console.warn(event);

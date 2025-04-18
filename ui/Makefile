@@ -4,8 +4,8 @@ init:
 	npm install
 
 build:
-	npx tsc --outDir public/ src/sw.ts
-	npx vite build --config vite.config.ts
+	npx vite build --config vite.main.config.ts
+	npx vite build --config vite.sw.config.ts
 
 build-android:
 	make build

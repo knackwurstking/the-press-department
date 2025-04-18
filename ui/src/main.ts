@@ -1,14 +1,10 @@
-import "./sw-register";
-
 import { KeepAwake } from "@capacitor-community/keep-awake";
-
-KeepAwake.isSupported().then((result) => {
-    result.isSupported && KeepAwake.keepAwake();
-});
 
 if ("serviceWorker" in navigator) {
     window.addEventListener("load", async () => {
-        const registration = await navigator.serviceWorker.register("/sw.js");
+        const registration = await navigator.serviceWorker.register(
+            process.env.SERVER_PATH + "/sw.js",
+        );
 
         try {
             console.log(
@@ -20,3 +16,7 @@ if ("serviceWorker" in navigator) {
         }
     });
 }
+
+KeepAwake.isSupported().then((result) => {
+    result.isSupported && KeepAwake.keepAwake();
+});
