@@ -1,6 +1,7 @@
 all: init build
 
 APP_NAME := the-press-department
+SERVER_APP_NAME := ${APP_NAME}-server
 
 clean:
 	git clean -fxd
@@ -14,7 +15,7 @@ run:
 build:
 	env GOOS=js GOARCH=wasm go build -o ui/public/${APP_NAME}.wasm ./cmd/${APP_NAME}
 	cd ui && make build
-	go build -o ./bin/${APP_NAME} ./cmd/${APP_NAME}
+	go build -o ./bin/${SERVER_APP_NAME} ./cmd/${SERVER_APP_NAME}
 
 build-android:
 	cd ui && make build && make build-android
@@ -27,7 +28,7 @@ Description=A interactive screensaver. No just for fun.
 After=network.target
 
 [Service]
-ExecStart=${APP_NAME}
+ExecStart=${SERVER_APP_NAME}
 
 [Install]
 WantedBy=default.target
@@ -42,16 +43,16 @@ endif
 
 export SYSTEMD_SERVICE_FILE
 install: check-linux
-	echo "$$SYSTEMD_SERVICE_FILE" > ${HOME}/.config/systemd/user/${APP_NAME}.service 
+	echo "$$SYSTEMD_SERVICE_FILE" > ${HOME}/.config/systemd/user/${SERVER_APP_NAME}.service 
 	systemctl --user daemon-reload 
-	echo "--> Created a service file @ ${HOME}/.config/systemd/user/${APP_NAME}.service"
-	sudo cp ./bin/${APP_NAME} /usr/local/bin/
+	echo "--> Created a service file @ ${HOME}/.config/systemd/user/${SERVER_APP_NAME}.service"
+	sudo cp ./bin/${SERVER_APP_NAME} /usr/local/bin/
 
 start: check-linux
-	systemctl --user restart ${APP_NAME}
+	systemctl --user restart ${SERVER_APP_NAME}
 
 stop: check-linux
-	systemctl --user stop ${APP_NAME}
+	systemctl --user stop ${SERVER_APP_NAME}
 
 log: check-linux
-	journalctl --user -u ${APP_NAME} --follow --output cat
+	journalctl --user -u ${SERVER_APP_NAME} --follow --output cat
