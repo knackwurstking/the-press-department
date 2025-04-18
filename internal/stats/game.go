@@ -19,11 +19,11 @@ type Game struct {
 	// PressBPM (setup value)
 	PressBPM float64 `json:"press-BPM"`
 
-	// ConveyorHz (setup value)
-	ConveyorHz float64 `json:"conveyor-hz"`
+	// RollingRailwayHz (setup value)
+	RollingRailwayHz float64 `json:"conveyor-hz"`
 
-	// ConveyorHzMultiply (setup value)
-	ConveyorHzMultiply float64 `json:"conveyor-hz-multiply"`
+	// RollingRailwayHzMultiply (setup value)
+	RollingRailwayHzMultiply float64 `json:"conveyor-hz-multiply"`
 }
 
 func (g *Game) AddGoodTile() {

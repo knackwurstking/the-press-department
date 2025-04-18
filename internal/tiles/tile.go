@@ -8,9 +8,7 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
-var (
-	ImageTileAssets map[State]*ebiten.Image = make(map[State]*ebiten.Image)
-)
+var ImageTileAssets map[State]*ebiten.Image = make(map[State]*ebiten.Image)
 
 func init() {
 	// Tile
@@ -68,8 +66,9 @@ func (t *Tile) Draw(screen *ebiten.Image) {
 }
 
 func (t *Tile) Size() (w, h float64) {
-	_w, _h := ImageTileAssets[t.data.State].Size()
-	return float64(_w) * *t.data.Scale, float64(_h) * *t.data.Scale
+	iW := ImageTileAssets[t.data.State].Bounds().Dx()
+	iH := ImageTileAssets[t.data.State].Bounds().Dy()
+	return float64(iW) * *t.data.Scale, float64(iH) * *t.data.Scale
 }
 
 func (t *Tile) Data() *TilesData {

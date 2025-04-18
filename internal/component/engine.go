@@ -12,9 +12,7 @@ import (
 
 // Board holds all the data and coordinates (like tiles positions and engine positions)
 type Engine struct {
-	// TODO: Kicked from the Engine
-	conveyor Component[RollingRailwayData]
-	input    Component[EngineUserInputData]
+	input Component[EngineUserInputData]
 
 	data                      *EngineData
 	screenWidth, screenHeight float64
@@ -40,12 +38,6 @@ func NewEngine(data *EngineData) *Engine {
 		},
 	}
 
-	e.conveyor = NewRollingRailway(&RollingRailwayData{
-		Scale:      &e.data.Scale,
-		HzMultiply: e.data.GetHzMultiply(),
-		Sprite:     NewRollSprite(&e.data.Scale),
-	})
-
 	return e
 }
 
@@ -64,7 +56,6 @@ func (e *Engine) Layout(outsideWidth, outsideHeight int) (int, int) {
 
 	e.screenWidth = float64(outsideWidth)
 
-	e.conveyor.Layout(outsideWidth, outsideHeight)
 	e.input.Layout(outsideWidth, outsideHeight)
 
 	return outsideWidth, outsideWidth
@@ -78,7 +69,7 @@ func (e *Engine) Update() error {
 	e.updatePress(next)
 
 	// Only handle user input if not on Pause
-	if !e.data.Pause {
+	if !*e.data.Pause {
 		// Handle user input
 		e.input.Data().ThrowAwayPaddingTop = e.conveyor.Data().Y - 10
 		e.input.Data().ThrowAwayPaddingBottom = e.conveyor.Data().Y + e.conveyor.Data().GetHeight() + 10
@@ -96,9 +87,6 @@ func (e *Engine) Update() error {
 }
 
 func (e *Engine) Draw(screen *ebiten.Image) {
-	// Draw the "Conveyor"
-	e.conveyor.Draw(screen)
-
 	// Draw the tile with the given positions
 	for _, tile := range e.data.tiles {
 		tile.Draw(screen)
@@ -211,45 +199,16 @@ func (e *Engine) getRandomState() tiles.State {
 
 type EngineData struct {
 	Stats *stats.Game
-	Pause bool // Pause will stop the machines :)
-
-	Scale float64
-
-	tiles []tiles.Tiles
-}
-
-func (c *EngineData) GetTiles() []tiles.Tiles {
-	return c.tiles
-}
-
-func (c *EngineData) GetBPM() float64 {
-	if c.Pause {
-		return 0
-	}
-	return c.Stats.PressBPM
+	Pause *bool // Pause will stop the machines :)
+	Scale *float64
 }
 
 func (c *EngineData) SetBPM(bpm float64) {
 	c.Stats.PressBPM = bpm
 }
 
-func (c *EngineData) GetHz() float64 {
-	if c.Pause {
-		return 0
-	}
-	return c.Stats.ConveyorHz
-}
-
 func (c *EngineData) SetHz(n float64) {
-	c.Stats.ConveyorHz = n
-}
-
-func (c *EngineData) GetHzMultiply() float64 {
-	return c.Stats.ConveyorHzMultiply
-}
-
-func (c *EngineData) SetHzMultiply(n float64) {
-	c.Stats.ConveyorHzMultiply = n
+	c.Stats.RollingRailwayHz = n
 }
 
 // EngineInput reads for example drag input like up/down (touch support for mobile)

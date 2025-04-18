@@ -9,9 +9,7 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
-var (
-	ImageGround image.Image
-)
+var ImageGround image.Image
 
 func init() {
 	var err error
@@ -54,9 +52,12 @@ func (b *Background) Update() error {
 }
 
 func (b *Background) Draw(screen *ebiten.Image) {
-	w, h := b.data.Image.Size()
+	w := b.data.Image.Bounds().Dx()
+	h := b.data.Image.Bounds().Dy()
+
 	imageWidth := float64(w) * b.data.Scale
 	imageHeight := float64(h) * b.data.Scale
+
 	col := int(math.Ceil(b.screenWidth / imageWidth))
 	row := int(math.Ceil(b.screenHeight / imageHeight))
 
