@@ -1,0 +1,8 @@
+{
+    "appId": "knackwurstking.thepressdepartment",
+    "appName": "The Press Department",
+    "webDir": "public",
+    "server": {
+        "androidScheme": "https"
+    }
+}
