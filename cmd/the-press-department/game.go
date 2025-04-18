@@ -6,7 +6,6 @@ package main
 import (
 	"fmt"
 	"image/color"
-	"syscall/js"
 	"the-press-department/internal/component"
 	"the-press-department/internal/stats"
 	"time"
@@ -40,7 +39,7 @@ var (
 	FontSizeBig = float64(31)
 	FontFaceBig font.Face
 
-	orientation js.Value
+	// orientation js.Value
 )
 
 func init() {
@@ -76,10 +75,10 @@ func init() {
 		panic(err)
 	}
 
-	// Orientation Change
-	window := js.Global().Get("window")
-	screen := window.Get("screen")
-	orientation = screen.Get("orientation")
+	//// Orientation Change
+	//window := js.Global().Get("window")
+	//screen := window.Get("screen")
+	//orientation = screen.Get("orientation")
 }
 
 type Mode int
@@ -95,8 +94,8 @@ type Game struct {
 	screenWidth, screenHeight int
 	scale                     float64
 
-	lastUpdate           time.Time
-	lastOrientationAngle int
+	lastUpdate time.Time
+	// lastOrientationAngle int
 }
 
 func NewGame(scale float64) *Game {
@@ -126,20 +125,24 @@ func NewGame(scale float64) *Game {
 
 // Layout implements ebiten.Game
 func (g *Game) Layout(outsideWidth int, outsideHeight int) (int, int) {
-	// Check screen orientation
-	orientationType := orientation.Get("type").Int()
-	if g.lastOrientationAngle != orientationType {
-		g.lastOrientationAngle = orientationType
-	}
+	//// Check screen orientation
+	//orientationAngle := orientation.Get("angle").Int()
+	//if g.lastOrientationAngle != orientationAngle {
+	//	g.lastOrientationAngle = orientationAngle
+	//}
 
-	// TODO: Need to test this on my phones browser
-	if g.lastOrientationAngle == 90 || g.lastOrientationAngle == 270 {
-		g.screenWidth = outsideHeight
-		g.screenHeight = outsideWidth
-	} else {
-		g.screenWidth = outsideWidth
-		g.screenHeight = outsideHeight
-	}
+	//// TODO: Need to test this on my phones browser
+	//
+	//if g.lastOrientationAngle == 90 || g.lastOrientationAngle == 270 {
+	//	g.screenWidth = outsideHeight
+	//	g.screenHeight = outsideWidth
+	//} else {
+	//	g.screenWidth = outsideWidth
+	//	g.screenHeight = outsideHeight
+	//}
+
+	g.screenWidth = outsideWidth
+	g.screenHeight = outsideHeight
 
 	g.Background.Layout(outsideWidth, outsideHeight)
 	g.Engines.Layout(outsideWidth, outsideHeight)
