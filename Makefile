@@ -14,6 +14,7 @@ run:
 build:
 	env GOOS=js GOARCH=wasm go build -o www/public/${APP_NAME}.wasm ./cmd/${APP_NAME}
 	cd www && make build
+	go build -o ./bin/${APP_NAME} ./cmd/${APP_NAME}
 
 build-android:
 	cd www && make build && make build-android
