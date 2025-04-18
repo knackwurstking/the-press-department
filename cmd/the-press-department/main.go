@@ -1,3 +1,6 @@
+//go:build js && wasm
+// +build js,wasm
+
 package main
 
 import (
@@ -11,7 +14,7 @@ func main() {
 	ebiten.SetWindowResizingMode(ebiten.WindowResizingModeEnabled)
 	ebiten.SetWindowTitle("The Press Department")
 
-	if err := ebiten.RunGame(NewGame(DefaultScale * 1.5)); err != nil {
+	if err := ebiten.RunGame(NewGame(DefaultScale)); err != nil {
 		log.Fatalf("Run game failed: %s", err.Error())
 	}
 }
