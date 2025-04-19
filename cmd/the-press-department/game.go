@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"image/color"
 	"the-press-department/internal/component"
+	"the-press-department/internal/sprites"
 	"the-press-department/internal/stats"
 	"time"
 
@@ -111,7 +112,7 @@ func NewGame(scale float64) *Game {
 		RollingRailway: component.NewRollingRailway(&component.RollingRailwayData{
 			Stats:  stats,
 			Scale:  scale,
-			Sprite: component.NewRollSprite(&scale),
+			Sprite: sprites.NewRoll(&scale),
 		}),
 		scale: scale,
 	}
@@ -243,7 +244,8 @@ func (g *Game) drawStats(screen *ebiten.Image) {
 
 	dopt := &text.DrawOptions{}
 	dopt.ColorScale.ScaleWithColor(c)
-	dopt.GeoM.Translate(1, float64(g.screenHeight))
+	dopt.GeoM.Translate(1, float64(g.screenHeight)-FontFace.Metrics().CapHeight)
+
 	text.Draw(screen, textMoney, FontFace, dopt)
 }
 
