@@ -61,8 +61,8 @@ func (b *Background) Draw(screen *ebiten.Image) {
 	col := int(math.Ceil(b.screenWidth / imageWidth))
 	row := int(math.Ceil(b.screenHeight / imageHeight))
 
-	for r := 0; r < row; r++ {
-		for c := 0; c < col; c++ {
+	for r := range row {
+		for c := range col {
 			b.imageOptions.GeoM.Reset()
 			b.imageOptions.GeoM.Scale(b.data.Scale, b.data.Scale)
 			b.imageOptions.GeoM.Translate(
