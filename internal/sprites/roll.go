@@ -75,7 +75,7 @@ type Roll struct {
 	scale *float64
 }
 
-func NewRollSprite(scale *float64) *Roll {
+func NewRoll(scale *float64) *Roll {
 	return &Roll{
 		imageIndex: 0,
 		Options: &ebiten.DrawImageOptions{
