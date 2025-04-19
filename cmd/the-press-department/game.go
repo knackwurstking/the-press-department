@@ -109,6 +109,7 @@ func NewGame(scale float64) *Game {
 			Image: ebiten.NewImageFromImage(component.ImageGround),
 		}),
 		RollingRailway: component.NewRollingRailway(&component.RollingRailwayData{
+			Stats:  stats,
 			Scale:  scale,
 			Sprite: component.NewRollSprite(&scale),
 		}),
