@@ -1,4 +1,4 @@
-package component
+package sprites
 
 import (
 	"bytes"
@@ -8,9 +8,7 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
-var (
-	ImageRollAsset [8]*ebiten.Image
-)
+var ImageRollAsset [8]*ebiten.Image
 
 func init() {
 	// Roll asset (sprit 0)
@@ -70,15 +68,15 @@ func init() {
 	ImageRollAsset[7] = ebiten.NewImageFromImage(img)
 }
 
-type RollSprite struct {
+type Roll struct {
 	imageIndex int
 	Options    *ebiten.DrawImageOptions
 
 	scale *float64
 }
 
-func NewRollSprite(scale *float64) *RollSprite {
-	return &RollSprite{
+func NewRollSprite(scale *float64) *Roll {
+	return &Roll{
 		imageIndex: 0,
 		Options: &ebiten.DrawImageOptions{
 			GeoM: ebiten.GeoM{},
@@ -87,7 +85,7 @@ func NewRollSprite(scale *float64) *RollSprite {
 	}
 }
 
-func (r *RollSprite) Draw(screen *ebiten.Image, x, y float64) {
+func (r *Roll) Draw(screen *ebiten.Image, x, y float64) {
 	r.Options.GeoM.Reset()
 	r.Options.GeoM.Scale(*r.scale, *r.scale)
 	r.Options.GeoM.Translate(x, y)
@@ -95,13 +93,13 @@ func (r *RollSprite) Draw(screen *ebiten.Image, x, y float64) {
 	screen.DrawImage(ImageRollAsset[r.imageIndex], r.Options)
 }
 
-func (r *RollSprite) GetAssetSize() (width float64, height float64) {
+func (r *Roll) GetAssetSize() (width float64, height float64) {
 	w := ImageRollAsset[0].Bounds().Dx()
 	h := ImageRollAsset[0].Bounds().Dy()
 	return float64(w) * *r.scale, float64(h) * *r.scale
 }
 
-func (r *RollSprite) NextSprite() {
+func (r *Roll) NextSprite() {
 	r.imageIndex += 1
 
 	if r.imageIndex >= len(ImageRollAsset) {

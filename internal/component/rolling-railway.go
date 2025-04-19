@@ -3,6 +3,7 @@ package component
 import (
 	"math/rand"
 	"slices"
+	"the-press-department/internal/sprites"
 	"the-press-department/internal/stats"
 	"the-press-department/internal/tiles"
 	"time"
@@ -216,7 +217,7 @@ func (c *RollingRailway) calcRange(next time.Time) float64 {
 
 type RollingRailwayData struct {
 	Stats  *stats.Game
-	Sprite *RollSprite
+	Sprite *sprites.Roll
 	Scale  float64
 	Pause  bool // Pause will stop the machines :)
 
