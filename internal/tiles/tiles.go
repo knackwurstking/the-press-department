@@ -7,6 +7,9 @@ type Tiles interface {
 	Draw(screen *ebiten.Image)
 	Size() (w, h float64)
 	ThrowAway()
+	IsOK() bool
+	HasStampAdhesive() bool
+	HasCrack() bool
 	IsThrownAway() bool
 	SetDraggedFn(func(tX float64, tY float64) (x float64, y float64))
 }

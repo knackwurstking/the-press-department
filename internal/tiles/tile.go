@@ -86,3 +86,15 @@ func (t *Tile) ThrowAway() {
 func (t *Tile) IsThrownAway() bool {
 	return t.thrownAway
 }
+
+func (t *Tile) IsOK() bool {
+	return t.Data().State == StateOK
+}
+
+func (t *Tile) HasStampAdhesive() bool {
+	return t.Data().State == StateStampAdhesive
+}
+
+func (t *Tile) HasCrack() bool {
+	return t.Data().State == StateCrack
+}

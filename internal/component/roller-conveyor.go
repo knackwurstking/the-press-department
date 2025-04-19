@@ -190,9 +190,9 @@ func (c *RollerConveyor) updateTiles(next time.Time) {
 			if !t.IsThrownAway() {
 				switch t.Data().State {
 				case tiles.StateOK:
-					c.stats.AddGoodTile()
+					c.stats.AddGoodTile(t)
 				default:
-					c.stats.AddBadTile()
+					c.stats.AddBadTile(t)
 				}
 			} else {
 				c.stats.AddThrownAwayTile(t)
