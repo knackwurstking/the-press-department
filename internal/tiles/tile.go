@@ -8,33 +8,9 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
-var ImageTileAssets map[State]*ebiten.Image = make(map[State]*ebiten.Image)
-
-func init() {
-	// Tile
-	img, _, err := image.Decode(bytes.NewReader(images.Tile))
-	if err != nil {
-		panic(err)
-	}
-	ImageTileAssets[StateOK] = ebiten.NewImageFromImage(img)
-
-	// TileWithCrack
-	img, _, err = image.Decode(bytes.NewReader(images.TileWithCrack))
-	if err != nil {
-		panic(err)
-	}
-	ImageTileAssets[StateCrack] = ebiten.NewImageFromImage(img)
-
-	// Stamp Adhesive
-	img, _, err = image.Decode(bytes.NewReader(images.TileWithStampAdhesive))
-	if err != nil {
-		panic(err)
-	}
-	ImageTileAssets[StateStampAdhesive] = ebiten.NewImageFromImage(img)
-}
-
 // Tile implements the `Tiles` interface
 type Tile struct {
+	Sprites      map[State]*ebiten.Image
 	ImageOptions *ebiten.DrawImageOptions
 
 	data       *TilesData
@@ -43,11 +19,35 @@ type Tile struct {
 }
 
 func NewTile(d *TilesData) *Tile {
+	s := make(map[State]*ebiten.Image)
+
+	// Tile
+	f, _, err := image.Decode(bytes.NewReader(images.Tile))
+	if err != nil {
+		panic(err)
+	}
+	s[StateOK] = ebiten.NewImageFromImage(f)
+
+	// TileWithCrack
+	f, _, err = image.Decode(bytes.NewReader(images.TileWithCrack))
+	if err != nil {
+		panic(err)
+	}
+	s[StateCrack] = ebiten.NewImageFromImage(f)
+
+	// Stamp Adhesive
+	f, _, err = image.Decode(bytes.NewReader(images.TileWithStampAdhesive))
+	if err != nil {
+		panic(err)
+	}
+	s[StateStampAdhesive] = ebiten.NewImageFromImage(f)
+
 	return &Tile{
-		data: d,
+		Sprites: s,
 		ImageOptions: &ebiten.DrawImageOptions{
 			GeoM: ebiten.GeoM{},
 		},
+		data:   d,
 		dragFn: nil,
 	}
 }
@@ -62,12 +62,12 @@ func (t *Tile) Draw(screen *ebiten.Image) {
 
 	t.ImageOptions.GeoM.Translate(t.data.X, t.data.Y)
 
-	screen.DrawImage(ImageTileAssets[t.data.State], t.ImageOptions)
+	screen.DrawImage(t.Sprites[t.data.State], t.ImageOptions)
 }
 
 func (t *Tile) Size() (w, h float64) {
-	iW := ImageTileAssets[t.data.State].Bounds().Dx()
-	iH := ImageTileAssets[t.data.State].Bounds().Dy()
+	iW := t.Sprites[t.data.State].Bounds().Dx()
+	iH := t.Sprites[t.data.State].Bounds().Dy()
 	return float64(iW) * *t.data.Scale, float64(iH) * *t.data.Scale
 }
 

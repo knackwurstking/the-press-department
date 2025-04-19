@@ -2,7 +2,6 @@ package component
 
 import (
 	"the-press-department/internal/sprites"
-	"the-press-department/internal/stats"
 	"the-press-department/internal/tiles"
 
 	"github.com/hajimehoshi/ebiten/v2"
@@ -13,10 +12,7 @@ type BackgroundData struct {
 }
 
 type RollerConveyorData struct {
-	Stats *stats.Game
-	Roll  *sprites.Roll
-	// TODO: Move pause to game stats
-	Pause bool // Pause will stop the machines :)
+	RollSprite *sprites.Roll
 
 	// TODO: Ok, i hate this: X, x, Y, y
 	X, Y float64
@@ -37,37 +33,18 @@ func (c *RollerConveyorData) SetUpdateData(r, x, y, size float64) {
 
 func (c *RollerConveyorData) SetSprite() {
 	c.rSum += c.r
-	w, _ := c.Roll.GetAssetSize()
+	w, _ := c.RollSprite.GetAssetSize()
 	if c.rSum >= w {
-		c.Roll.NextSprite()
+		c.RollSprite.NextSprite()
 		c.rSum = 0
 	}
 }
 
 func (c *RollerConveyorData) Height() float64 {
-	_, h := c.Roll.GetAssetSize()
+	_, h := c.RollSprite.GetAssetSize()
 	return h
 }
 
-// TODO: Move to stats
-func (c *RollerConveyorData) PressBPM() float64 {
-	if c.Pause {
-		return 0
-	}
-
-	return c.Stats.PressBPM
-}
-
-// TODO: Move to stats
-func (c *RollerConveyorData) Hz() float64 {
-	if c.Pause {
-		return 0
-	}
-
-	return c.Stats.RollerConveyorHz
-}
-
-// TODO: Move to stats
 func (c *RollerConveyorData) Tiles() []tiles.Tiles {
 	return c.tiles
 }

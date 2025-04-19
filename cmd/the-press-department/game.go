@@ -25,9 +25,8 @@ var (
 	DefaultScale float64 = 0.1
 
 	// modes
-	ModePause   = Mode(1)
-	ModeGame    = Mode(2)
-	ModeSuspend = Mode(3)
+	ModePause = Mode(1)
+	ModeGame  = Mode(2)
 
 	FontDPI = float64(71)
 
@@ -96,20 +95,26 @@ type Game struct {
 
 func NewGame(scale float64) *Game {
 	stats := &stats.Game{
+		Money:                    0,
+		GoodTiles:                0,
+		BadTiles:                 0,
 		TilesProduced:            0, // Engine tilesProduced config field
 		PressBPM:                 6.5,
 		RollerConveyorHz:         8.0,
 		RollerConveyorHzMultiply: 2.5,
+		Pause:                    true, // ModePause
 	}
 
 	game := &Game{
 		Mode:       ModePause,
 		Stats:      stats,
 		Background: component.NewBackground(&scale),
-		RollerConveyor: component.NewRollerConveyor(&scale, &component.RollerConveyorData{
-			Stats: stats,
-			Roll:  sprites.NewRoll(&scale),
-		}),
+		RollerConveyor: component.NewRollerConveyor(
+			stats, &scale,
+			component.RollerConveyorData{
+				RollSprite: sprites.NewRoll(&scale),
+			},
+		),
 		scale: scale,
 	}
 
@@ -136,12 +141,11 @@ func (g *Game) Update() error {
 	//}
 
 	switch g.Mode {
-	case ModePause, ModeSuspend:
-		g.RollerConveyor.Data().Pause = true
+	case ModePause:
 		// Listen for keys to continue (or start the game)
 		if g.isKeyPressed() {
 			// Continue or start the game
-			g.RollerConveyor.Data().Pause = false
+			g.Stats.Pause = false
 			g.Mode = ModeGame
 		}
 	case ModeGame:
@@ -158,9 +162,8 @@ func (g *Game) Update() error {
 // Draw implements ebiten.Game
 func (g *Game) Draw(screen *ebiten.Image) {
 	switch g.Mode {
-	case ModePause, ModeSuspend:
+	case ModePause:
 		g.drawPause(screen)
-	case ModeSuspend:
 	case ModeGame:
 		g.drawGame(screen)
 	}
@@ -190,8 +193,6 @@ func (g *Game) drawPause(screen *ebiten.Image) {
 	switch g.Mode {
 	case ModePause:
 		texts = append(texts, "Click to start.")
-	case ModeSuspend:
-		texts = append(texts, "Click to continue.")
 	}
 
 	for i, l := range titleTexts {
@@ -248,7 +249,7 @@ func (g *Game) drawDebug(screen *ebiten.Image) {
 
 	// debug overlay: "Engine Info"
 	// 1. Row
-	counter := fmt.Sprintf("Press Speed: %.1fh", g.RollerConveyor.Data().PressBPM())
+	counter := fmt.Sprintf("Press Speed: %.1fh", g.Stats.PressBPM)
 	ebitenutil.DebugPrintAt(screen, counter, g.screenWidth-(len(counter)*6+2), 0)
 
 	// 2. Row
@@ -257,6 +258,6 @@ func (g *Game) drawDebug(screen *ebiten.Image) {
 
 	// 3. Row
 	counter = fmt.Sprintf("RB: %d [%.1f hz]", len(g.RollerConveyor.Data().Tiles()),
-		g.RollerConveyor.Data().Hz())
+		g.Stats.RollerConveyorHz)
 	ebitenutil.DebugPrintAt(screen, counter, g.screenWidth-(len(counter)*6+2), 32)
 }

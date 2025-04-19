@@ -4,6 +4,7 @@ package component
 import (
 	"math/rand"
 	"slices"
+	"the-press-department/internal/stats"
 	"the-press-department/internal/tiles"
 	"time"
 
@@ -15,30 +16,38 @@ import (
 //
 // NOTE: Create and engines type only if multiple engines are needed
 type RollerConveyor struct {
-	input                     Component[RollerConveyorUserInputData]
-	data                      *RollerConveyorData
-	rolls                     []Coord
-	scale                     *float64
+	RollerConveyorData
+
+	input Component[RollerConveyorUserInputData]
+	rolls []Coord
+
+	stats *stats.Game
+	scale *float64
+
 	screenWidth, screenHeight float64
 	lastUpdate                time.Time
-	lastTile                  time.Time
 	rand                      *rand.Rand
-	tileStates                []tiles.State
+
+	lastTile   time.Time
+	tileStates []tiles.State
 }
 
-func NewRollerConveyor(scale *float64, data *RollerConveyorData) Component[RollerConveyorData] {
+func NewRollerConveyor(stats *stats.Game, scale *float64, data RollerConveyorData) Component[RollerConveyorData] {
 	c := &RollerConveyor{
-		input:      NewRollerConveyorUserInput(&RollerConveyorUserInputData{}),
-		scale:      scale,
-		data:       data,
-		rolls:      make([]Coord, 0),
-		lastTile:   time.Now(),
-		lastUpdate: time.Now(),
-		rand:       rand.New(rand.NewSource(time.Now().Unix())),
+		RollerConveyorData: data,
+		input:              NewRollerConveyorUserInput(&RollerConveyorUserInputData{}),
+		stats:              stats,
+		rolls:              make([]Coord, 0),
+		scale:              scale,
+		lastTile:           time.Now(),
+		lastUpdate:         time.Now(),
+		rand:               rand.New(rand.NewSource(time.Now().Unix())),
 		tileStates: []tiles.State{
 			tiles.StateOK,
-			tiles.StateOK,
 			tiles.StateCrack,
+			tiles.StateOK,
+			tiles.StateStampAdhesive,
+			tiles.StateOK,
 		},
 	}
 
@@ -55,7 +64,7 @@ func (c *RollerConveyor) Layout(outsideWidth, outsideHeight int) (int, int) {
 		c.screenHeight = float64(outsideHeight)
 
 		// update tiles
-		for _, t := range c.data.tiles {
+		for _, t := range c.tiles {
 			if !t.IsThrownAway() {
 				_, h := t.Size()
 				t.Data().Y = (c.screenHeight / 2) - (h / 2)
@@ -67,8 +76,8 @@ func (c *RollerConveyor) Layout(outsideWidth, outsideHeight int) (int, int) {
 }
 
 func (c *RollerConveyor) Update() error {
-	c.data.X = c.data.x
-	c.data.Y = c.data.y
+	c.X = c.x
+	c.Y = c.y
 
 	next := time.Now()
 	c.Data().SetUpdateData(
@@ -78,22 +87,22 @@ func (c *RollerConveyor) Update() error {
 		c.screenWidth, // width
 	)
 
-	c.data.SetSprite()
-	w, _ := c.data.Roll.GetAssetSize()
+	c.SetSprite()
+	w, _ := c.RollSprite.GetAssetSize()
 	padding := w * 3
 
 	// Update roll coords (x axis)
 	c.rolls = make([]Coord, 0)
-	for p := c.data.X; p <= c.data.size; p += (w + padding) {
-		c.rolls = append(c.rolls, Coord{X: float64(p), Y: c.data.Y})
+	for p := c.X; p <= c.size; p += (w + padding) {
+		c.rolls = append(c.rolls, Coord{X: float64(p), Y: c.Y})
 	}
 
 	// Only handle user input if not on Pause
-	if !c.data.Pause {
+	if !c.stats.Pause {
 		// Handle user input
 		c.input.Data().ThrowAwayPaddingTop = c.Data().Y - 10
 		c.input.Data().ThrowAwayPaddingBottom = c.Data().Y + c.Data().Height() + 10
-		c.input.Data().Tiles = c.data.tiles
+		c.input.Data().Tiles = c.tiles
 		_ = c.input.Update()
 	}
 
@@ -111,21 +120,21 @@ func (c *RollerConveyor) Update() error {
 
 func (c *RollerConveyor) Draw(screen *ebiten.Image) {
 	for i := range c.rolls {
-		c.data.Roll.Draw(screen, c.rolls[i].X, c.rolls[i].Y)
+		c.RollSprite.Draw(screen, c.rolls[i].X, c.rolls[i].Y)
 	}
 
 	// Draw the tile with the given positions
-	for _, tile := range c.data.tiles {
+	for _, tile := range c.tiles {
 		tile.Draw(screen)
 	}
 }
 
 func (c *RollerConveyor) Data() *RollerConveyorData {
-	return c.data
+	return &c.RollerConveyorData
 }
 
 func (c *RollerConveyor) updatePress(next time.Time) {
-	if c.data.Pause {
+	if c.stats.Pause {
 		// on pause just add the diff between next and last and add it to last
 		c.lastTile = c.lastTile.Add(next.Sub(c.lastTile))
 		return
@@ -133,7 +142,7 @@ func (c *RollerConveyor) updatePress(next time.Time) {
 
 	// check time and get a tile based on BPM
 	ms := time.Microsecond * time.Duration(
-		60/c.data.PressBPM()*1000000,
+		60/c.stats.PressBPM*1000000,
 	)
 	if c.lastTile.Add(ms).UnixMicro() <= next.UnixMicro() {
 		// get a new tile here
@@ -146,8 +155,8 @@ func (c *RollerConveyor) updatePress(next time.Time) {
 		tile.Data().X = c.screenWidth
 		tile.Data().Y = (c.screenHeight / 2) - (h / 2)
 
-		c.data.tiles = append(c.data.tiles, tile)
-		c.data.Stats.TilesProduced++
+		c.tiles = append(c.tiles, tile)
+		c.stats.TilesProduced++
 		c.lastTile = next
 	}
 }
@@ -156,7 +165,7 @@ func (c *RollerConveyor) updateTiles(next time.Time) {
 	toRemove := make([]tiles.Tiles, 0)
 
 	// Update new tiles position
-	for _, t := range c.data.tiles {
+	for _, t := range c.tiles {
 		d := t.Data()
 		w, h := t.Size()
 
@@ -181,12 +190,12 @@ func (c *RollerConveyor) updateTiles(next time.Time) {
 			if !t.IsThrownAway() {
 				switch t.Data().State {
 				case tiles.StateOK:
-					c.data.Stats.AddGoodTile()
+					c.stats.AddGoodTile()
 				default:
-					c.data.Stats.AddBadTile()
+					c.stats.AddBadTile()
 				}
 			} else {
-				c.data.Stats.AddThrownAwayTile(t)
+				c.stats.AddThrownAwayTile(t)
 			}
 
 			toRemove = append(toRemove, t)
@@ -195,9 +204,9 @@ func (c *RollerConveyor) updateTiles(next time.Time) {
 
 	// Remove it
 	for _, t := range toRemove {
-		for i, t2 := range c.data.tiles {
+		for i, t2 := range c.tiles {
 			if t == t2 {
-				c.data.tiles = slices.Delete(c.data.tiles, i, i+1)
+				c.tiles = slices.Delete(c.tiles, i, i+1)
 				break
 			}
 		}
@@ -210,6 +219,6 @@ func (c *RollerConveyor) getRandomState() tiles.State {
 
 func (c *RollerConveyor) calcRange(next time.Time) float64 {
 	return (float64(next.Sub(c.lastUpdate).Seconds()) *
-		(c.data.Stats.RollerConveyorHzMultiply * c.data.Hz())) *
+		(c.stats.RollerConveyorHzMultiply * c.stats.RollerConveyorHz)) *
 		(*c.scale * 10)
 }

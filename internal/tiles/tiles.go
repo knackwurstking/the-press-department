@@ -1,10 +1,6 @@
 package tiles
 
-import (
-	_ "image/jpeg"
-
-	"github.com/hajimehoshi/ebiten/v2"
-)
+import "github.com/hajimehoshi/ebiten/v2"
 
 type Tiles interface {
 	Data() *TilesData

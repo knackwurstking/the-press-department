@@ -24,6 +24,9 @@ type Game struct {
 
 	// RollerConveyorHzMultiply (setup value)
 	RollerConveyorHzMultiply float64 `json:"conveyor-hz-multiply"`
+
+	// Pause shows if the game is running or not
+	Pause bool `json:"-"`
 }
 
 func (g *Game) AddGoodTile() {
