@@ -103,12 +103,9 @@ func NewGame(scale float64) *Game {
 	}
 
 	game := &Game{
-		Mode:  ModePause,
-		Stats: stats,
-		Background: component.NewBackground(&component.BackgroundData{
-			Scale: scale,
-			Image: ebiten.NewImageFromImage(component.ImageGround),
-		}),
+		Mode:       ModePause,
+		Stats:      stats,
+		Background: component.NewBackground(scale),
 		RollingRailway: component.NewRollingRailway(&component.RollingRailwayData{
 			Stats:  stats,
 			Scale:  scale,

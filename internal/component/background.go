@@ -31,9 +31,12 @@ type Background struct {
 	screenWidth, screenHeight float64
 }
 
-func NewBackground(data *BackgroundData) Component[BackgroundData] {
+func NewBackground(scale float64) Component[BackgroundData] {
 	return &Background{
-		data: data,
+		data: &BackgroundData{
+			Scale: scale,
+			Image: ebiten.NewImageFromImage(ImageGround),
+		},
 		imageOptions: &ebiten.DrawImageOptions{
 			GeoM: ebiten.GeoM{},
 		},
