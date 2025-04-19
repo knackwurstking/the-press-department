@@ -44,9 +44,10 @@ func NewRollerConveyor(stats *stats.Game, scale *float64, data RollerConveyorDat
 		rand:               rand.New(rand.NewSource(time.Now().Unix())),
 		tileStates: []tiles.State{
 			tiles.StateOK,
-			tiles.StateCrack,
 			tiles.StateOK,
+			tiles.StateCrack,
 			tiles.StateStampAdhesive,
+			tiles.StateOK,
 			tiles.StateOK,
 		},
 	}
