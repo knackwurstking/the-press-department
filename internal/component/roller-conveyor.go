@@ -1,4 +1,3 @@
-// TODO: Ok, rename this shit back to conveiour
 package component
 
 import (
@@ -24,9 +23,9 @@ type RollerConveyor struct {
 	stats *stats.Game
 	scale *float64
 
-	screenWidth, screenHeight float64
-	lastUpdate                time.Time
-	rand                      *rand.Rand
+	width, height float64
+	lastUpdate    time.Time
+	rand          *rand.Rand
 
 	lastTile   time.Time
 	tileStates []tiles.State
@@ -56,18 +55,19 @@ func NewRollerConveyor(stats *stats.Game, scale *float64, data RollerConveyorDat
 }
 
 func (c *RollerConveyor) Layout(outsideWidth, outsideHeight int) (int, int) {
-	c.screenWidth = float64(outsideWidth)
+	c.width = float64(outsideWidth)
 
 	// Update tiles only if height has changed (no special reason for this)
-	if c.screenHeight != float64(outsideHeight) {
+	if c.height != float64(outsideHeight) {
+		c.height = float64(outsideHeight)
+
 		for _, t := range c.tiles {
 			if !t.IsThrownAway() {
 				_, h := t.Size()
-				t.Data().Y = (c.screenHeight / 2) - (h / 2)
+				t.Data().Y = (c.height / 2) - (h / 2)
 			}
 		}
 	}
-	c.screenHeight = float64(outsideHeight)
 
 	c.input.Layout(outsideWidth, outsideHeight)
 
@@ -80,10 +80,10 @@ func (c *RollerConveyor) Update() error {
 
 	next := time.Now()
 	c.Data().SetUpdateData(
-		c.calcRange(next), // r
-		0,                 // x
-		c.screenHeight/2-(c.Data().Height()/2), // y
-		c.screenWidth, // width
+		c.calcRange(next),                // r
+		0,                                // x
+		c.height/2-(c.Data().Height()/2), // y
+		c.width,                          // width
 	)
 
 	c.SetSprite()
@@ -151,8 +151,8 @@ func (c *RollerConveyor) updatePress(next time.Time) {
 		})
 
 		_, h := tile.Size()
-		tile.Data().X = c.screenWidth
-		tile.Data().Y = (c.screenHeight / 2) - (h / 2)
+		tile.Data().X = c.width
+		tile.Data().Y = (c.height / 2) - (h / 2)
 
 		c.tiles = append(c.tiles, tile)
 		c.stats.TilesProduced++
@@ -170,7 +170,7 @@ func (c *RollerConveyor) updateTiles(next time.Time) {
 
 		// update tiles if not thrown away
 		if t.IsThrownAway() {
-			pressY := (c.screenHeight / 2) - (h / 2)
+			pressY := (c.height / 2) - (h / 2)
 			r := float64(next.Sub(c.lastUpdate).Seconds()) * (250) * (*c.scale * 10)
 			if d.Y <= pressY {
 				d.Y -= r
@@ -183,7 +183,7 @@ func (c *RollerConveyor) updateTiles(next time.Time) {
 		d.X -= c.calcRange(next)
 
 		// Set tiles which are out of screen to remove
-		if d.X <= 0-w || d.Y <= 0-h || d.Y >= c.screenHeight { // x-axis
+		if d.X <= 0-w || d.Y <= 0-h || d.Y >= c.height { // x-axis
 			// Money management
 			if !t.IsThrownAway() {
 				switch t.Data().State {
