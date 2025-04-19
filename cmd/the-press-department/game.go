@@ -84,7 +84,7 @@ type Mode int
 type Game struct {
 	Mode           Mode
 	Background     component.Component[component.BackgroundData]
-	RollingRailway component.Component[component.RollingRailwayData]
+	RollerConveyor component.Component[component.RollerConveyorData]
 
 	Stats *stats.Game
 
@@ -98,15 +98,15 @@ func NewGame(scale float64) *Game {
 	stats := &stats.Game{
 		TilesProduced:            0, // Engine tilesProduced config field
 		PressBPM:                 6.5,
-		RollingRailwayHz:         8.0,
-		RollingRailwayHzMultiply: 2.5,
+		RollerConveyorHz:         8.0,
+		RollerConveyorHzMultiply: 2.5,
 	}
 
 	game := &Game{
 		Mode:       ModePause,
 		Stats:      stats,
 		Background: component.NewBackground(&scale),
-		RollingRailway: component.NewRollingRailway(&scale, &component.RollingRailwayData{
+		RollerConveyor: component.NewRollerConveyor(&scale, &component.RollerConveyorData{
 			Stats: stats,
 			Roll:  sprites.NewRoll(&scale),
 		}),
@@ -122,7 +122,7 @@ func (g *Game) Layout(outsideWidth int, outsideHeight int) (int, int) {
 	g.screenHeight = outsideHeight
 
 	g.Background.Layout(outsideWidth, outsideHeight)
-	g.RollingRailway.Layout(outsideWidth, outsideHeight)
+	g.RollerConveyor.Layout(outsideWidth, outsideHeight)
 
 	return outsideWidth, outsideHeight
 }
@@ -137,18 +137,18 @@ func (g *Game) Update() error {
 
 	switch g.Mode {
 	case ModePause, ModeSuspend:
-		g.RollingRailway.Data().Pause = true
+		g.RollerConveyor.Data().Pause = true
 		// Listen for keys to continue (or start the game)
 		if g.isKeyPressed() {
 			// Continue or start the game
-			g.RollingRailway.Data().Pause = false
+			g.RollerConveyor.Data().Pause = false
 			g.Mode = ModeGame
 		}
 	case ModeGame:
 	}
 
 	_ = g.Background.Update()
-	_ = g.RollingRailway.Update()
+	_ = g.RollerConveyor.Update()
 
 	g.lastUpdate = time.Now()
 
@@ -178,7 +178,7 @@ func (g *Game) isKeyPressed() bool {
 
 func (g *Game) drawPause(screen *ebiten.Image) {
 	g.Background.Draw(screen)
-	g.RollingRailway.Draw(screen)
+	g.RollerConveyor.Draw(screen)
 
 	g.drawStats(screen)
 
@@ -221,7 +221,7 @@ func (g *Game) drawPause(screen *ebiten.Image) {
 func (g *Game) drawGame(screen *ebiten.Image) {
 	// run the game
 	g.Background.Draw(screen)
-	g.RollingRailway.Draw(screen)
+	g.RollerConveyor.Draw(screen)
 
 	g.drawStats(screen)
 	g.drawDebug(screen)
@@ -248,7 +248,7 @@ func (g *Game) drawDebug(screen *ebiten.Image) {
 
 	// debug overlay: "Engine Info"
 	// 1. Row
-	counter := fmt.Sprintf("Press Speed: %.1fh", g.RollingRailway.Data().PressBPM())
+	counter := fmt.Sprintf("Press Speed: %.1fh", g.RollerConveyor.Data().PressBPM())
 	ebitenutil.DebugPrintAt(screen, counter, g.screenWidth-(len(counter)*6+2), 0)
 
 	// 2. Row
@@ -256,7 +256,7 @@ func (g *Game) drawDebug(screen *ebiten.Image) {
 	ebitenutil.DebugPrintAt(screen, counter, g.screenWidth-(len(counter)*6+2), 16)
 
 	// 3. Row
-	counter = fmt.Sprintf("RB: %d [%.1f hz]", len(g.RollingRailway.Data().Tiles()),
-		g.RollingRailway.Data().Hz())
+	counter = fmt.Sprintf("RB: %d [%.1f hz]", len(g.RollerConveyor.Data().Tiles()),
+		g.RollerConveyor.Data().Hz())
 	ebitenutil.DebugPrintAt(screen, counter, g.screenWidth-(len(counter)*6+2), 32)
 }

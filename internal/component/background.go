@@ -9,18 +9,6 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
-var ImageGround image.Image
-
-func init() {
-	var err error
-
-	// Ground
-	ImageGround, _, err = image.Decode(bytes.NewReader(images.Ground))
-	if err != nil {
-		panic(err)
-	}
-}
-
 // Background implements the `Component` interface.
 // Currently it is just as background for the game (some shit with grey)
 type Background struct {
@@ -33,9 +21,15 @@ type Background struct {
 }
 
 func NewBackground(scale *float64) Component[BackgroundData] {
+	// Ground
+	i, _, err := image.Decode(bytes.NewReader(images.Ground))
+	if err != nil {
+		panic(err)
+	}
+
 	return &Background{
 		data: &BackgroundData{
-			Image: ebiten.NewImageFromImage(ImageGround),
+			Image: ebiten.NewImageFromImage(i),
 		},
 		imageOptions: &ebiten.DrawImageOptions{
 			GeoM: ebiten.GeoM{},
@@ -80,8 +74,4 @@ func (b *Background) Draw(screen *ebiten.Image) {
 
 func (b *Background) Data() *BackgroundData {
 	return b.data
-}
-
-type BackgroundData struct {
-	Image *ebiten.Image
 }
