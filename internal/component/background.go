@@ -28,18 +28,19 @@ type Background struct {
 
 	data                      *BackgroundData
 	imageOptions              *ebiten.DrawImageOptions
+	scale                     *float64
 	screenWidth, screenHeight float64
 }
 
-func NewBackground(scale float64) Component[BackgroundData] {
+func NewBackground(scale *float64) Component[BackgroundData] {
 	return &Background{
 		data: &BackgroundData{
-			Scale: scale,
 			Image: ebiten.NewImageFromImage(ImageGround),
 		},
 		imageOptions: &ebiten.DrawImageOptions{
 			GeoM: ebiten.GeoM{},
 		},
+		scale: scale,
 	}
 }
 
@@ -58,8 +59,8 @@ func (b *Background) Draw(screen *ebiten.Image) {
 	w := b.data.Image.Bounds().Dx()
 	h := b.data.Image.Bounds().Dy()
 
-	imageWidth := float64(w) * b.data.Scale
-	imageHeight := float64(h) * b.data.Scale
+	imageWidth := float64(w) * *b.scale
+	imageHeight := float64(h) * *b.scale
 
 	col := int(math.Ceil(b.screenWidth / imageWidth))
 	row := int(math.Ceil(b.screenHeight / imageHeight))
@@ -67,7 +68,7 @@ func (b *Background) Draw(screen *ebiten.Image) {
 	for r := range row {
 		for c := range col {
 			b.imageOptions.GeoM.Reset()
-			b.imageOptions.GeoM.Scale(b.data.Scale, b.data.Scale)
+			b.imageOptions.GeoM.Scale(*b.scale, *b.scale)
 			b.imageOptions.GeoM.Translate(
 				imageWidth*float64(c),
 				imageHeight*float64(r),
@@ -82,6 +83,5 @@ func (b *Background) Data() *BackgroundData {
 }
 
 type BackgroundData struct {
-	Scale float64
 	Image *ebiten.Image
 }

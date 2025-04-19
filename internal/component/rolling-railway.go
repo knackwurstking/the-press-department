@@ -18,9 +18,9 @@ import (
 // NOTE: Create and engines type only if multiple engines are needed
 type RollingRailway struct {
 	input                     Component[RollingRailwayUserInputData]
-	stats                     *stats.Game
 	data                      *RollingRailwayData
 	rolls                     []Coord
+	scale                     *float64
 	screenWidth, screenHeight float64
 	lastUpdate                time.Time
 	lastTile                  time.Time
@@ -28,9 +28,10 @@ type RollingRailway struct {
 	tileStates                []tiles.State
 }
 
-func NewRollingRailway(data *RollingRailwayData) Component[RollingRailwayData] {
+func NewRollingRailway(scale *float64, data *RollingRailwayData) Component[RollingRailwayData] {
 	c := &RollingRailway{
 		input:      NewRollingRailwayUserInput(&RollingRailwayUserInputData{}),
+		scale:      scale,
 		data:       data,
 		rolls:      make([]Coord, 0),
 		lastTile:   time.Now(),
@@ -80,7 +81,7 @@ func (c *RollingRailway) Update() error {
 	)
 
 	c.data.SetSprite()
-	w, _ := c.data.Sprite.GetAssetSize()
+	w, _ := c.data.Roll.GetAssetSize()
 	padding := w * 3
 
 	// Update roll coords (x axis)
@@ -112,7 +113,7 @@ func (c *RollingRailway) Update() error {
 
 func (c *RollingRailway) Draw(screen *ebiten.Image) {
 	for i := range c.rolls {
-		c.data.Sprite.Draw(screen, c.rolls[i].X, c.rolls[i].Y)
+		c.data.Roll.Draw(screen, c.rolls[i].X, c.rolls[i].Y)
 	}
 
 	// Draw the tile with the given positions
@@ -140,7 +141,7 @@ func (c *RollingRailway) updatePress(next time.Time) {
 		// get a new tile here
 		tile := tiles.NewTile(&tiles.TilesData{
 			State: c.getRandomState(),
-			Scale: &c.data.Scale,
+			Scale: c.scale,
 		})
 
 		_, h := tile.Size()
@@ -165,7 +166,7 @@ func (c *RollingRailway) updateTiles(next time.Time) {
 		if t.IsThrownAway() {
 			// Animation
 			pressY := (c.screenHeight / 2) - (h / 2)
-			r := float64(next.Sub(c.lastUpdate).Seconds()) * (250) * (c.data.Scale * 10)
+			r := float64(next.Sub(c.lastUpdate).Seconds()) * (250) * (*c.scale * 10)
 			if d.Y <= pressY {
 				d.Y -= r
 			} else {
@@ -212,14 +213,13 @@ func (c *RollingRailway) getRandomState() tiles.State {
 func (c *RollingRailway) calcRange(next time.Time) float64 {
 	return (float64(next.Sub(c.lastUpdate).Seconds()) *
 		(c.data.Stats.RollingRailwayHzMultiply * c.data.Hz())) *
-		(c.data.Scale * 10)
+		(*c.scale * 10)
 }
 
 type RollingRailwayData struct {
-	Stats  *stats.Game
-	Sprite *sprites.Roll
-	Scale  float64
-	Pause  bool // Pause will stop the machines :)
+	Stats *stats.Game
+	Roll  *sprites.Roll
+	Pause bool // Pause will stop the machines :)
 
 	// TODO: Ok, i hote this: X, x, Y, y
 	X, Y float64
@@ -239,15 +239,15 @@ func (c *RollingRailwayData) SetUpdateData(r, x, y, size float64) {
 
 func (c *RollingRailwayData) SetSprite() {
 	c.rSum += c.r
-	w, _ := c.Sprite.GetAssetSize()
+	w, _ := c.Roll.GetAssetSize()
 	if c.rSum >= w {
-		c.Sprite.NextSprite()
+		c.Roll.NextSprite()
 		c.rSum = 0
 	}
 }
 
 func (c *RollingRailwayData) Height() float64 {
-	_, h := c.Sprite.GetAssetSize()
+	_, h := c.Roll.GetAssetSize()
 	return h
 }
 

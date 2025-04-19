@@ -105,11 +105,10 @@ func NewGame(scale float64) *Game {
 	game := &Game{
 		Mode:       ModePause,
 		Stats:      stats,
-		Background: component.NewBackground(scale),
-		RollingRailway: component.NewRollingRailway(&component.RollingRailwayData{
-			Stats:  stats,
-			Scale:  scale,
-			Sprite: sprites.NewRoll(&scale),
+		Background: component.NewBackground(&scale),
+		RollingRailway: component.NewRollingRailway(&scale, &component.RollingRailwayData{
+			Stats: stats,
+			Roll:  sprites.NewRoll(&scale),
 		}),
 		scale: scale,
 	}
@@ -135,9 +134,6 @@ func (g *Game) Update() error {
 	//if time.Since(g.lastUpdate) >= time.Second && g.Mode != ModePause {
 	//	g.Mode = ModeSuspend
 	//}
-
-	g.Background.Data().Scale = g.scale
-	g.RollingRailway.Data().Scale = g.scale
 
 	switch g.Mode {
 	case ModePause, ModeSuspend:
