@@ -35,7 +35,7 @@ func (g *Game) AddGoodTile(tile tiles.Tiles) {
 	g.GoodTiles++
 
 	if tile.IsOK() {
-		g.Money += 150
+		g.Money += 200
 	} else {
 		// NOTE: Should never happen
 		g.Money -= 10000
