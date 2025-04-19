@@ -48,7 +48,7 @@ func (g *Game) AddBadTile(tile tiles.Tiles) {
 	if tile.HasCrack() {
 		g.Money -= 400
 	} else if tile.HasStampAdhesive() {
-		g.Money -= 150
+		g.Money -= 250
 	} else {
 		// NOTE: Should never happen, as long the tile is not ok
 		g.Money -= 1000
