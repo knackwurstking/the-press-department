@@ -260,7 +260,7 @@ func (g *Game) drawDebug(screen *ebiten.Image) {
 	ebitenutil.DebugPrintAt(screen, counter, g.screenWidth-(len(counter)*6+2), 16)
 
 	// 3. Row
-	counter = fmt.Sprintf("RB: %d [%.1f hz]", len(g.RollingRailway.Data().GetTiles()),
-		g.RollingRailway.Data().GetHz())
+	counter = fmt.Sprintf("RB: %d [%.1f hz]", len(g.RollingRailway.Data().Tiles()),
+		g.RollingRailway.Data().Hz())
 	ebitenutil.DebugPrintAt(screen, counter, g.screenWidth-(len(counter)*6+2), 32)
 }

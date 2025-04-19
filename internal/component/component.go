@@ -3,7 +3,7 @@ package component
 import "github.com/hajimehoshi/ebiten/v2"
 
 type ComponentData interface {
-	BackgroundData | EngineData | EngineUserInputData | RollingRailwayData
+	BackgroundData | RollingRailwayData | RollingRailwayUserInputData
 }
 
 type Component[T ComponentData] interface {
