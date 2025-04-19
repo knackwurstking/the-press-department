@@ -1,16 +1,24 @@
 package tiles
 
 import (
-	"bytes"
-	"image"
 	"the-press-department/internal/images"
 
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
+var tileSet = map[State]*ebiten.Image{}
+
+func init() {
+	tileSet = map[State]*ebiten.Image{
+		StateOK:            images.TileStateOK,
+		StateCrack:         images.TileStateCrack,
+		StateStampAdhesive: images.TileStateStampAdhesive,
+	}
+}
+
 // Tile implements the `Tiles` interface
 type Tile struct {
-	Sprites      map[State]*ebiten.Image
+	TileSet      map[State]*ebiten.Image
 	ImageOptions *ebiten.DrawImageOptions
 
 	data       *TilesData
@@ -19,31 +27,8 @@ type Tile struct {
 }
 
 func NewTile(d *TilesData) *Tile {
-	s := make(map[State]*ebiten.Image)
-
-	// Tile
-	f, _, err := image.Decode(bytes.NewReader(images.Tile))
-	if err != nil {
-		panic(err)
-	}
-	s[StateOK] = ebiten.NewImageFromImage(f)
-
-	// TileWithCrack
-	f, _, err = image.Decode(bytes.NewReader(images.TileWithCrack))
-	if err != nil {
-		panic(err)
-	}
-	s[StateCrack] = ebiten.NewImageFromImage(f)
-
-	// Stamp Adhesive
-	f, _, err = image.Decode(bytes.NewReader(images.TileWithStampAdhesive))
-	if err != nil {
-		panic(err)
-	}
-	s[StateStampAdhesive] = ebiten.NewImageFromImage(f)
-
 	return &Tile{
-		Sprites: s,
+		TileSet: tileSet,
 		ImageOptions: &ebiten.DrawImageOptions{
 			GeoM: ebiten.GeoM{},
 		},
@@ -62,12 +47,12 @@ func (t *Tile) Draw(screen *ebiten.Image) {
 
 	t.ImageOptions.GeoM.Translate(t.data.X, t.data.Y)
 
-	screen.DrawImage(t.Sprites[t.data.State], t.ImageOptions)
+	screen.DrawImage(t.TileSet[t.data.State], t.ImageOptions)
 }
 
 func (t *Tile) Size() (w, h float64) {
-	iW := t.Sprites[t.data.State].Bounds().Dx()
-	iH := t.Sprites[t.data.State].Bounds().Dy()
+	iW := t.TileSet[t.data.State].Bounds().Dx()
+	iH := t.TileSet[t.data.State].Bounds().Dy()
 	return float64(iW) * *t.data.Scale, float64(iH) * *t.data.Scale
 }
 

@@ -1,71 +1,22 @@
 package sprites
 
 import (
-	"bytes"
-	"image"
 	"the-press-department/internal/images"
 
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
-var ImageRollAsset [8]*ebiten.Image
+var ImageRollSprites [8]*ebiten.Image
 
 func init() {
-	// Roll asset (sprit 0)
-	img, _, err := image.Decode(bytes.NewReader(images.Roll0))
-	if err != nil {
-		panic(err)
-	}
-	ImageRollAsset[0] = ebiten.NewImageFromImage(img)
-
-	// Roll asset (sprit 1)
-	img, _, err = image.Decode(bytes.NewReader(images.Roll1))
-	if err != nil {
-		panic(err)
-	}
-	ImageRollAsset[1] = ebiten.NewImageFromImage(img)
-
-	// Roll asset (sprit 2)
-	img, _, err = image.Decode(bytes.NewReader(images.Roll2))
-	if err != nil {
-		panic(err)
-	}
-	ImageRollAsset[2] = ebiten.NewImageFromImage(img)
-
-	// Roll asset (sprit 3)
-	img, _, err = image.Decode(bytes.NewReader(images.Roll3))
-	if err != nil {
-		panic(err)
-	}
-	ImageRollAsset[3] = ebiten.NewImageFromImage(img)
-
-	// Roll asset (sprit 4)
-	img, _, err = image.Decode(bytes.NewReader(images.Roll4))
-	if err != nil {
-		panic(err)
-	}
-	ImageRollAsset[4] = ebiten.NewImageFromImage(img)
-
-	// Roll asset (sprit 5)
-	img, _, err = image.Decode(bytes.NewReader(images.Roll5))
-	if err != nil {
-		panic(err)
-	}
-	ImageRollAsset[5] = ebiten.NewImageFromImage(img)
-
-	// Roll asset (sprit 6)
-	img, _, err = image.Decode(bytes.NewReader(images.Roll6))
-	if err != nil {
-		panic(err)
-	}
-	ImageRollAsset[6] = ebiten.NewImageFromImage(img)
-
-	// Roll asset (sprit 7)
-	img, _, err = image.Decode(bytes.NewReader(images.Roll7))
-	if err != nil {
-		panic(err)
-	}
-	ImageRollAsset[7] = ebiten.NewImageFromImage(img)
+	ImageRollSprites[0] = images.Roll0
+	ImageRollSprites[1] = images.Roll1
+	ImageRollSprites[2] = images.Roll2
+	ImageRollSprites[3] = images.Roll3
+	ImageRollSprites[4] = images.Roll4
+	ImageRollSprites[5] = images.Roll5
+	ImageRollSprites[6] = images.Roll6
+	ImageRollSprites[7] = images.Roll7
 }
 
 type Roll struct {
@@ -90,19 +41,19 @@ func (r *Roll) Draw(screen *ebiten.Image, x, y float64) {
 	r.Options.GeoM.Scale(*r.scale, *r.scale)
 	r.Options.GeoM.Translate(x, y)
 
-	screen.DrawImage(ImageRollAsset[r.imageIndex], r.Options)
+	screen.DrawImage(ImageRollSprites[r.imageIndex], r.Options)
 }
 
 func (r *Roll) GetAssetSize() (width float64, height float64) {
-	w := ImageRollAsset[0].Bounds().Dx()
-	h := ImageRollAsset[0].Bounds().Dy()
+	w := ImageRollSprites[0].Bounds().Dx()
+	h := ImageRollSprites[0].Bounds().Dy()
 	return float64(w) * *r.scale, float64(h) * *r.scale
 }
 
 func (r *Roll) NextSprite() {
 	r.imageIndex += 1
 
-	if r.imageIndex >= len(ImageRollAsset) {
+	if r.imageIndex >= len(ImageRollSprites) {
 		r.imageIndex = 0
 	}
 }

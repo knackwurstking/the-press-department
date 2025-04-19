@@ -1,8 +1,6 @@
 package component
 
 import (
-	"bytes"
-	"image"
 	"math"
 	"the-press-department/internal/images"
 
@@ -21,15 +19,9 @@ type Background struct {
 }
 
 func NewBackground(scale *float64) Component[BackgroundData] {
-	// Ground
-	i, _, err := image.Decode(bytes.NewReader(images.Ground))
-	if err != nil {
-		panic(err)
-	}
-
 	return &Background{
 		data: &BackgroundData{
-			Image: ebiten.NewImageFromImage(i),
+			Image: images.Ground,
 		},
 		imageOptions: &ebiten.DrawImageOptions{
 			GeoM: ebiten.GeoM{},
