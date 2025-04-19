@@ -57,14 +57,9 @@ func NewRollerConveyor(stats *stats.Game, scale *float64, data RollerConveyorDat
 
 func (c *RollerConveyor) Layout(outsideWidth, outsideHeight int) (int, int) {
 	c.screenWidth = float64(outsideWidth)
-	c.screenHeight = float64(outsideHeight)
 
-	c.input.Layout(outsideWidth, outsideHeight)
-
+	// Update tiles only if height has changed (no special reason for this)
 	if c.screenHeight != float64(outsideHeight) {
-		c.screenHeight = float64(outsideHeight)
-
-		// update tiles
 		for _, t := range c.tiles {
 			if !t.IsThrownAway() {
 				_, h := t.Size()
@@ -72,6 +67,9 @@ func (c *RollerConveyor) Layout(outsideWidth, outsideHeight int) (int, int) {
 			}
 		}
 	}
+	c.screenHeight = float64(outsideHeight)
+
+	c.input.Layout(outsideWidth, outsideHeight)
 
 	return outsideWidth, outsideHeight
 }
@@ -170,9 +168,8 @@ func (c *RollerConveyor) updateTiles(next time.Time) {
 		d := t.Data()
 		w, h := t.Size()
 
-		// Check if tile has thrownAway state
+		// update tiles if not thrown away
 		if t.IsThrownAway() {
-			// Animation
 			pressY := (c.screenHeight / 2) - (h / 2)
 			r := float64(next.Sub(c.lastUpdate).Seconds()) * (250) * (*c.scale * 10)
 			if d.Y <= pressY {
