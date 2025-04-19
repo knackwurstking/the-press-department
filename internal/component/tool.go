@@ -12,6 +12,14 @@ const (
 
 type ToolType string
 
+type ToolData struct {
+	t ToolType
+}
+
+func (td *ToolData) Type() ToolType {
+	return td.t
+}
+
 type Tool struct {
 	ToolData
 
@@ -46,12 +54,4 @@ func (t Tool) Draw(i *ebiten.Image) {
 
 func (t Tool) Data() *ToolData {
 	return &t.ToolData
-}
-
-type ToolData struct {
-	t ToolType
-}
-
-func (td *ToolData) Type() ToolType {
-	return td.t
 }

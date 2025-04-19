@@ -7,32 +7,35 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
+type BackgroundData struct {
+	image        *ebiten.Image
+	imageOptions *ebiten.DrawImageOptions
+}
+
 // Background implements the `Component` interface.
 // Currently it is just as background for the game (some shit with grey)
 type Background struct {
-	Component[BackgroundData]
+	BackgroundData
 
-	data                      *BackgroundData
-	imageOptions              *ebiten.DrawImageOptions
-	scale                     *float64
-	screenWidth, screenHeight float64
+	scale         *float64
+	width, height float64
 }
 
 func NewBackground(scale *float64) Component[BackgroundData] {
 	return &Background{
-		data: &BackgroundData{
-			Image: images.Ground,
-		},
-		imageOptions: &ebiten.DrawImageOptions{
-			GeoM: ebiten.GeoM{},
+		BackgroundData: BackgroundData{
+			image: images.Ground,
+			imageOptions: &ebiten.DrawImageOptions{
+				GeoM: ebiten.GeoM{},
+			},
 		},
 		scale: scale,
 	}
 }
 
 func (b *Background) Layout(outsideWidth, outsideHeight int) (int, int) {
-	b.screenWidth = float64(outsideWidth)
-	b.screenHeight = float64(outsideHeight)
+	b.width = float64(outsideWidth)
+	b.height = float64(outsideHeight)
 
 	return outsideWidth, outsideHeight
 }
@@ -42,14 +45,14 @@ func (b *Background) Update() error {
 }
 
 func (b *Background) Draw(screen *ebiten.Image) {
-	w := b.data.Image.Bounds().Dx()
-	h := b.data.Image.Bounds().Dy()
+	w := b.image.Bounds().Dx()
+	h := b.image.Bounds().Dy()
 
 	imageWidth := float64(w) * *b.scale
 	imageHeight := float64(h) * *b.scale
 
-	col := int(math.Ceil(b.screenWidth / imageWidth))
-	row := int(math.Ceil(b.screenHeight / imageHeight))
+	col := int(math.Ceil(b.width / imageWidth))
+	row := int(math.Ceil(b.height / imageHeight))
 
 	for r := range row {
 		for c := range col {
@@ -59,11 +62,11 @@ func (b *Background) Draw(screen *ebiten.Image) {
 				imageWidth*float64(c),
 				imageHeight*float64(r),
 			)
-			screen.DrawImage(b.data.Image, b.imageOptions)
+			screen.DrawImage(b.image, b.imageOptions)
 		}
 	}
 }
 
 func (b *Background) Data() *BackgroundData {
-	return b.data
+	return &b.BackgroundData
 }

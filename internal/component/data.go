@@ -3,13 +3,7 @@ package component
 import (
 	"the-press-department/internal/sprites"
 	"the-press-department/internal/tiles"
-
-	"github.com/hajimehoshi/ebiten/v2"
 )
-
-type BackgroundData struct {
-	Image *ebiten.Image
-}
 
 type RollerConveyorData struct {
 	RollSprite *sprites.Roll
